@@ -48,11 +48,15 @@ class TestProcedureApp {
 
     loadManualTests() {
         const container = document.getElementById('manualSteps');
-        manualTests.forEach(test => {
+        container.innerHTML = ''; // Clear existing content
+        manualTests.forEach((test, index) => {
             const testElement = document.createElement('div');
             testElement.innerHTML = buildManualTestHTML(test);
-            testElement.querySelector('.manual-test').style.display = 'none';
-            container.appendChild(testElement.firstChild);
+            const testDiv = testElement.querySelector('.manual-test');
+            if (testDiv) {
+                testDiv.style.display = index === 0 ? 'block' : 'none';
+                container.appendChild(testDiv);
+            }
         });
 
         // Show first test
@@ -62,11 +66,14 @@ class TestProcedureApp {
     loadAutomatedTests() {
         const container = document.getElementById('autoTestContainer');
         container.innerHTML = '';
-        automatedTests.forEach(test => {
+        automatedTests.forEach((test, index) => {
             const testElement = document.createElement('div');
             testElement.innerHTML = buildAutomatedTestHTML(test, this.automatedSystem);
-            testElement.querySelector('.automated-test').style.display = 'none';
-            container.appendChild(testElement.firstChild);
+            const testDiv = testElement.querySelector('.automated-test');
+            if (testDiv) {
+                testDiv.style.display = index === 0 ? 'block' : 'none';
+                container.appendChild(testDiv);
+            }
         });
 
         // Show first test
@@ -277,6 +284,17 @@ class TestProcedureApp {
     saveTestResults() {
         localStorage.setItem('hichord-test-results-v2', JSON.stringify(this.testResults));
     }
+
+    log(message, testId) {
+        const logContent = document.getElementById(`logContent${testId}`);
+        if (logContent) {
+            const logItem = document.createElement('div');
+            logItem.className = 'log-item';
+            logItem.textContent = message;
+            logContent.appendChild(logItem);
+            logContent.scrollTop = logContent.scrollHeight;
+        }
+    }
 }
 
 // Global test app instance
@@ -346,3 +364,15 @@ function goBackToTests() {
 function printReport() {
     window.print();
 }
+
+// Logging helper for tests
+testApp.log = function(message, testId) {
+    const logContent = document.getElementById(`logContent${testId}`);
+    if (logContent) {
+        const logItem = document.createElement('div');
+        logItem.className = 'log-item';
+        logItem.textContent = message;
+        logContent.appendChild(logItem);
+        logContent.scrollTop = logContent.scrollHeight;
+    }
+};

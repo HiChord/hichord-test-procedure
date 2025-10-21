@@ -4,9 +4,9 @@
 const manualTests = [
     {
         id: 1,
-        name: "CHARGING INDICATOR",
+        name: "Charging Indicator",
         procedure: [
-            "Locate USB-C port on side of HiChord",
+            "Locate USB-C port on side of HiChord™",
             "Connect USB-C cable to HiChord and power source",
             "Observe LED indicator on side panel"
         ],
@@ -15,11 +15,12 @@ const manualTests = [
             "LED shows BLUE when fully charged",
             "LED is visible and bright"
         ],
-        oled: null
+        oled: null,
+        image: "images/Side View.png"
     },
     {
         id: 2,
-        name: "POWER ON SEQUENCE",
+        name: "Power On Sequence",
         procedure: [
             "Press and hold power button for 1 second",
             "Observe OLED display boot animation",
@@ -38,7 +39,8 @@ const manualTests = [
     },
     {
         id: 3,
-        name: "VOLUME CONTROL",
+        name: "Volume Control",
+        image: "images/Top View.png",
         procedure: [
             "Locate volume slider on top edge",
             "Press any chord button (1-7) to generate sound",
@@ -58,7 +60,8 @@ const manualTests = [
     },
     {
         id: 4,
-        name: "FUNCTION BUTTONS",
+        name: "Function Buttons",
+        image: "images/BUtton numbers 2.png",
         procedure: [
             "Press F1 (gray button) - should open Settings menu",
             "Press F1 again to close menu",
@@ -81,7 +84,8 @@ const manualTests = [
     },
     {
         id: 5,
-        name: "JOYSTICK (8 DIRECTIONS)",
+        name: "Joystick (8 Directions)",
+        image: "images/Front View.png",
         procedure: [
             "Press F1 to enter Settings menu",
             "Move joystick UP - should change octave",
@@ -108,7 +112,8 @@ const manualTests = [
     },
     {
         id: 6,
-        name: "JOYSTICK BUTTON PRESS",
+        name: "Joystick Button Press",
+        image: "images/Front View.png",
         procedure: [
             "Press F2 to enter Effects menu",
             "Use joystick directions to navigate",
@@ -125,7 +130,8 @@ const manualTests = [
     },
     {
         id: 7,
-        name: "BUILT-IN SPEAKER",
+        name: "Built-in Speaker",
+        image: "images/Back View.png",
         procedure: [
             "Ensure no headphones or USB cable connected",
             "Set volume to 50%",
@@ -143,7 +149,8 @@ const manualTests = [
     },
     {
         id: 8,
-        name: "HEADPHONE OUTPUT",
+        name: "Headphone Output",
+        image: "images/Side View.png",
         procedure: [
             "Connect headphones to 3.5mm jack on right side",
             "Verify internal speaker mutes automatically",
@@ -162,7 +169,8 @@ const manualTests = [
     },
     {
         id: 9,
-        name: "USB-C AUDIO OUTPUT",
+        name: "USB-C Audio Output",
+        image: "images/Side View.png",
         procedure: [
             "Connect HiChord to computer via USB-C",
             "Computer should recognize \"HiChord\" audio device",
@@ -182,7 +190,8 @@ const manualTests = [
     },
     {
         id: 10,
-        name: "MIDI OUTPUT",
+        name: "MIDI Output",
+        image: "images/Side View.png",
         procedure: [
             "Connect HiChord to computer via USB-C",
             "Open DAW or MIDI monitor software",
@@ -202,7 +211,7 @@ const manualTests = [
     },
     {
         id: 11,
-        name: "MICROPHONE INPUT",
+        name: "Microphone Input",
         batch: "4+",
         skipBatch: ["1", "2", "3"],
         procedure: [
@@ -229,7 +238,7 @@ const manualTests = [
     },
     {
         id: 12,
-        name: "BATTERY INDICATOR",
+        name: "Battery Indicator",
         batch: "2+",
         skipBatch: ["1"],
         procedure: [
@@ -343,24 +352,32 @@ function buildManualTestHTML(test) {
 
     const oledHTML = renderOLED(test.oled);
 
+    const imageHTML = test.image ? `
+        <div class="device-image">
+            <img src="${test.image}" alt="${test.name}" />
+        </div>
+    ` : '';
+
     return `
         <div class="manual-test" data-test-id="${test.id}">
             <div class="test-header">
                 <div class="test-number">${String(test.id).padStart(2, '0')}</div>
                 <h2>${test.name}</h2>
-                ${test.batch ? `<span class="batch-tag">BATCH ${test.batch}</span>` : ''}
+                ${test.batch ? `<span class="batch-tag">Batch ${test.batch}</span>` : ''}
             </div>
 
             <div class="test-body">
+                ${imageHTML}
+
                 <div class="procedure-section">
-                    <h3>TEST PROCEDURE</h3>
+                    <h3>Test Procedure</h3>
                     <ol>${procedureHTML}</ol>
                 </div>
 
                 ${oledHTML}
 
                 <div class="expected-section">
-                    <h3>EXPECTED RESULTS</h3>
+                    <h3>Expected Results</h3>
                     <ul>${expectedHTML}</ul>
                 </div>
 

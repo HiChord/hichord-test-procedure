@@ -77,8 +77,10 @@ h1 {
 }
 
 .mode-icon {
-    font-size: 48px;
-    margin-bottom: 16px;
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 16px;
+    display: block;
 }
 
 .mode-name {
@@ -253,6 +255,23 @@ h1 {
     padding: 12px 16px;
     margin-top: 24px;
     font-size: 13px;
+}
+
+/* Device Images */
+.device-image {
+    margin: 24px 0;
+    text-align: center;
+    background: #F9FAFB;
+    padding: 24px;
+    border-radius: 8px;
+    border: 1px solid #E5E7EB;
+}
+
+.device-image img {
+    max-width: 100%;
+    height: auto;
+    max-height: 300px;
+    object-fit: contain;
 }
 
 /* OLED Mockup */

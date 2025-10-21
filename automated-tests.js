@@ -1,5 +1,6 @@
 // Automated Test System with WebMIDI Integration
 // Real-time hardware validation via USB-C
+// Based on HiChord Companion App implementation
 
 class AutomatedTestSystem {
     constructor() {
@@ -9,6 +10,15 @@ class AutomatedTestSystem {
         this.isConnected = false;
         this.hardwareBatch = null;
         this.buttonSystem = null; // 'ADC' or 'I2C'
+
+        // MIDI CC numbers (from companion app)
+        this.CC_BPM = 20;
+        this.CC_KEY = 21;
+        this.CC_OCTAVE = 22;
+        this.CC_JOYSTICK = 23;
+        this.CC_PRESET = 24;
+        this.CC_HANDSHAKE = 127;
+        this.CC_VOLUME = 7;
 
         // Test state tracking
         this.currentTest = null;
@@ -31,7 +41,7 @@ class AutomatedTestSystem {
 
             this.midiAccess = await navigator.requestMIDIAccess({ sysex: true });
 
-            // Find HiChord device
+            // Find HiChord device (matching companion app logic)
             let foundInput = null;
             let foundOutput = null;
 
@@ -50,7 +60,7 @@ class AutomatedTestSystem {
             }
 
             if (!foundInput || !foundOutput) {
-                throw new Error('HiChord not found. Please connect HiChord via USB-C.');
+                throw new Error('HiChord™ not found. Please connect HiChord via USB-C and ensure it is powered on.');
             }
 
             this.midiInput = foundInput;
@@ -58,6 +68,11 @@ class AutomatedTestSystem {
             this.midiInput.onmidimessage = (e) => this.handleMIDIMessage(e);
 
             this.isConnected = true;
+
+            // Send handshake (matching companion app)
+            this.sendHandshake();
+
+            // Detect hardware batch
             await this.detectHardware();
 
             return true;
@@ -76,16 +91,22 @@ class AutomatedTestSystem {
         this.midiOutput = null;
     }
 
+    sendHandshake() {
+        // Send CC#127 with value 1 (matching companion app)
+        if (this.midiOutput) {
+            this.midiOutput.send([0xB0, this.CC_HANDSHAKE, 1]);
+        }
+    }
+
     async detectHardware() {
-        // Request device state via SysEx
-        // SysEx format: F0 7D 00 00 F7 (request state)
+        // Request device state via SysEx (matching companion app)
         const sysexRequest = [0xF0, 0x7D, 0x00, 0x00, 0xF7];
         this.sendSysEx(sysexRequest);
 
-        // For now, we'll detect based on button response patterns
-        // This will be refined when we test button inputs
-        this.hardwareBatch = 'Unknown';
-        this.buttonSystem = 'Unknown';
+        // For now, assume I2C for Batch 4+ (most recent hardware)
+        // This can be refined based on SysEx responses
+        this.hardwareBatch = '4+';
+        this.buttonSystem = 'I2C';
     }
 
     handleMIDIMessage(event) {
@@ -109,15 +130,17 @@ class AutomatedTestSystem {
                 break;
 
             case 0x80: // Note Off
-            case 0x90: // Note On with velocity 0
-                if (data2 === 0) {
-                    this.notifyHandlers('noteOff', { note: data1 });
-                }
+                this.notifyHandlers('noteOff', { note: data1 });
                 break;
 
             case 0xB0: // Control Change
                 this.receivedCCs.set(data1, data2);
                 this.notifyHandlers('cc', { cc: data1, value: data2 });
+
+                // Log specific CCs for debugging
+                if (data1 === this.CC_VOLUME) {
+                    this.notifyHandlers('volume', { value: data2 });
+                }
                 break;
         }
     }
@@ -146,6 +169,7 @@ class AutomatedTestSystem {
 
     addMessageHandler(handler) {
         this.messageHandlers.push(handler);
+        return handler;
     }
 
     removeMessageHandler(handler) {
@@ -180,23 +204,24 @@ class AutomatedTestSystem {
 const automatedTests = [
     {
         id: 1,
-        name: "CHARGING INDICATOR",
+        name: "Charging Indicator",
         automated: false,
         instruction: "Plug in USB-C cable and observe LED on side panel",
-        verify: "Manually verify: LED is RED when charging, BLUE when charged",
+        verify: "Manually verify: LED is RED when charging, BLUE when fully charged",
+        image: "images/Side View.png",
         autoTest: null
     },
     {
         id: 2,
-        name: "POWER ON SEQUENCE",
-        automated: false,
-        instruction: "HiChord should already be powered on and connected",
+        name: "Power On Sequence",
+        automated: true,
+        instruction: "HiChord™ should already be powered on and connected via USB-C",
         verify: "Connection successful = Power On test PASSED",
         autoTest: (system) => {
             return new Promise((resolve) => {
                 // If connected, power on is successful
                 if (system.isConnected) {
-                    resolve({ passed: true, message: "Device connected successfully" });
+                    resolve({ passed: true, message: "Device connected successfully - HiChord™ is powered on" });
                 } else {
                     resolve({ passed: false, message: "Device not connected" });
                 }
@@ -205,39 +230,40 @@ const automatedTests = [
     },
     {
         id: 3,
-        name: "VOLUME CONTROL",
+        name: "Volume Control",
         automated: true,
-        instruction: "Move volume slider from MIN to MAX slowly",
-        verify: "Test will automatically detect volume changes via audio level",
+        instruction: "Move volume slider from MIN to MAX slowly (at least 3 times)",
+        verify: "Test will automatically detect volume changes via CC#7 (Volume)",
+        image: "images/Top View.png",
         autoTest: (system) => {
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve) => {
                 let volumeChanges = 0;
                 let lastVolume = -1;
-                const minChanges = 3; // Need at least 3 volume level changes
+                const minChanges = 5; // Need at least 5 volume level changes
+                const changeThreshold = 10; // Significant change threshold
 
                 const handler = {
-                    type: 'cc',
+                    type: 'volume',
                     callback: (data) => {
-                        if (data.cc === 7) { // CC7 is volume
-                            if (lastVolume >= 0 && Math.abs(data.value - lastVolume) > 10) {
-                                volumeChanges++;
-                            }
-                            lastVolume = data.value;
+                        if (lastVolume >= 0 && Math.abs(data.value - lastVolume) > changeThreshold) {
+                            volumeChanges++;
+                            testApp.log(`Volume change ${volumeChanges}: ${lastVolume} → ${data.value}`, 3);
+                        }
+                        lastVolume = data.value;
 
-                            if (volumeChanges >= minChanges) {
-                                system.removeMessageHandler(handler);
-                                resolve({
-                                    passed: true,
-                                    message: `Volume control working (${volumeChanges} changes detected)`
-                                });
-                            }
+                        if (volumeChanges >= minChanges) {
+                            system.removeMessageHandler(handler);
+                            resolve({
+                                passed: true,
+                                message: `Volume control working (${volumeChanges} changes detected)`
+                            });
                         }
                     }
                 };
 
                 system.addMessageHandler(handler);
 
-                // Timeout after 15 seconds
+                // Timeout after 20 seconds
                 setTimeout(() => {
                     system.removeMessageHandler(handler);
                     if (volumeChanges < minChanges) {
@@ -246,165 +272,89 @@ const automatedTests = [
                             message: `Insufficient volume changes (${volumeChanges}/${minChanges})`
                         });
                     }
-                }, 15000);
+                }, 20000);
             });
         }
     },
     {
         id: 4,
-        name: "FUNCTION BUTTONS",
-        automated: true,
+        name: "Function Buttons",
+        automated: false,
         instruction: "Press each function button: F1 (gray), F2 (yellow), F3 (red)",
-        verify: "Test will detect each button press via MIDI messages",
-        autoTest: (system) => {
-            return new Promise((resolve) => {
-                const pressedButtons = new Set();
-                const requiredButtons = ['F1', 'F2', 'F3'];
-
-                const handler = {
-                    type: 'all',
-                    callback: (data) => {
-                        // Function buttons may send specific CCs or note patterns
-                        // F1, F2, F3 detection based on MIDI activity patterns
-                        // This is a simplified version - real implementation would
-                        // need to parse the specific MIDI messages
-                    }
-                };
-
-                system.addMessageHandler(handler);
-
-                // For manual verification in automated mode
-                const checkInterval = setInterval(() => {
-                    const status = `Waiting for buttons: ${requiredButtons.filter(b => !pressedButtons.has(b)).join(', ')}`;
-                    // Update UI with status
-                }, 500);
-
-                setTimeout(() => {
-                    system.removeMessageHandler(handler);
-                    clearInterval(checkInterval);
-                    resolve({
-                        passed: pressedButtons.size === 3,
-                        message: `Detected ${pressedButtons.size}/3 function buttons`
-                    });
-                }, 20000);
-            });
-        }
+        verify: "Manually verify each button opens its respective menu on the OLED",
+        image: "images/BUtton numbers 2.png",
+        autoTest: null
     },
     {
         id: 5,
-        name: "JOYSTICK (8 DIRECTIONS)",
-        automated: true,
+        name: "Joystick (8 Directions)",
+        automated: false,
         instruction: "Move joystick in all 8 directions: UP, DOWN, LEFT, RIGHT, and 4 diagonals",
-        verify: "Test will detect joystick movements via CC messages or menu changes",
-        autoTest: (system) => {
-            return new Promise((resolve) => {
-                const directions = new Set();
-                const requiredDirections = 8;
-
-                const handler = {
-                    type: 'cc',
-                    callback: (data) => {
-                        // Joystick movements may send CC messages
-                        // or trigger menu navigation CCs
-                        // Track unique directional inputs
-                    }
-                };
-
-                system.addMessageHandler(handler);
-
-                setTimeout(() => {
-                    system.removeMessageHandler(handler);
-                    resolve({
-                        passed: directions.size >= requiredDirections,
-                        message: `Detected ${directions.size}/${requiredDirections} directions`
-                    });
-                }, 25000);
-            });
-        }
+        verify: "Manually verify menu navigation responds to each direction",
+        image: "images/Front View.png",
+        autoTest: null
     },
     {
         id: 6,
-        name: "JOYSTICK BUTTON PRESS",
-        automated: true,
+        name: "Joystick Button Press",
+        automated: false,
         instruction: "Press down on joystick (click) 3 times",
-        verify: "Test will detect joystick button clicks",
-        autoTest: (system) => {
-            return new Promise((resolve) => {
-                let clicks = 0;
-                const requiredClicks = 3;
-
-                const handler = {
-                    type: 'all',
-                    callback: (data) => {
-                        // Detect joystick click events
-                        clicks++;
-                        if (clicks >= requiredClicks) {
-                            system.removeMessageHandler(handler);
-                            resolve({
-                                passed: true,
-                                message: `Joystick clicks detected (${clicks})`
-                            });
-                        }
-                    }
-                };
-
-                system.addMessageHandler(handler);
-
-                setTimeout(() => {
-                    system.removeMessageHandler(handler);
-                    resolve({
-                        passed: clicks >= requiredClicks,
-                        message: `Detected ${clicks}/${requiredClicks} clicks`
-                    });
-                }, 10000);
-            });
-        }
+        verify: "Manually verify tactile click and menu selection",
+        image: "images/Front View.png",
+        autoTest: null
     },
     {
         id: 7,
-        name: "SPEAKER TEST",
+        name: "Speaker Test",
         automated: false,
         instruction: "Listen to internal speaker while pressing chord buttons 1-7",
-        verify: "Manually verify clear audio from speaker",
+        verify: "Manually verify clear audio from speaker with no distortion",
+        image: "images/Back View.png",
         autoTest: null
     },
     {
         id: 8,
-        name: "HEADPHONE OUTPUT",
+        name: "Headphone Output",
         automated: false,
-        instruction: "Connect headphones. Press chord buttons and verify stereo audio",
-        verify: "Manually verify audio in both L and R channels",
+        instruction: "Connect headphones to 3.5mm jack. Press chord buttons and verify stereo audio",
+        verify: "Manually verify audio in both L and R channels, speaker mutes automatically",
+        image: "images/Side View.png",
         autoTest: null
     },
     {
         id: 9,
-        name: "USB-C AUDIO OUTPUT",
+        name: "USB-C Audio Output",
         automated: false,
-        instruction: "Audio should be playing through USB-C connection",
-        verify: "Manually verify audio on computer",
+        instruction: "Set computer audio output to 'HiChord'. Play audio and verify output",
+        verify: "Manually verify digital audio plays through computer speakers/headphones",
+        image: "images/Side View.png",
         autoTest: null
     },
     {
         id: 10,
-        name: "MIDI OUTPUT",
+        name: "MIDI Output",
         automated: true,
-        instruction: "Press each chord button 1-7",
+        instruction: "Press each chord button 1-7 (hold each for 1 second)",
         verify: "Test will automatically detect MIDI notes from each button",
+        image: "images/BUtton numbers 2.png",
         autoTest: (system) => {
             return new Promise((resolve) => {
-                const pressedButtons = new Set();
+                const pressedNotes = new Set();
                 const requiredButtons = 7;
+                let lastNoteTime = Date.now();
 
                 const handler = {
                     type: 'noteOn',
                     callback: (data) => {
-                        pressedButtons.add(data.note);
+                        pressedNotes.add(data.note);
+                        lastNoteTime = Date.now();
+                        testApp.log(`Chord button detected: Note ${data.note}`, 10);
 
-                        if (pressedButtons.size >= requiredButtons) {
+                        if (pressedNotes.size >= requiredButtons) {
                             system.removeMessageHandler(handler);
                             resolve({
                                 passed: true,
-                                message: `All ${requiredButtons} chord buttons detected`
+                                message: `All ${requiredButtons} chord buttons detected via MIDI`
                             });
                         }
                     }
@@ -412,35 +362,36 @@ const automatedTests = [
 
                 system.addMessageHandler(handler);
 
+                // Timeout after 30 seconds
                 setTimeout(() => {
                     system.removeMessageHandler(handler);
                     resolve({
-                        passed: pressedButtons.size >= requiredButtons,
-                        message: `Detected ${pressedButtons.size}/${requiredButtons} chord buttons`
+                        passed: pressedNotes.size >= requiredButtons,
+                        message: `Detected ${pressedNotes.size}/${requiredButtons} chord buttons`
                     });
-                }, 20000);
+                }, 30000);
             });
         }
     },
     {
         id: 11,
-        name: "MICROPHONE INPUT",
+        name: "Microphone Input",
         batch: "4+",
         automated: false,
-        instruction: "Hold F3 + Button 6 for MIC_SAMPLE mode. Record a sample.",
-        verify: "Manually verify recording and playback",
+        instruction: "Hold F3 + Button 6 for MIC_SAMPLE mode. Record and play back a sample.",
+        verify: "Manually verify recording and playback quality",
         autoTest: null,
-        note: "BATCH 4+ ONLY"
+        note: "Batch 4+ only - Skip for Batch 1-3"
     },
     {
         id: 12,
-        name: "BATTERY INDICATOR",
+        name: "Battery Indicator",
         batch: "2+",
         automated: false,
-        instruction: "Disconnect USB (if possible) and check OLED for battery indicator",
-        verify: "Manually verify battery percentage in top-right corner",
+        instruction: "Observe OLED display top-right corner for battery percentage",
+        verify: "Manually verify battery percentage is visible and updates",
         autoTest: null,
-        note: "BATCH 2+ ONLY"
+        note: "Batch 2+ only - Skip for Batch 1"
     }
 ];
 
@@ -453,13 +404,19 @@ function buildAutomatedTestHTML(test, system) {
     ` : '';
 
     const automatedBadge = test.automated ?
-        '<span class="auto-badge">🤖 AUTOMATED</span>' :
-        '<span class="manual-badge">👤 MANUAL VERIFY</span>';
+        '<span class="auto-badge">🤖 Automated</span>' :
+        '<span class="manual-badge">Manual Verify</span>';
+
+    const imageHTML = test.image ? `
+        <div class="device-image">
+            <img src="${test.image}" alt="${test.name}" />
+        </div>
+    ` : '';
 
     const testControls = test.automated ? `
         <div class="auto-test-controls">
             <button class="btn-run-test" onclick="runAutomatedTest(${test.id})">
-                ▶ RUN TEST
+                ▶ Run Test
             </button>
             <div class="test-status" id="autoTestStatus${test.id}">
                 <span class="status-text">Ready to test</span>
@@ -477,12 +434,14 @@ function buildAutomatedTestHTML(test, system) {
                 <div class="test-number">${String(test.id).padStart(2, '0')}</div>
                 <h2>${test.name}</h2>
                 ${automatedBadge}
-                ${test.batch ? `<span class="batch-tag">BATCH ${test.batch}</span>` : ''}
+                ${test.batch ? `<span class="batch-tag">Batch ${test.batch}</span>` : ''}
             </div>
 
             <div class="test-body">
+                ${imageHTML}
+
                 <div class="instruction-section">
-                    <h3>INSTRUCTIONS</h3>
+                    <h3>Instructions</h3>
                     <p>${test.instruction}</p>
                 </div>
 

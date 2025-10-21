@@ -9,20 +9,35 @@
 <body>
     <div class="container">
         <header>
-            <h1>HICHORD TEST PROCEDURE</h1>
-            <p class="subtitle">PRODUCTION QUALITY ASSURANCE PROTOCOL</p>
+            <h1>HiChord™ Test Procedure</h1>
+            <p class="subtitle">Production Quality Assurance Protocol</p>
         </header>
 
         <!-- Mode Selection -->
         <div class="mode-selector">
             <button class="mode-btn active" data-mode="manual">
-                <div class="mode-icon">📋</div>
-                <div class="mode-name">MANUAL MODE</div>
+                <svg class="mode-icon" viewBox="0 0 100 100" width="48" height="48">
+                    <rect x="20" y="15" width="60" height="70" fill="none" stroke="currentColor" stroke-width="3"/>
+                    <line x1="30" y1="30" x2="70" y2="30" stroke="currentColor" stroke-width="2"/>
+                    <line x1="30" y1="45" x2="70" y2="45" stroke="currentColor" stroke-width="2"/>
+                    <line x1="30" y1="60" x2="70" y2="60" stroke="currentColor" stroke-width="2"/>
+                    <circle cx="32" cy="30" r="2" fill="currentColor"/>
+                    <circle cx="32" cy="45" r="2" fill="currentColor"/>
+                    <circle cx="32" cy="60" r="2" fill="currentColor"/>
+                </svg>
+                <div class="mode-name">Manual Mode</div>
                 <div class="mode-desc">Traditional checklist with expected results</div>
             </button>
             <button class="mode-btn" data-mode="automated">
-                <div class="mode-icon">🔌</div>
-                <div class="mode-name">AUTOMATED MODE</div>
+                <svg class="mode-icon" viewBox="0 0 100 100" width="48" height="48">
+                    <rect x="15" y="35" width="70" height="30" rx="5" fill="none" stroke="currentColor" stroke-width="3"/>
+                    <rect x="25" y="45" width="15" height="10" fill="currentColor"/>
+                    <rect x="45" y="45" width="15" height="10" fill="currentColor"/>
+                    <rect x="65" y="45" width="15" height="10" fill="currentColor"/>
+                    <line x1="50" y1="65" x2="50" y2="75" stroke="currentColor" stroke-width="3"/>
+                    <path d="M 35 75 L 50 80 L 65 75" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                </svg>
+                <div class="mode-name">Automated Mode</div>
                 <div class="mode-desc">USB-C connected with real-time validation</div>
             </button>
         </div>
@@ -130,7 +145,7 @@
         </div>
 
         <footer>
-            <p>HiChord Test Procedure v2.0 | Dual Mode: Manual + Automated</p>
+            <p>HiChord™ Test Procedure v2.0 | Dual Mode: Manual + Automated</p>
         </footer>
     </div>
 
