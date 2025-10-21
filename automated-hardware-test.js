@@ -322,140 +322,140 @@ class HiChordTestApp {
                 name: 'Chord Button 1',
                 instruction: 'Press CHORD BUTTON 1',
                 type: 'button',
-                expectedInput: 'button1',
+                expectedButtonId: 1,
                 timeout: 10000
             },
             {
                 name: 'Chord Button 2',
                 instruction: 'Press CHORD BUTTON 2',
                 type: 'button',
-                expectedInput: 'button2',
+                expectedButtonId: 2,
                 timeout: 10000
             },
             {
                 name: 'Chord Button 3',
                 instruction: 'Press CHORD BUTTON 3',
                 type: 'button',
-                expectedInput: 'button3',
+                expectedButtonId: 3,
                 timeout: 10000
             },
             {
                 name: 'Chord Button 4',
                 instruction: 'Press CHORD BUTTON 4',
                 type: 'button',
-                expectedInput: 'button4',
+                expectedButtonId: 4,
                 timeout: 10000
             },
             {
                 name: 'Chord Button 5',
                 instruction: 'Press CHORD BUTTON 5',
                 type: 'button',
-                expectedInput: 'button5',
+                expectedButtonId: 5,
                 timeout: 10000
             },
             {
                 name: 'Chord Button 6',
                 instruction: 'Press CHORD BUTTON 6',
                 type: 'button',
-                expectedInput: 'button6',
+                expectedButtonId: 6,
                 timeout: 10000
             },
             {
                 name: 'Chord Button 7',
                 instruction: 'Press CHORD BUTTON 7',
                 type: 'button',
-                expectedInput: 'button7',
+                expectedButtonId: 7,
                 timeout: 10000
             },
             {
                 name: 'Function Button F1',
                 instruction: 'Press FUNCTION BUTTON F1 (Settings)',
                 type: 'button',
-                expectedInput: 'f1',
+                expectedButtonId: 8,
                 timeout: 10000
             },
             {
                 name: 'Function Button F2',
                 instruction: 'Press FUNCTION BUTTON F2 (Effects)',
                 type: 'button',
-                expectedInput: 'f2',
+                expectedButtonId: 9,
                 timeout: 10000
             },
             {
                 name: 'Function Button F3',
                 instruction: 'Press FUNCTION BUTTON F3 (BPM/Mode)',
                 type: 'button',
-                expectedInput: 'f3',
+                expectedButtonId: 10,
                 timeout: 10000
             },
             {
                 name: 'Joystick UP',
-                instruction: 'Hold Button 1 and move Joystick UP',
+                instruction: 'Move Joystick UP',
                 type: 'joystick',
-                expectedInput: 'joy_up',
+                expectedButtonId: 11,
                 timeout: 10000
             },
             {
                 name: 'Joystick UP-RIGHT',
-                instruction: 'Hold Button 1 and move Joystick UP-RIGHT',
+                instruction: 'Move Joystick UP-RIGHT (diagonal)',
                 type: 'joystick',
-                expectedInput: 'joy_upright',
+                expectedButtonId: 16,
                 timeout: 10000
             },
             {
                 name: 'Joystick RIGHT',
-                instruction: 'Hold Button 1 and move Joystick RIGHT',
+                instruction: 'Move Joystick RIGHT',
                 type: 'joystick',
-                expectedInput: 'joy_right',
+                expectedButtonId: 14,
                 timeout: 10000
             },
             {
                 name: 'Joystick DOWN-RIGHT',
-                instruction: 'Hold Button 1 and move Joystick DOWN-RIGHT',
+                instruction: 'Move Joystick DOWN-RIGHT (diagonal)',
                 type: 'joystick',
-                expectedInput: 'joy_downright',
+                expectedButtonId: 18,
                 timeout: 10000
             },
             {
                 name: 'Joystick DOWN',
-                instruction: 'Hold Button 1 and move Joystick DOWN',
+                instruction: 'Move Joystick DOWN',
                 type: 'joystick',
-                expectedInput: 'joy_down',
+                expectedButtonId: 12,
                 timeout: 10000
             },
             {
                 name: 'Joystick DOWN-LEFT',
-                instruction: 'Hold Button 1 and move Joystick DOWN-LEFT',
+                instruction: 'Move Joystick DOWN-LEFT (diagonal)',
                 type: 'joystick',
-                expectedInput: 'joy_downleft',
+                expectedButtonId: 17,
                 timeout: 10000
             },
             {
                 name: 'Joystick LEFT',
-                instruction: 'Hold Button 1 and move Joystick LEFT',
+                instruction: 'Move Joystick LEFT',
                 type: 'joystick',
-                expectedInput: 'joy_left',
+                expectedButtonId: 13,
                 timeout: 10000
             },
             {
                 name: 'Joystick UP-LEFT',
-                instruction: 'Hold Button 1 and move Joystick UP-LEFT',
+                instruction: 'Move Joystick UP-LEFT (diagonal)',
                 type: 'joystick',
-                expectedInput: 'joy_upleft',
+                expectedButtonId: 15,
                 timeout: 10000
             },
             {
                 name: 'Joystick Click',
                 instruction: 'Click the Joystick (press down)',
-                type: 'joystick',
-                expectedInput: 'joy_click',
+                type: 'button',
+                expectedButtonId: 19,
                 timeout: 10000
             },
             {
                 name: 'Volume Wheel',
-                instruction: 'Rotate the Volume Wheel from MIN to MAX',
+                instruction: 'Rotate the Volume Wheel significantly',
                 type: 'volume',
-                expectedInput: 'volume',
+                expectedButtonId: 20,
                 timeout: 15000
             },
             {
@@ -496,6 +496,14 @@ class HiChordTestApp {
         }
 
         const test = this.testDefinitions[this.currentTestIndex];
+
+        // Exit test mode before MIDI/audio tests (they need normal operation)
+        if ((test.type === 'midi' || test.type === 'audio') && this.inTestMode) {
+            await this.exitTestMode();
+            this.log('Exited test mode for MIDI/audio testing', 'info');
+            await this.wait(500);
+        }
+
         this.waitingForInput = true;
 
         document.getElementById('currentTestInstruction').textContent = test.instruction;
@@ -569,19 +577,28 @@ class HiChordTestApp {
     handleTestResponse(testType, testData) {
         if (!this.waitingForInput) return;
 
+        const test = this.testDefinitions[this.currentTestIndex];
+
+        // testData format: [buttonId, successFlag, ...]
+        const buttonId = testData[0];
+        const passed = testData[1] === 1;
+
+        this.log(`← RX Button ${buttonId} (expected ${test.expectedButtonId})`, 'receive');
+
+        // Validate button ID matches expected
+        if (test.expectedButtonId && buttonId !== test.expectedButtonId) {
+            this.log(`✗ Wrong button: got ${buttonId}, expected ${test.expectedButtonId}`, 'error');
+            this.failCurrentTest(`Wrong button: got ${buttonId}, expected ${test.expectedButtonId}`);
+            return;
+        }
+
         clearTimeout(this.testTimeout);
         this.waitingForInput = false;
-
-        const test = this.testDefinitions[this.currentTestIndex];
-        const passed = testData[0] === 1; // 1 = pass, 0 = fail
 
         if (passed) {
             this.passCurrentTest();
         } else {
-            const reason = testData.length > 1 ?
-                `Failed: ${testData.slice(1).map(b => String.fromCharCode(b)).join('')}` :
-                'Failed validation';
-            this.failCurrentTest(reason);
+            this.failCurrentTest('Test failed');
         }
     }
 
@@ -627,7 +644,11 @@ class HiChordTestApp {
 
     async finishTests() {
         this.waitingForInput = false;
-        await this.exitTestMode();
+
+        // Exit test mode if still active
+        if (this.inTestMode) {
+            await this.exitTestMode();
+        }
 
         document.getElementById('currentTest').style.display = 'none';
         document.getElementById('testResults').style.display = 'block';
