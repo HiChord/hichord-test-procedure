@@ -60,29 +60,117 @@ const manualTests = [
     },
     {
         id: 4,
-        name: "Function Buttons",
+        name: "Function Buttons (F1, F2, F3)",
         image: "images/BUtton numbers 2.png",
         procedure: [
-            "Press F1 (gray button) - should open Settings menu",
-            "  • Use joystick to navigate: KEY, OCTAVE, PRESET",
-            "  • Current selection shows on OLED (e.g., \"KEY\" / \"C\")",
-            "Press F1 again to close menu",
-            "Press F2 (yellow button) - should open Effects menu",
-            "  • Use joystick to navigate: GLIDE, REVERB, CHORUS, DELAY, etc.",
-            "  • Current selection shows on OLED (e.g., \"GLIDE\" / \"OFF\")",
-            "Press F2 again to close menu",
-            "Press F3 (red button) - should open Modes menu",
-            "  • Use joystick to navigate mode options",
-            "  • Current mode shows on OLED",
-            "Press F3 again to close menu"
+            "Press each function button ONCE after startup",
+            "Verify expected menu appears on OLED",
+            "Check button registers and displays correct default menu"
         ],
         expected: [
             "Each button press registers immediately",
-            "Correct menu appears for each button",
-            "Menus display clearly on OLED with inverted header bar",
-            "No stuck buttons or double-triggers",
-            "Buttons return to neutral position"
+            "Correct menu appears with default startup values",
+            "OLED displays clearly with inverted header bar"
         ],
+        oled: {
+            type: "function3_startup",
+            buttons: [
+                { button: "F1", name: "KEY", color: "#666666", icon: "⚙", header: "KEY", value: "C" },
+                { button: "F2", name: "GLIDE", color: "#FFD700", icon: "〜", header: "GLIDE", value: "OFF" },
+                { button: "F3", name: "PLAY", color: "#FF4500", icon: "⏱", header: "MODE", value: "PLAY" }
+            ]
+        }
+    },
+    {
+        id: 5,
+        name: "Chord Buttons (1-7) in C Major",
+        image: "images/BUtton numbers 2.png",
+        procedure: [
+            "Press each chord button 1-7 individually",
+            "Verify chord name displays on OLED",
+            "Listen for correct chord sound (C major key)"
+        ],
+        expected: [
+            "Each button triggers immediately",
+            "Chord name displays clearly on OLED",
+            "Audio plays correct chord in C major",
+            "No stuck notes or audio glitches"
+        ],
+        oled: {
+            type: "chord7_cmajor",
+            chords: [
+                { button: 1, chord: "C", name: "I - Tonic (MAJOR)" },
+                { button: 2, chord: "Dm", name: "ii - Supertonic (MINOR)" },
+                { button: 3, chord: "Em", name: "iii - Mediant (MINOR)" },
+                { button: 4, chord: "F", name: "IV - Subdominant (MAJOR)" },
+                { button: 5, chord: "G", name: "V - Dominant (MAJOR)" },
+                { button: 6, chord: "Am", name: "vi - Submediant (MINOR)" },
+                { button: 7, chord: "Bdim", name: "vii° - Leading Tone (DIM)" }
+            ]
+        }
+    },
+    {
+        id: 6,
+        name: "Joystick Chord Modification (Hold Button 1)",
+        image: "images/Top View.png",
+        procedure: [
+            "Hold CHORD BUTTON 1 (C major)",
+            "Move joystick in each of 8 directions + center",
+            "Verify chord modification displays on OLED",
+            "Listen for chord quality change"
+        ],
+        expected: [
+            "Joystick responds smoothly in all directions",
+            "Modified chord name displays correctly",
+            "Audio changes to match modified chord",
+            "Center position returns to default chord"
+        ],
+        oled: {
+            type: "joystick8_button1",
+            directions: [
+                { dir: "CENTER", chord: "C", label: "C Major (default)" },
+                { dir: "UP", chord: "Cmaj/min", label: "Major/Minor toggle" },
+                { dir: "UP-RIGHT", chord: "C7", label: "Seventh" },
+                { dir: "RIGHT", chord: "Cmaj7", label: "Major Seventh" },
+                { dir: "DOWN-RIGHT", chord: "Cmaj9", label: "Major Ninth" },
+                { dir: "DOWN", chord: "Csus4", label: "Suspended 4th" },
+                { dir: "DOWN-LEFT", chord: "Csus2", label: "Suspended 2nd / Major 6th" },
+                { dir: "LEFT", chord: "Cdim", label: "Diminished" },
+                { dir: "UP-LEFT", chord: "Caug", label: "Augmented" }
+            ]
+        }
+    },
+    {
+        id: 7,
+        name: "Joystick Click (Looper)",
+        image: "images/Top View.png",
+        procedure: [
+            "Click joystick button (press down)",
+            "Verify looper GUI appears on OLED",
+            "Click again to cycle through: REC → PLAY → STOP"
+        ],
+        expected: [
+            "Joystick click registers immediately",
+            "Looper GUI displays with \"rec loop\" icon",
+            "Second click shows \"play loop\" icon",
+            "Third click clears loop"
+        ],
+        oled: {
+            type: "looper",
+            states: [
+                { state: "REC", icon: "⏺", text: "rec loop" },
+                { state: "PLAY", icon: "⏵", text: "play loop" }
+            ]
+        }
+    },
+    {
+        id: 8,
+        name: "OLD TEST - Joystick (deprecated)",
+        deprecated: true,
+        procedure: [
+            "THIS TEST HAS BEEN REPLACED BY TESTS 6 & 7"
+        ],
+        expected: ["See new tests"],
         oled: {
             type: "function3",
             menus: [
@@ -491,6 +579,148 @@ function renderOLED(oledData) {
 
             html += '</div>';
             return html;
+        },
+        function3_startup: (data) => {
+            // Show 3 function buttons - press ONCE after startup
+            const buttons = data.buttons;
+            let html = '<div class="single-test-list">';
+
+            buttons.forEach(btn => {
+                html += `
+                    <div class="single-test-row">
+                        <div class="button-icon-display">
+                            <div class="button-icon-square" style="background-color: ${btn.color}; color: ${btn.color === '#FFD700' ? '#000' : '#FFF'};">
+                                ${btn.icon}
+                            </div>
+                            <div class="button-label">${btn.button}</div>
+                        </div>
+
+                        <div class="arrow-single">→</div>
+
+                        <div class="oled-screen-full">
+                            <div class="oled-header-inverted">${btn.header}</div>
+                            <div class="oled-body-centered">${btn.value}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            return html;
+        },
+        chord7_cmajor: (data) => {
+            // Show 7 chord buttons in C major with chord names and sound
+            const chords = data.chords;
+            let html = '<div class="single-test-list">';
+
+            chords.forEach(chord => {
+                html += `
+                    <div class="single-test-row">
+                        <div class="button-icon-display">
+                            <div class="chord-button-number">${chord.button}</div>
+                            <div class="button-label">Button ${chord.button}</div>
+                        </div>
+
+                        <div class="arrow-single">→</div>
+
+                        <div class="oled-screen-full">
+                            <div class="oled-chord-display">${chord.chord}</div>
+                        </div>
+
+                        <div class="chord-name-label">${chord.name}</div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            return html;
+        },
+        joystick8_button1: (data) => {
+            // Show joystick modification while holding Button 1
+            const directions = data.directions;
+            let html = '<div class="single-test-list">';
+
+            // CENTER position first (highlighted)
+            const center = directions[0];
+            html += `
+                <div class="single-test-row center-highlight">
+                    <div class="button-icon-display">
+                        <div class="joy-arrow-icon">●</div>
+                        <div class="button-label">CENTER</div>
+                    </div>
+
+                    <div class="arrow-single">→</div>
+
+                    <div class="oled-screen-full">
+                        <div class="oled-chord-display">${center.chord}</div>
+                    </div>
+
+                    <div class="chord-name-label">${center.label}</div>
+                </div>
+            `;
+
+            // All 8 directions
+            const directionOrder = [
+                { idx: 1, arrow: '↑', label: 'UP' },
+                { idx: 2, arrow: '↗', label: 'UP-RIGHT' },
+                { idx: 3, arrow: '→', label: 'RIGHT' },
+                { idx: 4, arrow: '↘', label: 'DOWN-RIGHT' },
+                { idx: 5, arrow: '↓', label: 'DOWN' },
+                { idx: 6, arrow: '↙', label: 'DOWN-LEFT' },
+                { idx: 7, arrow: '←', label: 'LEFT' },
+                { idx: 8, arrow: '↖', label: 'UP-LEFT' }
+            ];
+
+            directionOrder.forEach(({idx, arrow, label}) => {
+                const dir = directions[idx];
+                html += `
+                    <div class="single-test-row">
+                        <div class="button-icon-display">
+                            <div class="joy-arrow-icon">${arrow}</div>
+                            <div class="button-label">${label}</div>
+                        </div>
+
+                        <div class="arrow-single">→</div>
+
+                        <div class="oled-screen-full">
+                            <div class="oled-chord-display">${dir.chord}</div>
+                        </div>
+
+                        <div class="chord-name-label">${dir.label}</div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            return html;
+        },
+        looper: (data) => {
+            // Show looper GUI states
+            const states = data.states;
+            let html = '<div class="single-test-list">';
+
+            states.forEach((state, idx) => {
+                html += `
+                    <div class="single-test-row">
+                        <div class="button-icon-display">
+                            <div class="joy-arrow-icon">⏺</div>
+                            <div class="button-label">Click ${idx + 1}</div>
+                        </div>
+
+                        <div class="arrow-single">→</div>
+
+                        <div class="oled-screen-full">
+                            <div class="oled-looper-display">
+                                <div class="looper-icon">${state.icon}</div>
+                                <div class="looper-text">${state.text}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            return html;
         }
     };
 
@@ -498,6 +728,42 @@ function renderOLED(oledData) {
     if (!renderer) return '';
 
     // Special handling for custom types - pass full data object
+    if (oledData.type === 'function3_startup') {
+        return `
+            <div class="oled-mockup function-mockup">
+                ${renderer(oledData)}
+                <div class="mockup-label">Expected OLED Display (Press Each Button ONCE)</div>
+            </div>
+        `;
+    }
+
+    if (oledData.type === 'chord7_cmajor') {
+        return `
+            <div class="oled-mockup chord-mockup">
+                ${renderer(oledData)}
+                <div class="mockup-label">Expected OLED Display + Sound (C Major Key)</div>
+            </div>
+        `;
+    }
+
+    if (oledData.type === 'joystick8_button1') {
+        return `
+            <div class="oled-mockup joystick-mockup">
+                ${renderer(oledData)}
+                <div class="mockup-label">Expected OLED Display (Hold Button 1 + Move Joystick)</div>
+            </div>
+        `;
+    }
+
+    if (oledData.type === 'looper') {
+        return `
+            <div class="oled-mockup looper-mockup">
+                ${renderer(oledData)}
+                <div class="mockup-label">Expected OLED Display (Joystick Click)</div>
+            </div>
+        `;
+    }
+
     if (oledData.type === 'joystick8') {
         return `
             <div class="oled-mockup joystick-mockup">
