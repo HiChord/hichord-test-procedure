@@ -75,9 +75,34 @@ const manualTests = [
         oled: {
             type: "function3_startup",
             buttons: [
-                { button: "F1", name: "KEY", color: "#666666", icon: "⚙", header: "KEY", value: "C" },
-                { button: "F2", name: "GLIDE", color: "#FFD700", icon: "〜", header: "GLIDE", value: "OFF" },
-                { button: "F3", name: "PLAY", color: "#FF4500", icon: "⏱", header: "MODE", value: "PLAY" }
+                {
+                    button: "F1",
+                    name: "Settings",
+                    color: "#666666",
+                    icon: "⚙",
+                    display: "dual",
+                    line1: { label: "KEY", value: "C", arrows: "←→" },
+                    line2: { label: "OCTAVE", value: "+1", arrows: "↑↓" }
+                },
+                {
+                    button: "F2",
+                    name: "Effects",
+                    color: "#FFD700",
+                    icon: "〜",
+                    display: "effect",
+                    effectName: "< VERB >",
+                    hint: "↑ change sound"
+                },
+                {
+                    button: "F3",
+                    name: "BPM/Mode",
+                    color: "#FF4500",
+                    icon: "⏱",
+                    display: "bpm",
+                    bpm: "120",
+                    topHint: "MODE ^",
+                    bottomHint: "BPM < >"
+                }
             ]
         }
     },
@@ -581,11 +606,49 @@ function renderOLED(oledData) {
             return html;
         },
         function3_startup: (data) => {
-            // Show 3 function buttons - press ONCE after startup
+            // Show 3 function buttons - press ONCE after startup with ACTUAL firmware OLED displays
             const buttons = data.buttons;
             let html = '<div class="single-test-list">';
 
             buttons.forEach(btn => {
+                let oledContent = '';
+
+                if (btn.display === 'dual') {
+                    // F1: KEY + OCTAVE dual line display
+                    oledContent = `
+                        <div class="oled-dual-line">
+                            <div class="oled-dual-row">
+                                <span class="oled-label">${btn.line1.label}</span>
+                                <span class="oled-arrows">${btn.line1.arrows}</span>
+                                <span class="oled-value">${btn.line1.value}</span>
+                            </div>
+                            <div class="oled-divider"></div>
+                            <div class="oled-dual-row">
+                                <span class="oled-label">${btn.line2.label}</span>
+                                <span class="oled-arrows">${btn.line2.arrows}</span>
+                                <span class="oled-value">${btn.line2.value}</span>
+                            </div>
+                        </div>
+                    `;
+                } else if (btn.display === 'effect') {
+                    // F2: Effect selection display
+                    oledContent = `
+                        <div class="oled-effect-display">
+                            <div class="oled-effect-name">${btn.effectName}</div>
+                            <div class="oled-hint">${btn.hint}</div>
+                        </div>
+                    `;
+                } else if (btn.display === 'bpm') {
+                    // F3: BPM display
+                    oledContent = `
+                        <div class="oled-bpm-display">
+                            <div class="oled-bpm-top">${btn.topHint}</div>
+                            <div class="oled-bpm-number">${btn.bpm}</div>
+                            <div class="oled-bpm-bottom">${btn.bottomHint}</div>
+                        </div>
+                    `;
+                }
+
                 html += `
                     <div class="single-test-row">
                         <div class="button-icon-display">
@@ -598,8 +661,7 @@ function renderOLED(oledData) {
                         <div class="arrow-single">→</div>
 
                         <div class="oled-screen-full">
-                            <div class="oled-header-inverted">${btn.header}</div>
-                            <div class="oled-body-centered">${btn.value}</div>
+                            ${oledContent}
                         </div>
                     </div>
                 `;

@@ -1254,6 +1254,101 @@ footer {
     letter-spacing: 1px;
 }
 
+/* F1 Dual-Line Display (KEY + OCTAVE) */
+.oled-dual-line {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8px;
+    width: 100%;
+}
+
+.oled-dual-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 8px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.oled-label {
+    font-size: 10px;
+    letter-spacing: 0.5px;
+}
+
+.oled-arrows {
+    font-size: 10px;
+    opacity: 0.7;
+}
+
+.oled-value {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.oled-divider {
+    height: 1px;
+    background: #FFFFFF;
+    margin: 2px 8px;
+    opacity: 0.3;
+}
+
+/* F2 Effect Display */
+.oled-effect-display {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 8px;
+    gap: 12px;
+}
+
+.oled-effect-name {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.oled-hint {
+    font-size: 10px;
+    opacity: 0.7;
+    letter-spacing: 0.5px;
+}
+
+/* F3 BPM Display */
+.oled-bpm-display {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 4px 8px;
+    width: 100%;
+}
+
+.oled-bpm-top {
+    font-size: 10px;
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+
+.oled-bpm-number {
+    font-size: 32px;
+    font-weight: 700;
+    text-align: right;
+    line-height: 1;
+    padding-right: 4px;
+}
+
+.oled-bpm-bottom {
+    font-size: 9px;
+    text-align: left;
+    letter-spacing: 0.5px;
+    padding-left: 4px;
+}
+
 /* Responsive adjustments for mobile */
 @media (max-width: 768px) {
     .single-test-row {
