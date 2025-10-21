@@ -112,25 +112,26 @@ const manualTests = [
         image: "images/BUtton numbers 2.png",
         procedure: [
             "Press each chord button 1-7 individually",
-            "Verify chord name displays on OLED",
-            "Listen for correct chord sound (C major key)"
+            "Verify chord name and number display on OLED",
+            "Listen for clear audio (no distortion)"
         ],
         expected: [
             "Each button triggers immediately",
-            "Chord name displays clearly on OLED",
-            "Audio plays correct chord in C major",
+            "OLED shows: chord number (circled, top left) + key letter (top right) + chord name (center)",
+            "Clear audio with no distortion",
             "No stuck notes or audio glitches"
         ],
         oled: {
             type: "chord7_cmajor",
+            key: "C",
             chords: [
-                { button: 1, chord: "C", name: "I - Tonic (MAJOR)" },
-                { button: 2, chord: "Dm", name: "ii - Supertonic (MINOR)" },
-                { button: 3, chord: "Em", name: "iii - Mediant (MINOR)" },
-                { button: 4, chord: "F", name: "IV - Subdominant (MAJOR)" },
-                { button: 5, chord: "G", name: "V - Dominant (MAJOR)" },
-                { button: 6, chord: "Am", name: "vi - Submediant (MINOR)" },
-                { button: 7, chord: "Bdim", name: "vii° - Leading Tone (DIM)" }
+                { button: 1, chord: "C" },
+                { button: 2, chord: "Dm" },
+                { button: 3, chord: "Em" },
+                { button: 4, chord: "F" },
+                { button: 5, chord: "G" },
+                { button: 6, chord: "Am" },
+                { button: 7, chord: "Bdim" }
             ]
         }
     },
@@ -139,29 +140,31 @@ const manualTests = [
         name: "Joystick Chord Modification (Hold Button 1)",
         image: "images/Top View.png",
         procedure: [
-            "Hold CHORD BUTTON 1 (C major)",
+            "Hold CHORD BUTTON 1",
             "Move joystick in each of 8 directions + center",
             "Verify chord modification displays on OLED",
-            "Listen for chord quality change"
+            "Listen for clear audio (no distortion)"
         ],
         expected: [
             "Joystick responds smoothly in all directions",
-            "Modified chord name displays correctly",
-            "Audio changes to match modified chord",
-            "Center position returns to default chord"
+            "OLED shows: chord number (1, circled) + key (C) + modified chord name",
+            "Clear audio with no distortion",
+            "Center position returns to default chord (C)"
         ],
         oled: {
             type: "joystick8_button1",
+            key: "C",
+            buttonNumber: 1,
             directions: [
-                { dir: "CENTER", chord: "C", label: "C Major (default)" },
-                { dir: "UP", chord: "Cmaj/min", label: "Major/Minor toggle" },
-                { dir: "UP-RIGHT", chord: "C7", label: "Seventh" },
-                { dir: "RIGHT", chord: "Cmaj7", label: "Major Seventh" },
-                { dir: "DOWN-RIGHT", chord: "Cmaj9", label: "Major Ninth" },
-                { dir: "DOWN", chord: "Csus4", label: "Suspended 4th" },
-                { dir: "DOWN-LEFT", chord: "Csus2", label: "Suspended 2nd / Major 6th" },
-                { dir: "LEFT", chord: "Cdim", label: "Diminished" },
-                { dir: "UP-LEFT", chord: "Caug", label: "Augmented" }
+                { dir: "CENTER", chord: "C" },
+                { dir: "UP", chord: "Cm" },
+                { dir: "UP-RIGHT", chord: "C7" },
+                { dir: "RIGHT", chord: "CM7" },
+                { dir: "DOWN-RIGHT", chord: "CM9" },
+                { dir: "DOWN", chord: "Csus4" },
+                { dir: "DOWN-LEFT", chord: "C6" },
+                { dir: "LEFT", chord: "Cdim" },
+                { dir: "UP-LEFT", chord: "C+" }
             ]
         }
     },
@@ -671,8 +674,10 @@ function renderOLED(oledData) {
             return html;
         },
         chord7_cmajor: (data) => {
-            // Show 7 chord buttons in C major with chord names and sound
+            // Show 7 chord buttons with pixel-perfect OLED display
+            // Display shows: chord number (circled, top left) + key letter (top right) + chord name (center)
             const chords = data.chords;
+            const key = data.key;
             let html = '<div class="single-test-list">';
 
             chords.forEach(chord => {
@@ -686,10 +691,12 @@ function renderOLED(oledData) {
                         <div class="arrow-single">→</div>
 
                         <div class="oled-screen-full">
-                            <div class="oled-chord-display">${chord.chord}</div>
+                            <div class="oled-chord-accurate">
+                                <div class="oled-chord-number-circle">${chord.button}</div>
+                                <div class="oled-chord-key-letter">${key}</div>
+                                <div class="oled-chord-name-center">${chord.chord}</div>
+                            </div>
                         </div>
-
-                        <div class="chord-name-label">${chord.name}</div>
                     </div>
                 `;
             });
@@ -698,8 +705,10 @@ function renderOLED(oledData) {
             return html;
         },
         joystick8_button1: (data) => {
-            // Show joystick modification while holding Button 1
+            // Show joystick modification with pixel-perfect OLED (chord number + key + modified chord name)
             const directions = data.directions;
+            const key = data.key;
+            const buttonNumber = data.buttonNumber;
             let html = '<div class="single-test-list">';
 
             // CENTER position first (highlighted)
@@ -714,10 +723,12 @@ function renderOLED(oledData) {
                     <div class="arrow-single">→</div>
 
                     <div class="oled-screen-full">
-                        <div class="oled-chord-display">${center.chord}</div>
+                        <div class="oled-chord-accurate">
+                            <div class="oled-chord-number-circle">${buttonNumber}</div>
+                            <div class="oled-chord-key-letter">${key}</div>
+                            <div class="oled-chord-name-center">${center.chord}</div>
+                        </div>
                     </div>
-
-                    <div class="chord-name-label">${center.label}</div>
                 </div>
             `;
 
@@ -745,10 +756,12 @@ function renderOLED(oledData) {
                         <div class="arrow-single">→</div>
 
                         <div class="oled-screen-full">
-                            <div class="oled-chord-display">${dir.chord}</div>
+                            <div class="oled-chord-accurate">
+                                <div class="oled-chord-number-circle">${buttonNumber}</div>
+                                <div class="oled-chord-key-letter">${key}</div>
+                                <div class="oled-chord-name-center">${dir.chord}</div>
+                            </div>
                         </div>
-
-                        <div class="chord-name-label">${dir.label}</div>
                     </div>
                 `;
             });
