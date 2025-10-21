@@ -904,3 +904,179 @@ footer {
         height: 140px;
     }
 }
+
+/* ========================================
+   CUSTOM OLED DISPLAYS FOR TEST PROCEDURE
+   ======================================== */
+
+/* Mini OLED screens for grid displays */
+.oled-screen-mini {
+    background: #000;
+    color: #FFF;
+    width: 128px;
+    height: 64px;
+    border: 2px solid #0A0A0A;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Courier New', 'Monaco', monospace;
+    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.1);
+    position: relative;
+}
+
+/* Chord text display (centered, large) */
+.oled-chord-text {
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: 1px;
+}
+
+/* Menu header (inverted bar) + value */
+.oled-menu-header {
+    background: #FFF;
+    color: #000;
+    font-size: 8px;
+    font-weight: 700;
+    padding: 2px 4px;
+    text-align: center;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.oled-menu-value {
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.oled-menu-single {
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+}
+
+/* Joystick 8-direction grid */
+.joystick-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.joy-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.joy-cell.empty {
+    visibility: hidden;
+}
+
+.joy-cell.center .oled-screen-mini {
+    border-color: #FF6B35;
+    border-width: 3px;
+    box-shadow: 0 0 12px rgba(255, 107, 53, 0.3);
+}
+
+.joy-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #6B6B6B;
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+
+/* Chord button grid (7 buttons) */
+.chord-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px;
+    padding: 20px;
+}
+
+.chord-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.chord-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #0A0A0A;
+    text-align: center;
+}
+
+/* Function button menu grid (F1, F2, F3) */
+.function-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 20px;
+}
+
+.function-cell {
+    border: 2px solid #E5E7EB;
+    border-radius: 8px;
+    padding: 16px;
+    background: #F9FAFB;
+}
+
+.function-header {
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    color: #0A0A0A;
+    border-bottom: 2px solid #0A0A0A;
+    padding-bottom: 8px;
+}
+
+.menu-examples {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+}
+
+.menu-item {
+    padding: 8px;
+}
+
+.menu-item .oled-menu-header {
+    width: 100%;
+}
+
+/* Responsive adjustments for mini screens */
+@media (max-width: 768px) {
+    .joystick-grid {
+        gap: 12px;
+        padding: 16px;
+    }
+
+    .oled-screen-mini {
+        width: 96px;
+        height: 48px;
+    }
+
+    .oled-chord-text {
+        font-size: 18px;
+    }
+
+    .oled-menu-value {
+        font-size: 14px;
+    }
+
+    .chord-grid,
+    .menu-examples {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 12px;
+    }
+}
