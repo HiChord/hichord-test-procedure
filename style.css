@@ -1231,27 +1231,47 @@ footer {
 }
 
 /* Looper OLED display */
-.oled-looper-display {
+/* OLED Menu List (Looper, Selection Menus) */
+.oled-menu-list {
     flex: 1;
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
+    padding: 4px;
+    gap: 2px;
+}
+
+.oled-menu-item {
+    display: flex;
+    align-items: center;
     gap: 8px;
-    padding: 12px;
+    padding: 4px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: lowercase;
+    letter-spacing: 0.3px;
+    border-radius: 2px;
+    background: transparent;
+    color: #E8E8E8;
+    transition: all 0.15s ease;
 }
 
-.looper-icon {
-    font-size: 28px;
-    font-weight: 700;
-    line-height: 1;
+.oled-menu-item.selected {
+    background: #E8E8E8;
+    color: #0A0A0A;
 }
 
-.looper-text {
+.menu-icon {
     font-size: 14px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    line-height: 1;
+    width: 16px;
+    text-align: center;
+}
+
+.menu-text {
+    flex: 1;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.5px;
 }
 
 /* F1 Dual-Line Display (KEY + OCTAVE) */

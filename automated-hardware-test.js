@@ -457,6 +457,22 @@ class HiChordTestApp {
                 type: 'volume',
                 expectedInput: 'volume',
                 timeout: 15000
+            },
+            {
+                name: 'MIDI Output',
+                instruction: 'Press any chord button to verify MIDI output',
+                type: 'midi',
+                expectedInput: 'midi_note',
+                timeout: 10000,
+                verify: 'Listening for MIDI note messages...'
+            },
+            {
+                name: 'USB Audio Output',
+                instruction: 'Press any chord button - listen for audio through computer speakers',
+                type: 'audio',
+                expectedInput: 'manual_verify',
+                timeout: 15000,
+                verify: 'Manually verify digital audio plays through computer speakers/headphones'
             }
         ];
     }
@@ -485,12 +501,32 @@ class HiChordTestApp {
 
         document.getElementById('currentTestTitle').textContent = test.name;
         document.getElementById('currentTestInstruction').textContent = test.instruction;
-        document.getElementById('testDisplay').innerHTML = `
-            <div style="text-align: center;">
-                <div style="font-size: 48px; margin-bottom: 20px;">⏳</div>
-                <div>Waiting for input...</div>
-            </div>
-        `;
+
+        // For manual verification tests (audio), show pass/fail buttons
+        if (test.type === 'audio') {
+            document.getElementById('testDisplay').innerHTML = `
+                <div style="text-align: center;">
+                    <div style="font-size: 48px; margin-bottom: 20px;">🎵</div>
+                    <div style="margin-bottom: 20px;">${test.verify}</div>
+                    <div style="display: flex; gap: 15px; justify-content: center;">
+                        <button onclick="testApp.audioTestPassed()" class="btn-primary" style="background: #44FF44; padding: 15px 30px;">
+                            ✓ PASS - Audio Heard
+                        </button>
+                        <button onclick="testApp.audioTestFailed()" class="btn-primary" style="background: #FF4444; padding: 15px 30px;">
+                            ✗ FAIL - No Audio
+                        </button>
+                    </div>
+                </div>
+            `;
+        } else {
+            document.getElementById('testDisplay').innerHTML = `
+                <div style="text-align: center;">
+                    <div style="font-size: 48px; margin-bottom: 20px;">⏳</div>
+                    <div>Waiting for input...</div>
+                </div>
+            `;
+        }
+
         document.getElementById('testStatus').className = 'test-status waiting';
         document.getElementById('testStatus').textContent = 'Test in progress...';
 
@@ -510,8 +546,31 @@ class HiChordTestApp {
         if (!this.waitingForInput) return;
 
         const test = this.testDefinitions[this.currentTestIndex];
-        // Test validation logic will be handled by firmware test mode
-        // Firmware will send back SysEx response indicating pass/fail
+
+        // MIDI output test - pass when any MIDI note is detected
+        if (test.type === 'midi' && inputType === 'note') {
+            this.log(`MIDI Note detected: ${inputData}`, 'success');
+            clearTimeout(this.testTimeout);
+            this.waitingForInput = false;
+            this.passCurrentTest();
+            return;
+        }
+
+        // Other test validation logic handled by firmware test mode SysEx responses
+    }
+
+    audioTestPassed() {
+        if (!this.waitingForInput) return;
+        clearTimeout(this.testTimeout);
+        this.waitingForInput = false;
+        this.passCurrentTest();
+    }
+
+    audioTestFailed() {
+        if (!this.waitingForInput) return;
+        clearTimeout(this.testTimeout);
+        this.waitingForInput = false;
+        this.failCurrentTest('No audio detected');
     }
 
     handleTestResponse(testType, testData) {

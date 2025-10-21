@@ -187,7 +187,8 @@ const manualTests = [
             type: "looper",
             states: [
                 { state: "REC", icon: "⏺", text: "rec loop" },
-                { state: "PLAY", icon: "⏵", text: "play loop" }
+                { state: "PLAY", icon: "⏵", text: "play loop" },
+                { state: "STOP", icon: "⏹", text: "stop loop" }
             ]
         }
     },
@@ -645,11 +646,13 @@ function renderOLED(oledData) {
             return html;
         },
         looper: (data) => {
-            // Show looper GUI states
+            // Show looper GUI states - authentic OLED selection menu
             const states = data.states;
             let html = '<div class="single-test-list">';
 
             states.forEach((state, idx) => {
+                // Create an authentic OLED selection menu showing all 3 options
+                // with the current one highlighted (inverted/selected)
                 html += `
                     <div class="single-test-row">
                         <div class="button-icon-display">
@@ -660,9 +663,19 @@ function renderOLED(oledData) {
                         <div class="arrow-single">→</div>
 
                         <div class="oled-screen-full">
-                            <div class="oled-looper-display">
-                                <div class="looper-icon">${state.icon}</div>
-                                <div class="looper-text">${state.text}</div>
+                            <div class="oled-menu-list">
+                                <div class="oled-menu-item ${state.state === 'REC' ? 'selected' : ''}">
+                                    <span class="menu-icon">⏺</span>
+                                    <span class="menu-text">rec loop</span>
+                                </div>
+                                <div class="oled-menu-item ${state.state === 'PLAY' ? 'selected' : ''}">
+                                    <span class="menu-icon">⏵</span>
+                                    <span class="menu-text">play loop</span>
+                                </div>
+                                <div class="oled-menu-item ${state.state === 'STOP' ? 'selected' : ''}">
+                                    <span class="menu-icon">⏹</span>
+                                    <span class="menu-text">stop loop</span>
+                                </div>
                             </div>
                         </div>
                     </div>
