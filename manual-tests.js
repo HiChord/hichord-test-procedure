@@ -231,9 +231,9 @@ const manualTests = [
     {
         id: 9,
         name: "Headphone Output",
-        image: "images/Side View.png",
+        image: "images/Top View.png",
         procedure: [
-            "Connect headphones to 3.5mm jack on right side",
+            "Connect headphones to 3.5mm jack on top side (see image)",
             "Verify internal speaker mutes automatically",
             "Set volume to 50%",
             "Press chord buttons 1-7",
