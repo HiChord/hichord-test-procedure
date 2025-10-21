@@ -22,7 +22,7 @@ const manualTests = [
         id: 2,
         name: "Power On Sequence",
         procedure: [
-            "Press and hold power button for 1 second",
+            "Slide power switch to ON position",
             "Observe OLED display boot animation",
             "Verify firmware version appears"
         ],
@@ -97,17 +97,18 @@ const manualTests = [
         name: "Joystick (8 Directions)",
         image: "images/Front View.png",
         procedure: [
-            "Press chord button 1 (C major) and hold",
-            "While holding, test each joystick direction:",
-            "  • UP: Should show \"Cm\" (C minor)",
-            "  • UP-RIGHT: Should show \"C7\" (C dominant 7)",
-            "  • RIGHT: Should show \"CM7\" (C major 7)",
-            "  • DOWN-RIGHT: Should show \"CM9\" (C major 9)",
-            "  • DOWN: Should show \"Csus4\" (C suspended 4)",
-            "  • DOWN-LEFT: Should show \"C6\" (C major 6)",
-            "  • LEFT: Should show \"Cdim\" (C diminished)",
-            "  • UP-LEFT: Should show \"C+\" (C augmented)",
-            "Release chord button when done"
+            "Press and HOLD chord button 1",
+            "While holding button 1, move joystick in each direction:",
+            "  ↑ UP: OLED shows \"Cm\"",
+            "  ↗ UP-RIGHT: OLED shows \"C7\"",
+            "  → RIGHT: OLED shows \"CM7\"",
+            "  ↘ DOWN-RIGHT: OLED shows \"CM9\"",
+            "  ↓ DOWN: OLED shows \"Csus4\"",
+            "  ↙ DOWN-LEFT: OLED shows \"C6\"",
+            "  ← LEFT: OLED shows \"Cdim\"",
+            "  ↖ UP-LEFT: OLED shows \"C+\"",
+            "  ● CENTER (release): OLED shows \"C\"",
+            "Release chord button when test complete"
         ],
         expected: [
             "All 8 directions register correctly",
@@ -118,16 +119,17 @@ const manualTests = [
         ],
         oled: {
             type: "joystick8",
+            // Index mapping: 0=CENTER, 1=UP, 2=UP-RIGHT, 3=RIGHT, 4=DOWN-RIGHT, 5=DOWN, 6=DOWN-LEFT, 7=LEFT, 8=UP-LEFT
             directions: [
-                { dir: "CENTER", chord: "C" },
-                { dir: "UP", chord: "Cm" },
-                { dir: "UP-RIGHT", chord: "C7" },
-                { dir: "RIGHT", chord: "CM7" },
-                { dir: "DOWN-RIGHT", chord: "CM9" },
-                { dir: "DOWN", chord: "Csus4" },
-                { dir: "DOWN-LEFT", chord: "C6" },
-                { dir: "LEFT", chord: "Cdim" },
-                { dir: "UP-LEFT", chord: "C+" }
+                { dir: "CENTER", chord: "C" },         // 0
+                { dir: "UP", chord: "Cm" },            // 1
+                { dir: "UP-RIGHT", chord: "C7" },      // 2
+                { dir: "RIGHT", chord: "CM7" },        // 3
+                { dir: "DOWN-RIGHT", chord: "CM9" },   // 4
+                { dir: "DOWN", chord: "Csus4" },       // 5
+                { dir: "DOWN-LEFT", chord: "C6" },     // 6
+                { dir: "LEFT", chord: "Cdim" },        // 7
+                { dir: "UP-LEFT", chord: "C+" }        // 8
             ]
         }
     },
@@ -152,7 +154,7 @@ const manualTests = [
     {
         id: 7,
         name: "Built-in Speaker",
-        image: "images/Back View.png",
+        image: "images/Front View.png",
         procedure: [
             "Ensure no headphones or USB cable connected",
             "Set volume to 50%",
@@ -212,10 +214,12 @@ const manualTests = [
         image: "images/Side View.png",
         procedure: [
             "Connect HiChord to computer via USB-C",
-            "Computer should recognize \"HiChord\" audio device",
-            "Set computer audio output to HiChord",
-            "Press chord buttons and verify audio on computer",
-            "Test at different volume levels"
+            "  Note: HiChord uses unified USB mode (Audio + MIDI simultaneously)",
+            "Computer should recognize \"HiChord\" audio device automatically",
+            "Set computer audio output to \"HiChord\"",
+            "Press chord buttons 1-7 and verify audio on computer speakers",
+            "Test at different volume levels (adjust HiChord volume wheel)",
+            "Verify low latency and clean digital audio"
         ],
         expected: [
             "HiChord appears as USB audio device",
@@ -254,12 +258,16 @@ const manualTests = [
         batch: "4+",
         skipBatch: ["1", "2", "3"],
         procedure: [
-            "Hold F3 + press Chord Button 6 to enter MIC_SAMPLE mode",
-            "Display should show recording instructions",
-            "Speak or play a note into microphone",
-            "Press joystick to stop recording",
-            "Press chord button to play back sample",
-            "Verify sample plays chromatically"
+            "Press F3 button to open mode selection menu",
+            "Move joystick RIGHT repeatedly to cycle modes until \"MIC SAMPLE\" appears",
+            "  (Mode order: ONESHOT → STRUM → REPEAT → SEQUENCER → CHORDHIRO → EARTRAINER → TUNER → MIC SAMPLE)",
+            "OLED should display: \"MIC SAMPLE\" / \"Hold Chord Btn 1 to Record\"",
+            "Press and HOLD chord button 1 to start recording",
+            "Speak or sing a note into the microphone (located on front panel)",
+            "Release chord button 1 to stop recording (max 5.0 seconds)",
+            "OLED shows sample length and detected pitch",
+            "Press chord buttons 1-7 to play back sample chromatically",
+            "Verify pitch shifts correctly across all buttons"
         ],
         expected: [
             "Microphone captures audio clearly",
@@ -361,47 +369,57 @@ function renderOLED(oledData) {
             </div>
         `,
         joystick8: (data) => {
-            // Create a 3x3 grid showing all 8 joystick directions + center
+            // Show each joystick direction with its OLED display side-by-side
+            // Much clearer than a 3x3 grid!
             const directions = data.directions;
-            const grid = [
-                [7, 0, 1],  // UP-LEFT, CENTER, UP-RIGHT
-                [6, -1, 2], // LEFT, (empty), RIGHT
-                [5, 4, 3]   // DOWN-LEFT, DOWN, DOWN-RIGHT
+
+            let html = '<div class="joystick-test-list">';
+
+            // Center position first (highlighted)
+            const center = directions[0];
+            html += `
+                <div class="joy-test-item center-item">
+                    <div class="joy-direction-icon">
+                        <div class="joy-arrow-big">●</div>
+                        <div class="joy-direction-label">CENTER (Release joystick)</div>
+                    </div>
+                    <div class="arrow-connector">→</div>
+                    <div class="oled-screen-mini">
+                        <div class="oled-chord-text">${center.chord}</div>
+                    </div>
+                </div>
+            `;
+
+            // All 8 directions
+            const directionOrder = [
+                { idx: 1, arrow: '↑', label: 'UP' },
+                { idx: 2, arrow: '↗', label: 'UP-RIGHT' },
+                { idx: 3, arrow: '→', label: 'RIGHT' },
+                { idx: 4, arrow: '↘', label: 'DOWN-RIGHT' },
+                { idx: 5, arrow: '↓', label: 'DOWN' },
+                { idx: 6, arrow: '↙', label: 'DOWN-LEFT' },
+                { idx: 7, arrow: '←', label: 'LEFT' },
+                { idx: 8, arrow: '↖', label: 'UP-LEFT' }
             ];
 
-            let gridHTML = '<div class="joystick-grid">';
-            for (let row = 0; row < 3; row++) {
-                for (let col = 0; col < 3; col++) {
-                    const idx = grid[row][col];
-                    if (idx === -1) {
-                        // Center empty space (actual center is at index 0)
-                        gridHTML += '<div class="joy-cell empty"></div>';
-                    } else if (idx === 0) {
-                        // Center position (no direction)
-                        const dir = directions[idx];
-                        gridHTML += `
-                            <div class="joy-cell center">
-                                <div class="oled-screen-mini">
-                                    <div class="oled-chord-text">${dir.chord}</div>
-                                </div>
-                                <div class="joy-label">CENTER</div>
-                            </div>
-                        `;
-                    } else {
-                        const dir = directions[idx];
-                        gridHTML += `
-                            <div class="joy-cell">
-                                <div class="oled-screen-mini">
-                                    <div class="oled-chord-text">${dir.chord}</div>
-                                </div>
-                                <div class="joy-label">${dir.dir}</div>
-                            </div>
-                        `;
-                    }
-                }
-            }
-            gridHTML += '</div>';
-            return gridHTML;
+            directionOrder.forEach(({idx, arrow, label}) => {
+                const dir = directions[idx];
+                html += `
+                    <div class="joy-test-item">
+                        <div class="joy-direction-icon">
+                            <div class="joy-arrow-big">${arrow}</div>
+                            <div class="joy-direction-label">${label}</div>
+                        </div>
+                        <div class="arrow-connector">→</div>
+                        <div class="oled-screen-mini">
+                            <div class="oled-chord-text">${dir.chord}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            return html;
         },
         chord7: (data) => {
             // Create a grid showing all 7 chord button displays
@@ -421,41 +439,65 @@ function renderOLED(oledData) {
             return gridHTML;
         },
         function3: (data) => {
-            // Create menu examples for F1, F2, F3
+            // Show button icon → what appears on OLED
             const menus = data.menus;
-            let gridHTML = '<div class="function-grid">';
+
+            // Button colors and icons from manual
+            const buttonInfo = {
+                'F1': { color: '#2C2C2C', icon: '⚙', label: 'Settings (Gray)' },
+                'F2': { color: '#FFD700', icon: '〜', label: 'Effects (Yellow)' },
+                'F3': { color: '#FF4500', icon: '⏱', label: 'Modes (Red)' }
+            };
+
+            let html = '<div class="function-test-list">';
+
             menus.forEach(menu => {
-                gridHTML += `
-                    <div class="function-cell">
-                        <div class="function-header">${menu.button}: ${menu.name}</div>
-                        <div class="menu-examples">
+                const btn = buttonInfo[menu.button];
+                html += `
+                    <div class="function-test-item">
+                        <div class="function-button-display">
+                            <div class="function-button-icon" style="background-color: ${btn.color}; color: ${btn.color === '#FFD700' ? '#000' : '#FFF'};">
+                                ${btn.icon}
+                            </div>
+                            <div class="function-button-label">${menu.button} - ${btn.label}</div>
+                        </div>
+
+                        <div class="arrow-connector-big">→</div>
+
+                        <div class="function-oled-examples">
+                            <div class="function-menu-title">${menu.name} Menu</div>
+                            <div class="oled-examples-row">
                 `;
+
                 menu.items.forEach(item => {
                     const parts = item.split(' → ');
                     if (parts.length === 2) {
                         // Item with value (e.g., "KEY → C")
-                        gridHTML += `
-                            <div class="oled-screen-mini menu-item">
+                        html += `
+                            <div class="oled-screen-mini">
                                 <div class="oled-menu-header">${parts[0]}</div>
                                 <div class="oled-menu-value">${parts[1]}</div>
                             </div>
                         `;
                     } else {
                         // Item without value (e.g., "NORMAL")
-                        gridHTML += `
-                            <div class="oled-screen-mini menu-item">
+                        html += `
+                            <div class="oled-screen-mini">
                                 <div class="oled-menu-single">${item}</div>
                             </div>
                         `;
                     }
                 });
-                gridHTML += `
+
+                html += `
+                            </div>
                         </div>
                     </div>
                 `;
             });
-            gridHTML += '</div>';
-            return gridHTML;
+
+            html += '</div>';
+            return html;
         }
     };
 

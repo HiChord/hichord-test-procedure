@@ -984,6 +984,23 @@ footer {
     box-shadow: 0 0 12px rgba(255, 107, 53, 0.3);
 }
 
+.joy-arrow {
+    font-size: 28px;
+    font-weight: 700;
+    color: #0A0A0A;
+    line-height: 1;
+    text-align: center;
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.center-arrow {
+    color: #FF6B35;
+    font-size: 32px;
+}
+
 .joy-label {
     font-size: 11px;
     font-weight: 600;
@@ -1054,11 +1071,161 @@ footer {
     width: 100%;
 }
 
+/* NEW: Joystick test list (direction → OLED side-by-side) */
+.joystick-test-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.joy-test-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 16px;
+    background: #F9FAFB;
+    border: 2px solid #E5E7EB;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.joy-test-item:hover {
+    border-color: #0A0A0A;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.joy-test-item.center-item {
+    background: #FFF4E6;
+    border-color: #FF6B35;
+    border-width: 3px;
+}
+
+.joy-direction-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-width: 120px;
+}
+
+.joy-arrow-big {
+    font-size: 48px;
+    font-weight: 700;
+    color: #0A0A0A;
+    line-height: 1;
+}
+
+.center-item .joy-arrow-big {
+    color: #FF6B35;
+}
+
+.joy-direction-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #6B6B6B;
+    text-align: center;
+}
+
+.arrow-connector {
+    font-size: 32px;
+    color: #0A0A0A;
+    font-weight: 700;
+}
+
+/* NEW: Function button test list (button icon → OLED examples) */
+.function-test-list {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 20px;
+}
+
+.function-test-item {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 20px;
+    background: #F9FAFB;
+    border: 2px solid #E5E7EB;
+    border-radius: 8px;
+}
+
+.function-button-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    min-width: 140px;
+}
+
+.function-button-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.function-button-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+    color: #0A0A0A;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.arrow-connector-big {
+    font-size: 48px;
+    color: #0A0A0A;
+    font-weight: 700;
+}
+
+.function-oled-examples {
+    flex: 1;
+}
+
+.function-menu-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #0A0A0A;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.oled-examples-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
 /* Responsive adjustments for mini screens */
 @media (max-width: 768px) {
     .joystick-grid {
         gap: 12px;
         padding: 16px;
+    }
+
+    .joy-test-item,
+    .function-test-item {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .arrow-connector,
+    .arrow-connector-big {
+        transform: rotate(90deg);
+        font-size: 24px;
     }
 
     .oled-screen-mini {
