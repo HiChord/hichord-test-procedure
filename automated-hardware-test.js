@@ -231,6 +231,11 @@ class HiChordTestApp {
             const testData = data.slice(3);
             this.handleTestResponse(testType, testData);
         }
+
+        // ADC values response (0x16)
+        if (command === this.SYSEX_ADC_VALUES_RESPONSE && data.length >= 2) {
+            this.handleADCValues(data.slice(2));
+        }
     }
 
     setupADCMonitor() {
@@ -275,6 +280,39 @@ class HiChordTestApp {
             clearInterval(this.adcMonitorInterval);
             this.adcMonitorInterval = null;
         }
+    }
+
+    handleADCValues(data) {
+        // Decode ADC values from SysEx response
+        // Format: [chord_hi] [chord_lo] [joyX_hi] [joyX_lo] [joyY_hi] [joyY_lo] [vol_hi] [vol_lo]
+        // Each value is 12-bit split into two 7-bit MIDI bytes
+
+        if (data.length < 8) return; // Need all 8 bytes
+
+        const chordADC = (data[0] << 7) | data[1];
+        const joyXADC = (data[2] << 7) | data[3];
+        const joyYADC = (data[4] << 7) | data[5];
+        const volumeADC = (data[6] << 7) | data[7];
+
+        // Update ADC display
+        // For ADC mode, chord buttons share one ADC channel, so show the chord ADC value
+        // Layout: Chord (idx 0-6 all show same), Joy X (10), Joy Y (11), Volume (12)
+
+        // Update chord button ADC (show on first button)
+        const chordEl = document.getElementById('adc0');
+        if (chordEl) chordEl.textContent = chordADC;
+
+        // Update joystick X
+        const joyXEl = document.getElementById('adc10');
+        if (joyXEl) joyXEl.textContent = joyXADC;
+
+        // Update joystick Y
+        const joyYEl = document.getElementById('adc11');
+        if (joyYEl) joyYEl.textContent = joyYADC;
+
+        // Update volume
+        const volumeEl = document.getElementById('adc12');
+        if (volumeEl) volumeEl.textContent = volumeADC;
     }
 
     // Test definitions
