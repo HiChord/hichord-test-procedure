@@ -226,10 +226,10 @@ class HiChordTestApp {
         }
 
         // Test response (0x12)
-        if (command === this.SYSEX_TEST_RESPONSE && data.length >= 3) {
-            const testType = data[2];
-            const testData = data.slice(3);
-            this.handleTestResponse(testType, testData);
+        if (command === this.SYSEX_TEST_RESPONSE && data.length >= 4) {
+            const buttonId = data[2];
+            const successFlag = data[3];
+            this.handleTestResponse(buttonId, successFlag);
         }
 
         // ADC values response (0x16)
@@ -574,14 +574,11 @@ class HiChordTestApp {
         this.failCurrentTest('No audio detected');
     }
 
-    handleTestResponse(testType, testData) {
+    handleTestResponse(buttonId, successFlag) {
         if (!this.waitingForInput) return;
 
         const test = this.testDefinitions[this.currentTestIndex];
-
-        // testData format: [buttonId, successFlag, ...]
-        const buttonId = testData[0];
-        const passed = testData[1] === 1;
+        const passed = successFlag === 1;
 
         this.log(`← RX Button ${buttonId} (expected ${test.expectedButtonId})`, 'receive');
 
