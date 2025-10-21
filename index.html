@@ -13,477 +13,96 @@
             <p class="subtitle">PRODUCTION QUALITY ASSURANCE PROTOCOL</p>
         </header>
 
-        <div class="info-box">
-            <strong>REQUIRED EQUIPMENT:</strong> USB-C cable, headphones (3.5mm), MIDI device (optional), speaker/audio input device
+        <!-- Mode Selection -->
+        <div class="mode-selector">
+            <button class="mode-btn active" data-mode="manual">
+                <div class="mode-icon">📋</div>
+                <div class="mode-name">MANUAL MODE</div>
+                <div class="mode-desc">Traditional checklist with expected results</div>
+            </button>
+            <button class="mode-btn" data-mode="automated">
+                <div class="mode-icon">🔌</div>
+                <div class="mode-name">AUTOMATED MODE</div>
+                <div class="mode-desc">USB-C connected with real-time validation</div>
+            </button>
         </div>
 
-        <!-- Test 1: Charging Light -->
-        <div class="test-step" data-step="1">
-            <div class="test-header">
-                <div class="test-number">01</div>
-                <h2>CHARGING INDICATOR</h2>
+        <!-- Manual Mode Container -->
+        <div id="manualMode" class="test-mode active">
+            <div class="info-box">
+                <strong>MANUAL MODE:</strong> Follow each test step and verify expected results. No USB connection required.
             </div>
-            <div class="test-content">
-                <div class="test-instruction">
-                    <h3>PROCEDURE</h3>
-                    <ol>
-                        <li>Locate USB-C port on side of HiChord</li>
-                        <li>Connect USB-C cable to HiChord and power source</li>
-                        <li>Observe LED on side panel</li>
-                    </ol>
-                </div>
-                <div class="test-expected">
-                    <h3>EXPECTED RESULT</h3>
-                    <div class="result-item">
-                        <span class="status-indicator charging">●</span>
-                        <span>RED LED: Charging in progress</span>
-                    </div>
-                    <div class="result-item">
-                        <span class="status-indicator charged">●</span>
-                        <span>BLUE LED: Fully charged</span>
-                    </div>
-                </div>
-                <div class="test-actions">
-                    <button class="btn-pass" onclick="markTest(1, 'pass')">PASS</button>
-                    <button class="btn-fail" onclick="markTest(1, 'fail')">FAIL</button>
-                </div>
+
+            <nav class="test-nav">
+                <button class="nav-btn" id="prevBtn" disabled>← PREVIOUS</button>
+                <span class="test-progress" id="testProgress">Test 1 of 12</span>
+                <button class="nav-btn" id="nextBtn">NEXT →</button>
+            </nav>
+
+            <!-- Test Steps Container -->
+            <div class="test-steps-container" id="manualSteps">
+                <!-- Tests will be dynamically loaded here -->
             </div>
+
+            <nav class="test-nav bottom">
+                <button class="nav-btn" id="prevBtnBottom" disabled>← PREVIOUS</button>
+                <button class="nav-btn" id="nextBtnBottom">NEXT →</button>
+            </nav>
         </div>
 
-        <!-- Test 2: Power On -->
-        <div class="test-step" data-step="2">
-            <div class="test-header">
-                <div class="test-number">02</div>
-                <h2>POWER ON SEQUENCE</h2>
-            </div>
-            <div class="test-content">
-                <div class="test-instruction">
-                    <h3>PROCEDURE</h3>
-                    <ol>
-                        <li>Press and hold power button for 1 second</li>
-                        <li>Observe OLED display boot sequence</li>
-                        <li>Verify firmware version display</li>
-                    </ol>
-                </div>
-                <div class="oled-mockup">
-                    <div class="oled-screen">
-                        <div class="oled-text-large">HICHORD</div>
-                        <div class="oled-text-small">REV 1.95</div>
+        <!-- Automated Mode Container -->
+        <div id="automatedMode" class="test-mode">
+            <div class="connection-panel">
+                <div class="connection-status" id="connectionStatus">
+                    <div class="status-indicator disconnected" id="statusIndicator"></div>
+                    <div class="status-text">
+                        <div id="statusTitle">NOT CONNECTED</div>
+                        <div id="statusSubtitle">Connect HiChord via USB-C</div>
                     </div>
-                    <div class="mockup-label">Expected boot screen</div>
                 </div>
-                <div class="test-expected">
-                    <h3>EXPECTED RESULT</h3>
-                    <ul>
-                        <li>Display shows "HICHORD" title</li>
-                        <li>Version "REV 1.95" appears below</li>
-                        <li>Boot animation completes smoothly</li>
-                    </ul>
-                </div>
-                <div class="test-actions">
-                    <button class="btn-pass" onclick="markTest(2, 'pass')">PASS</button>
-                    <button class="btn-fail" onclick="markTest(2, 'fail')">FAIL</button>
-                </div>
+                <button class="btn-connect" id="connectBtn">CONNECT TO HICHORD</button>
             </div>
-        </div>
 
-        <!-- Test 3: Volume Control -->
-        <div class="test-step" data-step="3">
-            <div class="test-header">
-                <div class="test-number">03</div>
-                <h2>VOLUME CONTROL</h2>
-            </div>
-            <div class="test-content">
-                <div class="test-instruction">
-                    <h3>PROCEDURE</h3>
-                    <ol>
-                        <li>Locate volume slider on top edge of device</li>
-                        <li>Press any chord button (1-7) to generate sound</li>
-                        <li>Move slider from minimum to maximum</li>
-                        <li>Observe OLED display volume indicator</li>
-                    </ol>
-                </div>
-                <div class="oled-mockup">
-                    <div class="oled-screen">
-                        <div class="volume-bar-container">
-                            <div class="volume-icon">♪</div>
-                            <div class="volume-bar">
-                                <div class="volume-fill" style="width: 75%"></div>
-                            </div>
-                            <div class="volume-percent">75%</div>
+            <div class="automated-content" id="automatedContent" style="display: none;">
+                <!-- Hardware Info -->
+                <div class="hardware-info" id="hardwareInfo" style="display: none;">
+                    <h3>DETECTED HARDWARE</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">BATCH:</span>
+                            <span class="info-value" id="detectedBatch">—</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">BUTTON SYSTEM:</span>
+                            <span class="info-value" id="detectedButtonSystem">—</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">FEATURES:</span>
+                            <span class="info-value" id="detectedFeatures">—</span>
                         </div>
                     </div>
-                    <div class="mockup-label">Volume display (example at 75%)</div>
                 </div>
-                <div class="test-expected">
-                    <h3>EXPECTED RESULT</h3>
-                    <ul>
-                        <li>Volume bar appears on OLED when slider moved</li>
-                        <li>Audio level changes smoothly with slider position</li>
-                        <li>No crackling or distortion at any volume level</li>
-                    </ul>
-                </div>
-                <div class="test-actions">
-                    <button class="btn-pass" onclick="markTest(3, 'pass')">PASS</button>
-                    <button class="btn-fail" onclick="markTest(3, 'fail')">FAIL</button>
-                </div>
-            </div>
-        </div>
 
-        <!-- Test 4: Menu Buttons -->
-        <div class="test-step" data-step="4">
-            <div class="test-header">
-                <div class="test-number">04</div>
-                <h2>FUNCTION BUTTONS</h2>
-            </div>
-            <div class="test-content">
-                <div class="test-instruction">
-                    <h3>PROCEDURE</h3>
-                    <ol>
-                        <li>Press <strong>F1 (gray)</strong> button - Should open Settings menu</li>
-                        <li>Press <strong>F2 (yellow)</strong> button - Should open Sounds/Effects menu</li>
-                        <li>Press <strong>F3 (red)</strong> button - Should open Mode/Tempo menu</li>
-                        <li>Press each button again to exit respective menu</li>
-                    </ol>
-                </div>
-                <div class="button-diagram">
-                    <div class="function-buttons">
-                        <div class="btn-f1">F1</div>
-                        <div class="btn-f2">F2</div>
-                        <div class="btn-f3">F3</div>
-                    </div>
-                    <div class="button-labels">
-                        <span>Settings</span>
-                        <span>Sounds</span>
-                        <span>Modes</span>
-                    </div>
-                </div>
-                <div class="test-expected">
-                    <h3>EXPECTED RESULT</h3>
-                    <ul>
-                        <li>Each button press registers immediately</li>
-                        <li>Correct menu appears for each button</li>
-                        <li>No stuck buttons or double-triggers</li>
-                    </ul>
-                </div>
-                <div class="test-actions">
-                    <button class="btn-pass" onclick="markTest(4, 'pass')">PASS</button>
-                    <button class="btn-fail" onclick="markTest(4, 'fail')">FAIL</button>
-                </div>
-            </div>
-        </div>
+                <nav class="test-nav">
+                    <button class="nav-btn" id="prevBtnAuto" disabled>← PREVIOUS</button>
+                    <span class="test-progress" id="testProgressAuto">Test 1 of 12</span>
+                    <button class="nav-btn" id="nextBtnAuto">NEXT →</button>
+                </nav>
 
-        <!-- Test 5: Joystick -->
-        <div class="test-step" data-step="5">
-            <div class="test-header">
-                <div class="test-number">05</div>
-                <h2>JOYSTICK (8 DIRECTIONS)</h2>
-            </div>
-            <div class="test-content">
-                <div class="test-instruction">
-                    <h3>PROCEDURE</h3>
-                    <ol>
-                        <li>Press F1 to enter Settings menu</li>
-                        <li>Move joystick in all 8 directions:</li>
-                        <ul>
-                            <li>UP, DOWN, LEFT, RIGHT</li>
-                            <li>UP-LEFT, UP-RIGHT, DOWN-LEFT, DOWN-RIGHT</li>
-                        </ul>
-                        <li>Verify menu navigation responds to each direction</li>
-                    </ol>
+                <!-- Automated Test Container -->
+                <div class="auto-test-container" id="autoTestContainer">
+                    <!-- Automated tests will be dynamically loaded here -->
                 </div>
-                <div class="joystick-diagram">
-                    <div class="joystick-directions">
-                        <div class="direction nw">↖</div>
-                        <div class="direction n">↑</div>
-                        <div class="direction ne">↗</div>
-                        <div class="direction w">←</div>
-                        <div class="direction center">●</div>
-                        <div class="direction e">→</div>
-                        <div class="direction sw">↙</div>
-                        <div class="direction s">↓</div>
-                        <div class="direction se">↘</div>
-                    </div>
-                </div>
-                <div class="test-expected">
-                    <h3>EXPECTED RESULT</h3>
-                    <ul>
-                        <li>All 8 directions register correctly</li>
-                        <li>Joystick returns to center when released</li>
-                        <li>No missed or phantom inputs</li>
-                    </ul>
-                </div>
-                <div class="test-actions">
-                    <button class="btn-pass" onclick="markTest(5, 'pass')">PASS</button>
-                    <button class="btn-fail" onclick="markTest(5, 'fail')">FAIL</button>
-                </div>
-            </div>
-        </div>
 
-        <!-- Test 6: Joystick Press -->
-        <div class="test-step" data-step="6">
-            <div class="test-header">
-                <div class="test-number">06</div>
-                <h2>JOYSTICK BUTTON PRESS</h2>
-            </div>
-            <div class="test-content">
-                <div class="test-instruction">
-                    <h3>PROCEDURE</h3>
-                    <ol>
-                        <li>Press F2 to enter Sounds menu</li>
-                        <li>Navigate to a sound using joystick directions</li>
-                        <li>Press down on joystick (click) to select sound</li>
-                        <li>Verify selection is confirmed</li>
-                    </ol>
-                </div>
-                <div class="test-expected">
-                    <h3>EXPECTED RESULT</h3>
-                    <ul>
-                        <li>Joystick click registers as button press</li>
-                        <li>Selection is confirmed with visual feedback</li>
-                        <li>Button has tactile click feel</li>
-                    </ul>
-                </div>
-                <div class="test-actions">
-                    <button class="btn-pass" onclick="markTest(6, 'pass')">PASS</button>
-                    <button class="btn-fail" onclick="markTest(6, 'fail')">FAIL</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Test 7: Speaker -->
-        <div class="test-step" data-step="7">
-            <div class="test-header">
-                <div class="test-number">07</div>
-                <h2>BUILT-IN SPEAKER</h2>
-            </div>
-            <div class="test-content">
-                <div class="test-instruction">
-                    <h3>PROCEDURE</h3>
-                    <ol>
-                        <li>Ensure no headphones or USB cable connected</li>
-                        <li>Set volume to 50%</li>
-                        <li>Press chord buttons 1-7 sequentially</li>
-                        <li>Listen for clear audio output from speaker</li>
-                    </ol>
-                </div>
-                <div class="test-expected">
-                    <h3>EXPECTED RESULT</h3>
-                    <ul>
-                        <li>Clear audio from internal speaker</li>
-                        <li>No distortion, crackling, or buzzing</li>
-                        <li>All 7 chord buttons produce sound</li>
-                        <li>Speaker has adequate volume and clarity</li>
-                    </ul>
-                </div>
-                <div class="test-actions">
-                    <button class="btn-pass" onclick="markTest(7, 'pass')">PASS</button>
-                    <button class="btn-fail" onclick="markTest(7, 'fail')">FAIL</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Test 8: Headphone Output -->
-        <div class="test-step" data-step="8">
-            <div class="test-header">
-                <div class="test-number">08</div>
-                <h2>HEADPHONE OUTPUT</h2>
-            </div>
-            <div class="test-content">
-                <div class="test-instruction">
-                    <h3>PROCEDURE</h3>
-                    <ol>
-                        <li>Connect headphones to 3.5mm jack on right side</li>
-                        <li>Verify internal speaker mutes automatically</li>
-                        <li>Press chord buttons 1-7</li>
-                        <li>Listen for stereo audio in headphones</li>
-                    </ol>
-                </div>
-                <div class="test-expected">
-                    <h3>EXPECTED RESULT</h3>
-                    <ul>
-                        <li>Internal speaker mutes when headphones connected</li>
-                        <li>Clear stereo audio in both left and right channels</li>
-                        <li>No ground noise or interference</li>
-                        <li>Volume control functions properly</li>
-                    </ul>
-                </div>
-                <div class="test-actions">
-                    <button class="btn-pass" onclick="markTest(8, 'pass')">PASS</button>
-                    <button class="btn-fail" onclick="markTest(8, 'fail')">FAIL</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Test 9: USB Audio -->
-        <div class="test-step" data-step="9">
-            <div class="test-header">
-                <div class="test-number">09</div>
-                <h2>USB-C AUDIO OUTPUT</h2>
-            </div>
-            <div class="test-content">
-                <div class="test-instruction">
-                    <h3>PROCEDURE</h3>
-                    <ol>
-                        <li>Connect HiChord to computer via USB-C cable</li>
-                        <li>Computer should recognize HiChord as audio device (no drivers needed)</li>
-                        <li>Set computer audio output to "HiChord"</li>
-                        <li>Press chord buttons and verify audio on computer</li>
-                    </ol>
-                </div>
-                <div class="oled-mockup">
-                    <div class="oled-screen">
-                        <div class="oled-text-large">♫ USB</div>
-                        <div class="oled-text-small">AUDIO MODE</div>
-                    </div>
-                    <div class="mockup-label">USB connection indicator</div>
-                </div>
-                <div class="test-expected">
-                    <h3>EXPECTED RESULT</h3>
-                    <ul>
-                        <li>HiChord appears as USB audio device</li>
-                        <li>Class-compliant (no driver installation required)</li>
-                        <li>Clean digital audio output to computer</li>
-                        <li>Low latency, no dropouts</li>
-                    </ul>
-                </div>
-                <div class="test-actions">
-                    <button class="btn-pass" onclick="markTest(9, 'pass')">PASS</button>
-                    <button class="btn-fail" onclick="markTest(9, 'fail')">FAIL</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Test 10: MIDI Output -->
-        <div class="test-step" data-step="10">
-            <div class="test-header">
-                <div class="test-number">10</div>
-                <h2>MIDI OVER USB-C</h2>
-            </div>
-            <div class="test-content">
-                <div class="test-instruction">
-                    <h3>PROCEDURE</h3>
-                    <ol>
-                        <li>Connect HiChord to computer via USB-C</li>
-                        <li>Open DAW or MIDI monitor software</li>
-                        <li>Select "HiChord" as MIDI input device</li>
-                        <li>Press chord buttons 1-7</li>
-                        <li>Verify MIDI note messages appear in monitor</li>
-                    </ol>
-                </div>
-                <div class="test-expected">
-                    <h3>EXPECTED RESULT</h3>
-                    <ul>
-                        <li>HiChord appears as USB MIDI device</li>
-                        <li>MIDI note-on/note-off messages sent correctly</li>
-                        <li>Each chord button sends appropriate MIDI notes</li>
-                        <li>MIDI timing is accurate</li>
-                    </ul>
-                </div>
-                <div class="test-actions">
-                    <button class="btn-pass" onclick="markTest(10, 'pass')">PASS</button>
-                    <button class="btn-fail" onclick="markTest(10, 'fail')">FAIL</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Test 11: Battery Indicator -->
-        <div class="test-step" data-step="11">
-            <div class="test-header">
-                <div class="test-number">11</div>
-                <h2>BATTERY LEVEL INDICATOR</h2>
-                <span class="batch-indicator">BATCH 2+ ONLY</span>
-            </div>
-            <div class="test-content">
-                <div class="test-instruction">
-                    <h3>PROCEDURE</h3>
-                    <ol>
-                        <li>Disconnect USB-C cable (run on battery)</li>
-                        <li>Observe top-right corner of OLED display</li>
-                        <li>Battery percentage should be visible</li>
-                        <li>Connect USB-C cable and verify charging indicator appears</li>
-                    </ol>
-                </div>
-                <div class="oled-mockup">
-                    <div class="oled-screen">
-                        <div class="battery-display">
-                            <div class="battery-icon">
-                                <div class="battery-level" style="width: 60%"></div>
-                            </div>
-                            <span class="battery-text">85%</span>
-                        </div>
-                    </div>
-                    <div class="mockup-label">Battery indicator (top-right of display)</div>
-                </div>
-                <div class="test-expected">
-                    <h3>EXPECTED RESULT</h3>
-                    <ul>
-                        <li>Battery percentage displays correctly</li>
-                        <li>Level updates as battery drains/charges</li>
-                        <li>Low battery warning appears below 20%</li>
-                        <li>Charging icon appears when USB connected</li>
-                    </ul>
-                </div>
-                <div class="warning-box">
-                    <strong>NOTE:</strong> Skip this test for Batch 1 units (no battery detection)
-                </div>
-                <div class="test-actions">
-                    <button class="btn-pass" onclick="markTest(11, 'pass')">PASS</button>
-                    <button class="btn-fail" onclick="markTest(11, 'fail')">FAIL</button>
-                    <button class="btn-skip" onclick="markTest(11, 'skip')">SKIP (Batch 1)</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Test 12: Microphone (Batch 4+) -->
-        <div class="test-step" data-step="12">
-            <div class="test-header">
-                <div class="test-number">12</div>
-                <h2>MICROPHONE INPUT</h2>
-                <span class="batch-indicator">BATCH 4+ ONLY</span>
-            </div>
-            <div class="test-content">
-                <div class="test-instruction">
-                    <h3>PROCEDURE</h3>
-                    <ol>
-                        <li>Hold F3 + press Chord Button 6 to enter MIC_SAMPLE mode</li>
-                        <li>Follow on-screen instructions to record a sample</li>
-                        <li>Speak or play a note into microphone</li>
-                        <li>Press joystick to stop recording</li>
-                        <li>Press chord button to play back recorded sample</li>
-                    </ol>
-                </div>
-                <div class="oled-mockup">
-                    <div class="oled-screen">
-                        <div class="oled-text-medium">● REC</div>
-                        <div class="recording-bar">
-                            <div class="recording-fill"></div>
-                        </div>
-                    </div>
-                    <div class="mockup-label">Recording in progress</div>
-                </div>
-                <div class="test-expected">
-                    <h3>EXPECTED RESULT</h3>
-                    <ul>
-                        <li>Microphone captures audio clearly</li>
-                        <li>Recorded sample plays back correctly</li>
-                        <li>Sample can be played chromatically across chord buttons</li>
-                        <li>No excessive noise or interference</li>
-                    </ul>
-                </div>
-                <div class="warning-box">
-                    <strong>NOTE:</strong> Skip this test for Batch 1-3 units (no microphone hardware)
-                </div>
-                <div class="test-actions">
-                    <button class="btn-pass" onclick="markTest(12, 'pass')">PASS</button>
-                    <button class="btn-fail" onclick="markTest(12, 'fail')">FAIL</button>
-                    <button class="btn-skip" onclick="markTest(12, 'skip')">SKIP (Batch 1-3)</button>
-                </div>
+                <nav class="test-nav bottom">
+                    <button class="nav-btn" id="prevBtnAutoBottom" disabled>← PREVIOUS</button>
+                    <button class="nav-btn" id="nextBtnAutoBottom">NEXT →</button>
+                </nav>
             </div>
         </div>
 
         <!-- Summary Section -->
-        <div class="summary-section">
+        <div class="summary-section" id="summarySection" style="display: none;">
             <h2>TEST SUMMARY</h2>
             <div class="summary-grid">
                 <div class="summary-item">
@@ -499,21 +118,24 @@
                     <div class="summary-value skip" id="skipCount">0</div>
                 </div>
                 <div class="summary-item">
-                    <div class="summary-label">REMAINING</div>
-                    <div class="summary-value" id="remainingCount">12</div>
+                    <div class="summary-label">TOTAL</div>
+                    <div class="summary-value" id="totalCount">12</div>
                 </div>
             </div>
             <div class="summary-actions">
                 <button class="btn-primary" onclick="printReport()">PRINT REPORT</button>
                 <button class="btn-secondary" onclick="resetTests()">RESET ALL TESTS</button>
+                <button class="btn-secondary" onclick="goBackToTests()">BACK TO TESTS</button>
             </div>
         </div>
 
         <footer>
-            <p>HiChord Test Procedure v1.0 | Generated with Claude Code</p>
+            <p>HiChord Test Procedure v2.0 | Dual Mode: Manual + Automated</p>
         </footer>
     </div>
 
+    <script src="manual-tests.js"></script>
+    <script src="automated-tests.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

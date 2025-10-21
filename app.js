@@ -1,260 +1,348 @@
-// HiChord Test Procedure - Interactive Test Tracking
-// Test state management
+// HiChord Test Procedure - Main Application
+// Coordinates Manual and Automated test modes
 
-const testResults = {
-    totalTests: 12,
-    results: {} // {testNumber: 'pass'|'fail'|'skip'}
-};
+class TestProcedureApp {
+    constructor() {
+        this.currentMode = 'manual';
+        this.currentTestIndex = 0;
+        this.totalTests = 12;
+        this.testResults = {};
+        this.automatedSystem = new AutomatedTestSystem();
 
-// Load saved test results from localStorage
-function loadTestResults() {
-    const saved = localStorage.getItem('hichord-test-results');
-    if (saved) {
-        try {
-            const data = JSON.parse(saved);
-            testResults.results = data.results || {};
-            updateAllTestStates();
-            updateSummary();
-        } catch (e) {
-            console.error('Failed to load test results:', e);
-        }
-    }
-}
-
-// Save test results to localStorage
-function saveTestResults() {
-    localStorage.setItem('hichord-test-results', JSON.stringify(testResults));
-}
-
-// Mark a test with result
-function markTest(testNumber, result) {
-    testResults.results[testNumber] = result;
-
-    // Update visual state
-    const testStep = document.querySelector(`.test-step[data-step="${testNumber}"]`);
-    if (testStep) {
-        testStep.classList.remove('passed', 'failed', 'skipped');
-        if (result === 'pass') {
-            testStep.classList.add('passed');
-        } else if (result === 'fail') {
-            testStep.classList.add('failed');
-        } else if (result === 'skip') {
-            testStep.classList.add('skipped');
-        }
+        this.init();
     }
 
-    updateSummary();
-    saveTestResults();
-
-    // Smooth scroll to next test
-    scrollToNextTest(testNumber);
-}
-
-// Update all test visual states from saved data
-function updateAllTestStates() {
-    Object.entries(testResults.results).forEach(([testNumber, result]) => {
-        const testStep = document.querySelector(`.test-step[data-step="${testNumber}"]`);
-        if (testStep) {
-            testStep.classList.remove('passed', 'failed', 'skipped');
-            if (result === 'pass') {
-                testStep.classList.add('passed');
-            } else if (result === 'fail') {
-                testStep.classList.add('failed');
-            } else if (result === 'skip') {
-                testStep.classList.add('skipped');
-            }
-        }
-    });
-}
-
-// Update summary counts
-function updateSummary() {
-    const passed = Object.values(testResults.results).filter(r => r === 'pass').length;
-    const failed = Object.values(testResults.results).filter(r => r === 'fail').length;
-    const skipped = Object.values(testResults.results).filter(r => r === 'skip').length;
-    const remaining = testResults.totalTests - (passed + failed + skipped);
-
-    document.getElementById('passCount').textContent = passed;
-    document.getElementById('failCount').textContent = failed;
-    document.getElementById('skipCount').textContent = skipped;
-    document.getElementById('remainingCount').textContent = remaining;
-}
-
-// Scroll to next test after marking current
-function scrollToNextTest(currentTestNumber) {
-    const nextTestNumber = currentTestNumber + 1;
-    if (nextTestNumber <= testResults.totalTests) {
-        setTimeout(() => {
-            const nextTest = document.querySelector(`.test-step[data-step="${nextTestNumber}"]`);
-            if (nextTest && !testResults.results[nextTestNumber]) {
-                nextTest.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        }, 300);
-    } else {
-        // All tests complete, scroll to summary
-        setTimeout(() => {
-            const summary = document.querySelector('.summary-section');
-            if (summary) {
-                summary.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        }, 300);
+    init() {
+        this.setupModeSelector();
+        this.loadManualTests();
+        this.setupNavigation();
+        this.loadTestResults();
     }
-}
 
-// Reset all tests
-function resetTests() {
-    if (confirm('Are you sure you want to reset all test results? This cannot be undone.')) {
-        testResults.results = {};
-        localStorage.removeItem('hichord-test-results');
+    setupModeSelector() {
+        const modeButtons = document.querySelectorAll('.mode-btn');
+        modeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const mode = btn.dataset.mode;
+                this.switchMode(mode);
+            });
+        });
+    }
 
-        // Clear all visual states
-        document.querySelectorAll('.test-step').forEach(step => {
-            step.classList.remove('passed', 'failed', 'skipped');
+    switchMode(mode) {
+        this.currentMode = mode;
+
+        // Update button states
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.mode === mode);
         });
 
-        updateSummary();
+        // Show/hide mode containers
+        document.getElementById('manualMode').classList.toggle('active', mode === 'manual');
+        document.getElementById('automatedMode').classList.toggle('active', mode === 'automated');
+
+        // Reset to first test when switching modes
+        this.currentTestIndex = 0;
+        this.updateTestDisplay();
+    }
+
+    loadManualTests() {
+        const container = document.getElementById('manualSteps');
+        manualTests.forEach(test => {
+            const testElement = document.createElement('div');
+            testElement.innerHTML = buildManualTestHTML(test);
+            testElement.querySelector('.manual-test').style.display = 'none';
+            container.appendChild(testElement.firstChild);
+        });
+
+        // Show first test
+        this.updateTestDisplay();
+    }
+
+    loadAutomatedTests() {
+        const container = document.getElementById('autoTestContainer');
+        container.innerHTML = '';
+        automatedTests.forEach(test => {
+            const testElement = document.createElement('div');
+            testElement.innerHTML = buildAutomatedTestHTML(test, this.automatedSystem);
+            testElement.querySelector('.automated-test').style.display = 'none';
+            container.appendChild(testElement.firstChild);
+        });
+
+        // Show first test
+        this.updateTestDisplay();
+    }
+
+    setupNavigation() {
+        // Manual mode navigation
+        document.getElementById('prevBtn').addEventListener('click', () => this.previousTest());
+        document.getElementById('nextBtn').addEventListener('click', () => this.nextTest());
+        document.getElementById('prevBtnBottom').addEventListener('click', () => this.previousTest());
+        document.getElementById('nextBtnBottom').addEventListener('click', () => this.nextTest());
+
+        // Automated mode navigation
+        document.getElementById('prevBtnAuto').addEventListener('click', () => this.previousTest());
+        document.getElementById('nextBtnAuto').addEventListener('click', () => this.nextTest());
+        document.getElementById('prevBtnAutoBottom').addEventListener('click', () => this.previousTest());
+        document.getElementById('nextBtnAutoBottom').addEventListener('click', () => this.nextTest());
+
+        // Connect button
+        document.getElementById('connectBtn').addEventListener('click', () => this.connectToHiChord());
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' && !e.shiftKey) {
+                this.nextTest();
+            } else if (e.key === 'ArrowLeft' && !e.shiftKey) {
+                this.previousTest();
+            }
+        });
+    }
+
+    updateTestDisplay() {
+        const allTests = this.currentMode === 'manual' ?
+            document.querySelectorAll('.manual-test') :
+            document.querySelectorAll('.automated-test');
+
+        // Hide all tests
+        allTests.forEach(test => test.style.display = 'none');
+
+        // Show current test
+        if (allTests[this.currentTestIndex]) {
+            allTests[this.currentTestIndex].style.display = 'block';
+        }
+
+        // Update progress
+        const progress = `Test ${this.currentTestIndex + 1} of ${this.totalTests}`;
+        document.getElementById('testProgress').textContent = progress;
+        if (document.getElementById('testProgressAuto')) {
+            document.getElementById('testProgressAuto').textContent = progress;
+        }
+
+        // Update navigation buttons
+        this.updateNavButtons();
 
         // Scroll to top
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-}
 
-// Generate printable report
-function printReport() {
-    // Prepare report data
-    const passed = Object.values(testResults.results).filter(r => r === 'pass').length;
-    const failed = Object.values(testResults.results).filter(r => r === 'fail').length;
-    const skipped = Object.values(testResults.results).filter(r => r === 'skip').length;
-    const remaining = testResults.totalTests - (passed + failed + skipped);
+    updateNavButtons() {
+        const isFirst = this.currentTestIndex === 0;
+        const isLast = this.currentTestIndex === this.totalTests - 1;
 
-    // Add print metadata
-    const printHeader = document.createElement('div');
-    printHeader.className = 'print-header';
-    printHeader.innerHTML = `
-        <div style="text-align: center; margin-bottom: 20px; padding: 20px; border: 2px solid #0A0A0A;">
-            <h2 style="margin-bottom: 10px;">HICHORD TEST REPORT</h2>
-            <p>Date: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}</p>
-            <p>Passed: ${passed} | Failed: ${failed} | Skipped: ${skipped} | Remaining: ${remaining}</p>
-        </div>
-    `;
+        // Manual mode buttons
+        document.getElementById('prevBtn').disabled = isFirst;
+        document.getElementById('prevBtnBottom').disabled = isFirst;
+        document.getElementById('nextBtn').textContent = isLast ? 'FINISH →' : 'NEXT →';
+        document.getElementById('nextBtnBottom').textContent = isLast ? 'FINISH →' : 'NEXT →';
 
-    document.body.insertBefore(printHeader, document.body.firstChild);
-
-    // Print
-    window.print();
-
-    // Remove print header after print dialog closes
-    setTimeout(() => {
-        printHeader.remove();
-    }, 100);
-}
-
-// Keyboard shortcuts
-document.addEventListener('keydown', (e) => {
-    // Ctrl/Cmd + R to reset (prevent default browser reload)
-    if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
-        e.preventDefault();
-        resetTests();
-    }
-
-    // Ctrl/Cmd + P for print
-    if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
-        e.preventDefault();
-        printReport();
-    }
-});
-
-// Add visual feedback for test step hover
-document.addEventListener('DOMContentLoaded', () => {
-    loadTestResults();
-
-    // Add hover effect to highlight current test
-    document.querySelectorAll('.test-step').forEach(step => {
-        step.addEventListener('mouseenter', () => {
-            if (!step.classList.contains('passed') &&
-                !step.classList.contains('failed') &&
-                !step.classList.contains('skipped')) {
-                step.style.borderColor = '#FF6B35';
-            }
-        });
-
-        step.addEventListener('mouseleave', () => {
-            if (!step.classList.contains('passed') &&
-                !step.classList.contains('failed') &&
-                !step.classList.contains('skipped')) {
-                step.style.borderColor = '#E5E7EB';
-            }
-        });
-    });
-
-    // Add animation to OLED screens
-    animateOLEDScreens();
-});
-
-// Animate OLED screens for realism
-function animateOLEDScreens() {
-    const oledScreens = document.querySelectorAll('.oled-screen');
-    oledScreens.forEach(screen => {
-        // Add subtle glow effect
-        screen.style.boxShadow = 'inset 0 0 20px rgba(255, 255, 255, 0.1), 0 0 10px rgba(255, 255, 255, 0.2)';
-    });
-}
-
-// Export test results as JSON
-function exportResults() {
-    const results = {
-        timestamp: new Date().toISOString(),
-        totalTests: testResults.totalTests,
-        results: testResults.results,
-        summary: {
-            passed: Object.values(testResults.results).filter(r => r === 'pass').length,
-            failed: Object.values(testResults.results).filter(r => r === 'fail').length,
-            skipped: Object.values(testResults.results).filter(r => r === 'skip').length
+        // Automated mode buttons
+        if (document.getElementById('prevBtnAuto')) {
+            document.getElementById('prevBtnAuto').disabled = isFirst;
+            document.getElementById('prevBtnAutoBottom').disabled = isFirst;
+            document.getElementById('nextBtnAuto').textContent = isLast ? 'FINISH →' : 'NEXT →';
+            document.getElementById('nextBtnAutoBottom').textContent = isLast ? 'FINISH →' : 'NEXT →';
         }
-    };
+    }
 
-    const dataStr = JSON.stringify(results, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `hichord-test-results-${new Date().toISOString().split('T')[0]}.json`;
-    link.click();
-    URL.revokeObjectURL(url);
-}
+    previousTest() {
+        if (this.currentTestIndex > 0) {
+            this.currentTestIndex--;
+            this.updateTestDisplay();
+        }
+    }
 
-// Progress indicator
-function updateProgressBar() {
-    const completed = Object.keys(testResults.results).length;
-    const progress = (completed / testResults.totalTests) * 100;
+    nextTest() {
+        if (this.currentTestIndex < this.totalTests - 1) {
+            this.currentTestIndex++;
+            this.updateTestDisplay();
+        } else {
+            // Show summary
+            this.showSummary();
+        }
+    }
 
-    // Create or update progress bar
-    let progressBar = document.getElementById('progress-bar');
-    if (!progressBar) {
-        progressBar = document.createElement('div');
-        progressBar.id = 'progress-bar';
-        progressBar.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: ${progress}%;
-            height: 4px;
-            background: linear-gradient(90deg, #FF6B35, #FFB800);
-            transition: width 0.3s ease;
-            z-index: 9999;
-        `;
-        document.body.appendChild(progressBar);
-    } else {
-        progressBar.style.width = `${progress}%`;
+    async connectToHiChord() {
+        const connectBtn = document.getElementById('connectBtn');
+        const statusIndicator = document.getElementById('statusIndicator');
+        const statusTitle = document.getElementById('statusTitle');
+        const statusSubtitle = document.getElementById('statusSubtitle');
+
+        connectBtn.disabled = true;
+        connectBtn.textContent = 'CONNECTING...';
+        statusTitle.textContent = 'CONNECTING';
+        statusSubtitle.textContent = 'Please wait...';
+
+        try {
+            await this.automatedSystem.connect();
+
+            // Connection successful
+            statusIndicator.classList.remove('disconnected');
+            statusIndicator.classList.add('connected');
+            statusTitle.textContent = 'CONNECTED';
+            statusSubtitle.textContent = 'HiChord connected via USB-C';
+            connectBtn.textContent = 'DISCONNECT';
+            connectBtn.disabled = false;
+            connectBtn.onclick = () => this.disconnectFromHiChord();
+
+            // Show automated content
+            document.getElementById('automatedContent').style.display = 'block';
+
+            // Load automated tests
+            this.loadAutomatedTests();
+
+            // Show hardware info
+            this.displayHardwareInfo();
+
+        } catch (error) {
+            statusIndicator.classList.remove('connected');
+            statusIndicator.classList.add('disconnected');
+            statusTitle.textContent = 'CONNECTION FAILED';
+            statusSubtitle.textContent = error.message;
+            connectBtn.textContent = 'RETRY CONNECTION';
+            connectBtn.disabled = false;
+
+            alert(`Connection Error:\n\n${error.message}\n\nMake sure:\n1. HiChord is powered on\n2. USB-C cable is connected\n3. You're using Chrome, Edge, or Opera browser`);
+        }
+    }
+
+    disconnectFromHiChord() {
+        this.automatedSystem.disconnect();
+
+        const connectBtn = document.getElementById('connectBtn');
+        const statusIndicator = document.getElementById('statusIndicator');
+        const statusTitle = document.getElementById('statusTitle');
+        const statusSubtitle = document.getElementById('statusSubtitle');
+
+        statusIndicator.classList.remove('connected');
+        statusIndicator.classList.add('disconnected');
+        statusTitle.textContent = 'DISCONNECTED';
+        statusSubtitle.textContent = 'Click to reconnect';
+        connectBtn.textContent = 'CONNECT TO HICHORD';
+        connectBtn.onclick = () => this.connectToHiChord();
+
+        document.getElementById('automatedContent').style.display = 'none';
+    }
+
+    displayHardwareInfo() {
+        const hardwareInfo = document.getElementById('hardwareInfo');
+        hardwareInfo.style.display = 'block';
+
+        document.getElementById('detectedBatch').textContent =
+            this.automatedSystem.hardwareBatch || 'Detecting...';
+        document.getElementById('detectedButtonSystem').textContent =
+            this.automatedSystem.buttonSystem || 'Detecting...';
+
+        const features = [];
+        if (this.automatedSystem.hardwareBatch && parseInt(this.automatedSystem.hardwareBatch) >= 2) {
+            features.push('Battery Detection');
+        }
+        if (this.automatedSystem.hardwareBatch && parseInt(this.automatedSystem.hardwareBatch) >= 4) {
+            features.push('Microphone Input');
+        }
+        document.getElementById('detectedFeatures').textContent =
+            features.length > 0 ? features.join(', ') : 'Basic Features';
+    }
+
+    showSummary() {
+        // Calculate results
+        const results = Object.values(this.testResults);
+        const passed = results.filter(r => r === 'pass').length;
+        const failed = results.filter(r => r === 'fail').length;
+        const skipped = results.filter(r => r === 'skip').length;
+
+        document.getElementById('passCount').textContent = passed;
+        document.getElementById('failCount').textContent = failed;
+        document.getElementById('skipCount').textContent = skipped;
+
+        // Hide test modes, show summary
+        document.getElementById('manualMode').style.display = 'none';
+        document.getElementById('automatedMode').style.display = 'none';
+        document.getElementById('summarySection').style.display = 'block';
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    loadTestResults() {
+        const saved = localStorage.getItem('hichord-test-results-v2');
+        if (saved) {
+            try {
+                this.testResults = JSON.parse(saved);
+            } catch (e) {
+                console.error('Failed to load test results:', e);
+            }
+        }
+    }
+
+    saveTestResults() {
+        localStorage.setItem('hichord-test-results-v2', JSON.stringify(this.testResults));
     }
 }
 
-// Update progress on any test result change
-const originalMarkTest = markTest;
-window.markTest = function(testNumber, result) {
-    originalMarkTest(testNumber, result);
-    updateProgressBar();
-};
+// Global test app instance
+let testApp;
 
-// Initialize progress bar
-updateProgressBar();
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    testApp = new TestProcedureApp();
+});
+
+// Global functions for button handlers
+function runAutomatedTest(testId) {
+    const test = automatedTests.find(t => t.id === testId);
+    if (!test || !test.autoTest) return;
+
+    const statusEl = document.getElementById(`autoTestStatus${testId}`);
+    const logEl = document.getElementById(`testLog${testId}`);
+    const logContent = document.getElementById(`logContent${testId}`);
+
+    // Show log
+    logEl.style.display = 'block';
+    logContent.innerHTML = '<div class="log-item">Starting test...</div>';
+
+    statusEl.innerHTML = '<span class="status-text testing">⏳ Testing...</span>';
+
+    // Run the test
+    test.autoTest(testApp.automatedSystem)
+        .then(result => {
+            if (result.passed) {
+                statusEl.innerHTML = '<span class="status-text passed">✓ PASSED</span>';
+                logContent.innerHTML += `<div class="log-item success">${result.message}</div>`;
+                testApp.testResults[testId] = 'pass';
+            } else {
+                statusEl.innerHTML = '<span class="status-text failed">✗ FAILED</span>';
+                logContent.innerHTML += `<div class="log-item error">${result.message}</div>`;
+                testApp.testResults[testId] = 'fail';
+            }
+            testApp.saveTestResults();
+        })
+        .catch(error => {
+            statusEl.innerHTML = '<span class="status-text failed">✗ ERROR</span>';
+            logContent.innerHTML += `<div class="log-item error">Error: ${error.message}</div>`;
+            testApp.testResults[testId] = 'fail';
+            testApp.saveTestResults();
+        });
+}
+
+function resetTests() {
+    if (confirm('Reset all test results? This cannot be undone.')) {
+        testApp.testResults = {};
+        testApp.saveTestResults();
+        location.reload();
+    }
+}
+
+function goBackToTests() {
+    document.getElementById('summarySection').style.display = 'none';
+    if (testApp.currentMode === 'manual') {
+        document.getElementById('manualMode').style.display = 'block';
+    } else {
+        document.getElementById('automatedMode').style.display = 'block';
+    }
+    testApp.currentTestIndex = 0;
+    testApp.updateTestDisplay();
+}
+
+function printReport() {
+    window.print();
+}
