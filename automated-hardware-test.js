@@ -482,8 +482,7 @@ class HiChordTestApp {
         this.currentTestIndex = 0;
         this.testResults = [];
 
-        document.getElementById('startTestBtn').style.display = 'none';
-        document.getElementById('testProgressContainer').style.display = 'block';
+        document.getElementById('testControls').style.display = 'none';
         document.getElementById('currentTest').style.display = 'block';
 
         this.log('Starting automated test sequence', 'info');
@@ -499,42 +498,36 @@ class HiChordTestApp {
         const test = this.testDefinitions[this.currentTestIndex];
         this.waitingForInput = true;
 
-        document.getElementById('currentTestTitle').textContent = test.name;
         document.getElementById('currentTestInstruction').textContent = test.instruction;
 
         // For manual verification tests (audio), show pass/fail buttons
         if (test.type === 'audio') {
             document.getElementById('testDisplay').innerHTML = `
-                <div style="text-align: center;">
-                    <div style="font-size: 48px; margin-bottom: 20px;">🎵</div>
-                    <div style="margin-bottom: 20px;">${test.verify}</div>
-                    <div style="display: flex; gap: 15px; justify-content: center;">
-                        <button onclick="testApp.audioTestPassed()" class="btn-primary" style="background: #44FF44; padding: 15px 30px;">
-                            ✓ PASS - Audio Heard
-                        </button>
-                        <button onclick="testApp.audioTestFailed()" class="btn-primary" style="background: #FF4444; padding: 15px 30px;">
-                            ✗ FAIL - No Audio
-                        </button>
-                    </div>
+                <div style="display: flex; gap: 15px; justify-content: center;">
+                    <button onclick="autoTestApp.audioTestPassed()"
+                        style="padding: 20px 40px; font-size: 16px; font-weight: 700; background: #10B981; color: white; border: none; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">
+                        ✓ AUDIO OK
+                    </button>
+                    <button onclick="autoTestApp.audioTestFailed()"
+                        style="padding: 20px 40px; font-size: 16px; font-weight: 700; background: #EF4444; color: white; border: none; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">
+                        ✗ NO AUDIO
+                    </button>
                 </div>
             `;
         } else {
-            document.getElementById('testDisplay').innerHTML = `
-                <div style="text-align: center;">
-                    <div style="font-size: 48px; margin-bottom: 20px;">⏳</div>
-                    <div>Waiting for input...</div>
-                </div>
-            `;
+            document.getElementById('testDisplay').innerHTML = '';
         }
 
-        document.getElementById('testStatus').className = 'test-status waiting';
-        document.getElementById('testStatus').textContent = 'Test in progress...';
+        const statusIndicator = document.getElementById('testStatus');
+        statusIndicator.className = 'test-status-indicator waiting';
+        document.getElementById('statusIcon').textContent = '⏳';
+        document.getElementById('statusText').textContent = 'WAITING FOR INPUT...';
 
         // Update progress
         const progress = ((this.currentTestIndex / this.testDefinitions.length) * 100).toFixed(0);
         document.getElementById('progressFill').style.width = `${progress}%`;
         document.getElementById('progressText').textContent =
-            `${this.currentTestIndex} / ${this.testDefinitions.length} tests completed`;
+            `${this.currentTestIndex} / ${this.testDefinitions.length}`;
 
         // Set timeout for test
         this.testTimeout = setTimeout(() => {
@@ -596,18 +589,16 @@ class HiChordTestApp {
         const test = this.testDefinitions[this.currentTestIndex];
         this.testResults.push({ name: test.name, passed: true });
 
-        document.getElementById('testDisplay').innerHTML = `
-            <div style="text-align: center;">
-                <div style="font-size: 64px; color: #44FF44;">✓</div>
-                <div style="font-size: 24px; color: #44FF44;">PASSED</div>
-            </div>
-        `;
-        document.getElementById('testStatus').className = 'test-status passed';
-        document.getElementById('testStatus').textContent = '✓ Test passed!';
+        document.getElementById('testDisplay').innerHTML = '';
+
+        const statusIndicator = document.getElementById('testStatus');
+        statusIndicator.className = 'test-status-indicator passed';
+        document.getElementById('statusIcon').textContent = '✓';
+        document.getElementById('statusText').textContent = 'PASSED';
 
         this.log(`✓ ${test.name} PASSED`, 'success');
 
-        await this.wait(1000);
+        await this.wait(800);
         this.currentTestIndex++;
         await this.runNextTest();
     }
@@ -617,18 +608,19 @@ class HiChordTestApp {
         this.testResults.push({ name: test.name, passed: false, reason });
 
         document.getElementById('testDisplay').innerHTML = `
-            <div style="text-align: center;">
-                <div style="font-size: 64px; color: #FF4444;">✗</div>
-                <div style="font-size: 24px; color: #FF4444;">FAILED</div>
-                <div style="font-size: 14px; margin-top: 10px;">${reason}</div>
+            <div style="text-align: center; font-size: 13px; color: #DC2626; font-weight: 600;">
+                ${reason}
             </div>
         `;
-        document.getElementById('testStatus').className = 'test-status failed';
-        document.getElementById('testStatus').textContent = `✗ Test failed: ${reason}`;
+
+        const statusIndicator = document.getElementById('testStatus');
+        statusIndicator.className = 'test-status-indicator failed';
+        document.getElementById('statusIcon').textContent = '✗';
+        document.getElementById('statusText').textContent = 'FAILED';
 
         this.log(`✗ ${test.name} FAILED: ${reason}`, 'error');
 
-        await this.wait(2000);
+        await this.wait(1500);
         this.currentTestIndex++;
         await this.runNextTest();
     }
@@ -637,17 +629,33 @@ class HiChordTestApp {
         this.waitingForInput = false;
         await this.exitTestMode();
 
-        document.getElementById('testProgressContainer').style.display = 'none';
         document.getElementById('currentTest').style.display = 'none';
         document.getElementById('testResults').style.display = 'block';
 
         const passed = this.testResults.filter(r => r.passed).length;
         const failed = this.testResults.filter(r => !r.passed).length;
 
+        // Update verdict
+        const verdictSection = document.getElementById('resultsVerdict');
+        const verdictIcon = document.getElementById('verdictIcon');
+        const verdictText = document.getElementById('verdictText');
+
+        if (failed === 0) {
+            verdictSection.classList.remove('fail');
+            verdictIcon.textContent = '✓';
+            verdictText.textContent = 'ALL TESTS PASSED';
+        } else {
+            verdictSection.classList.add('fail');
+            verdictIcon.textContent = '✗';
+            verdictText.textContent = `${failed} TEST${failed > 1 ? 'S' : ''} FAILED`;
+        }
+
+        // Update stats
         document.getElementById('passedCount').textContent = passed;
         document.getElementById('failedCount').textContent = failed;
         document.getElementById('totalCount').textContent = this.testResults.length;
 
+        // Update detailed results
         const detailContainer = document.getElementById('resultsDetail');
         detailContainer.innerHTML = '';
 

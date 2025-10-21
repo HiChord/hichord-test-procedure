@@ -85,36 +85,36 @@
 
             <!-- Test Controls -->
             <div class="test-controls" id="testControls" style="display: none;">
-                <button class="btn-primary" id="startTestBtn">Start Automated Test Sequence</button>
-                <div class="test-info-box">
-                    <p><strong>This will test:</strong></p>
-                    <ul>
-                        <li>All 7 chord buttons</li>
-                        <li>All 3 function buttons (F1, F2, F3)</li>
-                        <li>Joystick (8 directions + click)</li>
-                        <li>Volume wheel</li>
-                    </ul>
-                    <p>Follow the on-screen instructions for each test.</p>
+                <button class="btn-start-test" id="startTestBtn">START TEST</button>
+                <div class="test-quick-stats">
+                    <div class="quick-stat-item">
+                        <div class="stat-number">22</div>
+                        <div class="stat-label">Total Tests</div>
+                    </div>
+                    <div class="quick-stat-item">
+                        <div class="stat-number">~2</div>
+                        <div class="stat-label">Minutes</div>
+                    </div>
                 </div>
-            </div>
-
-            <!-- Test Progress -->
-            <div class="test-progress-container" id="testProgressContainer" style="display: none;">
-                <h3>Test Progress</h3>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill"></div>
-                </div>
-                <div class="progress-text" id="progressText">0 / 0 tests completed</div>
             </div>
 
             <!-- Current Test Display -->
-            <div class="current-test" id="currentTest" style="display: none;">
-                <h3 id="currentTestTitle">Waiting for input...</h3>
-                <p id="currentTestInstruction">Please follow the instructions below</p>
-                <div class="test-display" id="testDisplay">
+            <div class="current-test-card" id="currentTest" style="display: none;">
+                <div class="test-progress-bar-slim">
+                    <div class="progress-fill-slim" id="progressFill"></div>
+                </div>
+                <div class="progress-count" id="progressText">0 / 0</div>
+
+                <div class="test-instruction-large" id="currentTestInstruction">Please follow the instructions below</div>
+
+                <div class="test-visual-display" id="testDisplay">
                     <!-- Dynamic test content -->
                 </div>
-                <div class="test-status" id="testStatus"></div>
+
+                <div class="test-status-indicator" id="testStatus">
+                    <div class="status-icon" id="statusIcon">⏳</div>
+                    <div class="status-text" id="statusText">Testing...</div>
+                </div>
             </div>
 
             <!-- ADC Monitor (for ADC-based PCBs) -->
@@ -126,29 +126,38 @@
             </div>
 
             <!-- Test Results Summary -->
-            <div class="test-results" id="testResults" style="display: none;">
-                <h3>Automated Test Results</h3>
-                <div class="results-summary">
-                    <div class="result-item passed">
-                        <span class="result-label">Passed:</span>
-                        <span class="result-value" id="autoPassedCount">0</span>
+            <div class="test-results-card" id="testResults" style="display: none;">
+                <div class="results-verdict" id="resultsVerdict">
+                    <div class="verdict-icon" id="verdictIcon">✓</div>
+                    <div class="verdict-text" id="verdictText">ALL TESTS PASSED</div>
+                </div>
+
+                <div class="results-stats-grid">
+                    <div class="stat-box stat-pass">
+                        <div class="stat-big-number" id="passedCount">0</div>
+                        <div class="stat-small-label">PASSED</div>
                     </div>
-                    <div class="result-item failed">
-                        <span class="result-label">Failed:</span>
-                        <span class="result-value" id="autoFailedCount">0</span>
+                    <div class="stat-box stat-fail">
+                        <div class="stat-big-number" id="failedCount">0</div>
+                        <div class="stat-small-label">FAILED</div>
                     </div>
-                    <div class="result-item">
-                        <span class="result-label">Total:</span>
-                        <span class="result-value" id="autoTotalCount">0</span>
+                    <div class="stat-box stat-total">
+                        <div class="stat-big-number" id="totalCount">0</div>
+                        <div class="stat-small-label">TOTAL</div>
                     </div>
                 </div>
-                <div class="results-detail" id="resultsDetail">
-                    <!-- Detailed results will be added here -->
+
+                <div class="results-actions-row">
+                    <button class="btn-action-secondary" onclick="printAutoResults()">PRINT</button>
+                    <button class="btn-action-primary" onclick="resetAutoTests()">TEST AGAIN</button>
                 </div>
-                <div class="results-actions">
-                    <button class="btn-primary" onclick="printAutoResults()">Print Results</button>
-                    <button class="btn-secondary" onclick="resetAutoTests()">Run Tests Again</button>
-                </div>
+
+                <details class="results-detail-section">
+                    <summary>View Detailed Results</summary>
+                    <div class="results-detail-list" id="resultsDetail">
+                        <!-- Detailed results will be added here -->
+                    </div>
+                </details>
             </div>
 
             <!-- Console Log -->
