@@ -11,9 +11,9 @@ const manualTests = [
             "Observe LED indicator on side panel"
         ],
         expected: [
-            "LED shows RED when charging",
-            "LED shows BLUE when fully charged",
-            "LED is visible and bright"
+            { text: "LED shows RED when charging", color: "red" },
+            { text: "LED shows BLUE when fully charged", color: "blue" },
+            { text: "LED is visible and bright", color: null }
         ],
         oled: null,
         image: "images/Side View.png"
@@ -346,9 +346,12 @@ function buildManualTestHTML(test) {
         `<li>${step}</li>`
     ).join('');
 
-    const expectedHTML = test.expected.map(item =>
-        `<li>${item}</li>`
-    ).join('');
+    const expectedHTML = test.expected.map(item => {
+        const itemText = typeof item === 'string' ? item : item.text;
+        const itemColor = typeof item === 'object' ? item.color : null;
+        const colorStyle = itemColor ? ` style="color: ${itemColor}; font-weight: 700;"` : '';
+        return `<li${colorStyle}>${itemText}</li>`;
+    }).join('');
 
     const oledHTML = renderOLED(test.oled);
 

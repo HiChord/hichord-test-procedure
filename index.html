@@ -45,13 +45,18 @@
         <!-- Manual Mode Container -->
         <div id="manualMode" class="test-mode active">
             <div class="info-box">
-                <strong>MANUAL MODE:</strong> Follow each test step and verify expected results. No USB connection required.
+                <strong>Manual Mode:</strong> Follow each test step and verify expected results. No USB connection required.
             </div>
 
+            <!-- Test Overview Navigation -->
+            <nav class="test-overview" id="testOverview">
+                <!-- Will be populated dynamically -->
+            </nav>
+
             <nav class="test-nav">
-                <button class="nav-btn" id="prevBtn" disabled>← PREVIOUS</button>
+                <button class="nav-btn" id="prevBtn" disabled>← Previous</button>
                 <span class="test-progress" id="testProgress">Test 1 of 12</span>
-                <button class="nav-btn" id="nextBtn">NEXT →</button>
+                <button class="nav-btn" id="nextBtn">Next →</button>
             </nav>
 
             <!-- Test Steps Container -->
@@ -60,8 +65,8 @@
             </div>
 
             <nav class="test-nav bottom">
-                <button class="nav-btn" id="prevBtnBottom" disabled>← PREVIOUS</button>
-                <button class="nav-btn" id="nextBtnBottom">NEXT →</button>
+                <button class="nav-btn" id="prevBtnBottom" disabled>← Previous</button>
+                <button class="nav-btn" id="nextBtnBottom">Next →</button>
             </nav>
         </div>
 
@@ -71,37 +76,42 @@
                 <div class="connection-status" id="connectionStatus">
                     <div class="status-indicator disconnected" id="statusIndicator"></div>
                     <div class="status-text">
-                        <div id="statusTitle">NOT CONNECTED</div>
-                        <div id="statusSubtitle">Connect HiChord via USB-C</div>
+                        <div id="statusTitle">Not Connected</div>
+                        <div id="statusSubtitle">Connect HiChord™ via USB-C</div>
                     </div>
                 </div>
-                <button class="btn-connect" id="connectBtn">CONNECT TO HICHORD</button>
+                <button class="btn-connect" id="connectBtn">Connect to HiChord</button>
             </div>
 
             <div class="automated-content" id="automatedContent" style="display: none;">
                 <!-- Hardware Info -->
                 <div class="hardware-info" id="hardwareInfo" style="display: none;">
-                    <h3>DETECTED HARDWARE</h3>
+                    <h3>Detected Hardware</h3>
                     <div class="info-grid">
                         <div class="info-item">
-                            <span class="info-label">BATCH:</span>
+                            <span class="info-label">Batch:</span>
                             <span class="info-value" id="detectedBatch">—</span>
                         </div>
                         <div class="info-item">
-                            <span class="info-label">BUTTON SYSTEM:</span>
+                            <span class="info-label">Button System:</span>
                             <span class="info-value" id="detectedButtonSystem">—</span>
                         </div>
                         <div class="info-item">
-                            <span class="info-label">FEATURES:</span>
+                            <span class="info-label">Features:</span>
                             <span class="info-value" id="detectedFeatures">—</span>
                         </div>
                     </div>
                 </div>
 
+                <!-- Test Overview Navigation -->
+                <nav class="test-overview" id="testOverviewAuto">
+                    <!-- Will be populated dynamically -->
+                </nav>
+
                 <nav class="test-nav">
-                    <button class="nav-btn" id="prevBtnAuto" disabled>← PREVIOUS</button>
+                    <button class="nav-btn" id="prevBtnAuto" disabled>← Previous</button>
                     <span class="test-progress" id="testProgressAuto">Test 1 of 12</span>
-                    <button class="nav-btn" id="nextBtnAuto">NEXT →</button>
+                    <button class="nav-btn" id="nextBtnAuto">Next →</button>
                 </nav>
 
                 <!-- Automated Test Container -->
@@ -110,37 +120,37 @@
                 </div>
 
                 <nav class="test-nav bottom">
-                    <button class="nav-btn" id="prevBtnAutoBottom" disabled>← PREVIOUS</button>
-                    <button class="nav-btn" id="nextBtnAutoBottom">NEXT →</button>
+                    <button class="nav-btn" id="prevBtnAutoBottom" disabled>← Previous</button>
+                    <button class="nav-btn" id="nextBtnAutoBottom">Next →</button>
                 </nav>
             </div>
         </div>
 
         <!-- Summary Section -->
         <div class="summary-section" id="summarySection" style="display: none;">
-            <h2>TEST SUMMARY</h2>
+            <h2>Test Summary</h2>
             <div class="summary-grid">
                 <div class="summary-item">
-                    <div class="summary-label">PASSED</div>
+                    <div class="summary-label">Passed</div>
                     <div class="summary-value" id="passCount">0</div>
                 </div>
                 <div class="summary-item">
-                    <div class="summary-label">FAILED</div>
+                    <div class="summary-label">Failed</div>
                     <div class="summary-value fail" id="failCount">0</div>
                 </div>
                 <div class="summary-item">
-                    <div class="summary-label">SKIPPED</div>
+                    <div class="summary-label">Skipped</div>
                     <div class="summary-value skip" id="skipCount">0</div>
                 </div>
                 <div class="summary-item">
-                    <div class="summary-label">TOTAL</div>
+                    <div class="summary-label">Total</div>
                     <div class="summary-value" id="totalCount">12</div>
                 </div>
             </div>
             <div class="summary-actions">
-                <button class="btn-primary" onclick="printReport()">PRINT REPORT</button>
-                <button class="btn-secondary" onclick="resetTests()">RESET ALL TESTS</button>
-                <button class="btn-secondary" onclick="goBackToTests()">BACK TO TESTS</button>
+                <button class="btn-primary" onclick="printReport()">Print Report</button>
+                <button class="btn-secondary" onclick="resetTests()">Reset All Tests</button>
+                <button class="btn-secondary" onclick="goBackToTests()">Back to Tests</button>
             </div>
         </div>
 

@@ -59,8 +59,35 @@ class TestProcedureApp {
             }
         });
 
+        // Build test overview navigation
+        this.buildTestOverview('testOverview', manualTests);
+
         // Show first test
         this.updateTestDisplay();
+    }
+
+    buildTestOverview(containerId, tests) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        container.innerHTML = '';
+        tests.forEach((test, index) => {
+            const item = document.createElement('div');
+            item.className = 'test-overview-item';
+            if (index === 0) item.classList.add('active');
+
+            item.innerHTML = `
+                <div class="test-overview-number">${String(test.id).padStart(2, '0')}</div>
+                <div class="test-overview-name">${test.name}</div>
+            `;
+
+            item.addEventListener('click', () => {
+                this.currentTestIndex = index;
+                this.updateTestDisplay();
+            });
+
+            container.appendChild(item);
+        });
     }
 
     loadAutomatedTests() {
@@ -75,6 +102,9 @@ class TestProcedureApp {
                 container.appendChild(testDiv);
             }
         });
+
+        // Build test overview navigation
+        this.buildTestOverview('testOverviewAuto', automatedTests);
 
         // Show first test
         this.updateTestDisplay();
@@ -126,6 +156,13 @@ class TestProcedureApp {
             document.getElementById('testProgressAuto').textContent = progress;
         }
 
+        // Update test overview active state
+        const overviewId = this.currentMode === 'manual' ? 'testOverview' : 'testOverviewAuto';
+        const overviewItems = document.querySelectorAll(`#${overviewId} .test-overview-item`);
+        overviewItems.forEach((item, index) => {
+            item.classList.toggle('active', index === this.currentTestIndex);
+        });
+
         // Update navigation buttons
         this.updateNavButtons();
 
@@ -140,15 +177,15 @@ class TestProcedureApp {
         // Manual mode buttons
         document.getElementById('prevBtn').disabled = isFirst;
         document.getElementById('prevBtnBottom').disabled = isFirst;
-        document.getElementById('nextBtn').textContent = isLast ? 'FINISH →' : 'NEXT →';
-        document.getElementById('nextBtnBottom').textContent = isLast ? 'FINISH →' : 'NEXT →';
+        document.getElementById('nextBtn').textContent = isLast ? 'Finish →' : 'Next →';
+        document.getElementById('nextBtnBottom').textContent = isLast ? 'Finish →' : 'Next →';
 
         // Automated mode buttons
         if (document.getElementById('prevBtnAuto')) {
             document.getElementById('prevBtnAuto').disabled = isFirst;
             document.getElementById('prevBtnAutoBottom').disabled = isFirst;
-            document.getElementById('nextBtnAuto').textContent = isLast ? 'FINISH →' : 'NEXT →';
-            document.getElementById('nextBtnAutoBottom').textContent = isLast ? 'FINISH →' : 'NEXT →';
+            document.getElementById('nextBtnAuto').textContent = isLast ? 'Finish →' : 'Next →';
+            document.getElementById('nextBtnAutoBottom').textContent = isLast ? 'Finish →' : 'Next →';
         }
     }
 
@@ -176,8 +213,8 @@ class TestProcedureApp {
         const statusSubtitle = document.getElementById('statusSubtitle');
 
         connectBtn.disabled = true;
-        connectBtn.textContent = 'CONNECTING...';
-        statusTitle.textContent = 'CONNECTING';
+        connectBtn.textContent = 'Connecting...';
+        statusTitle.textContent = 'Connecting';
         statusSubtitle.textContent = 'Please wait...';
 
         try {
@@ -186,9 +223,9 @@ class TestProcedureApp {
             // Connection successful
             statusIndicator.classList.remove('disconnected');
             statusIndicator.classList.add('connected');
-            statusTitle.textContent = 'CONNECTED';
-            statusSubtitle.textContent = 'HiChord connected via USB-C';
-            connectBtn.textContent = 'DISCONNECT';
+            statusTitle.textContent = 'Connected';
+            statusSubtitle.textContent = 'HiChord™ connected via USB-C';
+            connectBtn.textContent = 'Disconnect';
             connectBtn.disabled = false;
             connectBtn.onclick = () => this.disconnectFromHiChord();
 
@@ -204,9 +241,9 @@ class TestProcedureApp {
         } catch (error) {
             statusIndicator.classList.remove('connected');
             statusIndicator.classList.add('disconnected');
-            statusTitle.textContent = 'CONNECTION FAILED';
+            statusTitle.textContent = 'Connection Failed';
             statusSubtitle.textContent = error.message;
-            connectBtn.textContent = 'RETRY CONNECTION';
+            connectBtn.textContent = 'Retry Connection';
             connectBtn.disabled = false;
 
             alert(`Connection Error:\n\n${error.message}\n\nMake sure:\n1. HiChord is powered on\n2. USB-C cable is connected\n3. You're using Chrome, Edge, or Opera browser`);
@@ -223,9 +260,9 @@ class TestProcedureApp {
 
         statusIndicator.classList.remove('connected');
         statusIndicator.classList.add('disconnected');
-        statusTitle.textContent = 'DISCONNECTED';
+        statusTitle.textContent = 'Disconnected';
         statusSubtitle.textContent = 'Click to reconnect';
-        connectBtn.textContent = 'CONNECT TO HICHORD';
+        connectBtn.textContent = 'Connect to HiChord';
         connectBtn.onclick = () => this.connectToHiChord();
 
         document.getElementById('automatedContent').style.display = 'none';

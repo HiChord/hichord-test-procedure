@@ -35,15 +35,13 @@ h1 {
     font-size: 48px;
     font-weight: 700;
     letter-spacing: -1px;
-    text-transform: uppercase;
     margin-bottom: 8px;
 }
 
 .subtitle {
     font-size: 14px;
     color: #6B6B6B;
-    text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
 }
 
 /* Mode Selector */
@@ -110,8 +108,61 @@ h1 {
     background: #F3F4F6;
     border-left: 4px solid #FFB800;
     padding: 16px 20px;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
     font-size: 14px;
+}
+
+/* Test Overview Navigation */
+.test-overview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 32px;
+    padding: 24px;
+    background: #F9FAFB;
+    border-radius: 8px;
+    border: 2px solid #E5E7EB;
+}
+
+.test-overview-item {
+    padding: 12px;
+    background: white;
+    border: 2px solid #E5E7EB;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    font-size: 12px;
+}
+
+.test-overview-item:hover {
+    border-color: #0A0A0A;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.test-overview-item.active {
+    border-color: #FF6B35;
+    background: #FFF9F5;
+    font-weight: 700;
+}
+
+.test-overview-item.completed {
+    border-color: #10B981;
+    background: #F0FDF4;
+}
+
+.test-overview-number {
+    font-size: 20px;
+    font-weight: 700;
+    color: #0A0A0A;
+    margin-bottom: 4px;
+}
+
+.test-overview-name {
+    font-size: 11px;
+    color: #6B6B6B;
+    line-height: 1.3;
 }
 
 /* Navigation */
