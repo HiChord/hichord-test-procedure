@@ -1071,179 +1071,197 @@ footer {
     width: 100%;
 }
 
-/* NEW: Joystick test list (direction → OLED side-by-side) */
-.joystick-test-list {
+/* UNIFIED: Single test row layout (button/direction → ONE OLED) */
+.single-test-list {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
     padding: 20px;
-    max-width: 700px;
+    max-width: 800px;
     margin: 0 auto;
 }
 
-.joy-test-item {
+.single-test-row {
     display: flex;
     align-items: center;
-    gap: 20px;
-    padding: 16px;
-    background: #F9FAFB;
+    gap: 16px;
+    padding: 12px 16px;
+    background: #FFFFFF;
     border: 2px solid #E5E7EB;
-    border-radius: 8px;
+    border-radius: 6px;
     transition: all 0.2s ease;
 }
 
-.joy-test-item:hover {
+.single-test-row:hover {
     border-color: #0A0A0A;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
-.joy-test-item.center-item {
+.single-test-row.center-highlight {
     background: #FFF4E6;
     border-color: #FF6B35;
-    border-width: 3px;
+    border-width: 2px;
 }
 
-.joy-direction-icon {
+/* Button/Direction icon display */
+.button-icon-display {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
-    min-width: 120px;
+    gap: 6px;
+    min-width: 100px;
 }
 
-.joy-arrow-big {
-    font-size: 48px;
-    font-weight: 700;
-    color: #0A0A0A;
-    line-height: 1;
-}
-
-.center-item .joy-arrow-big {
-    color: #FF6B35;
-}
-
-.joy-direction-label {
-    font-size: 12px;
+.button-label {
+    font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
     color: #6B6B6B;
     text-align: center;
 }
 
-.arrow-connector {
-    font-size: 32px;
-    color: #0A0A0A;
-    font-weight: 700;
-}
-
-/* NEW: Function button test list (button icon → OLED examples) */
-.function-test-list {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-    padding: 20px;
-}
-
-.function-test-item {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    padding: 20px;
-    background: #F9FAFB;
-    border: 2px solid #E5E7EB;
-    border-radius: 8px;
-}
-
-.function-button-display {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    min-width: 140px;
-}
-
-.function-button-icon {
-    width: 64px;
-    height: 64px;
-    border-radius: 8px;
+/* Function button icons (F1, F2, F3) */
+.button-icon-square {
+    width: 48px;
+    height: 48px;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 36px;
+    font-size: 28px;
     font-weight: 700;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
 }
 
-.function-button-label {
-    font-size: 12px;
+/* Joystick direction arrows */
+.joy-arrow-icon {
+    font-size: 42px;
+    font-weight: 700;
+    color: #0A0A0A;
+    line-height: 1;
+    text-align: center;
+}
+
+.center-highlight .joy-arrow-icon {
+    color: #FF6B35;
+}
+
+/* Chord button numbers */
+.chord-button-number {
+    width: 48px;
+    height: 48px;
+    border-radius: 6px;
+    background: #0A0A0A;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 700;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Arrow connector */
+.arrow-single {
+    font-size: 28px;
+    color: #0A0A0A;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+/* Full OLED screen simulation (64x32 pixel accurate) */
+.oled-screen-full {
+    background: #000000;
+    color: #FFFFFF;
+    width: 192px;
+    height: 96px;
+    border: 2px solid #1A1A1A;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Courier New', 'Monaco', monospace;
+    box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+/* OLED header (inverted bar) for menu items */
+.oled-header-inverted {
+    background: #FFFFFF;
+    color: #000000;
+    padding: 4px 8px;
+    font-size: 11px;
     font-weight: 700;
     text-align: center;
-    color: #0A0A0A;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.arrow-connector-big {
-    font-size: 48px;
-    color: #0A0A0A;
-    font-weight: 700;
-}
-
-.function-oled-examples {
-    flex: 1;
-}
-
-.function-menu-title {
-    font-size: 14px;
-    font-weight: 700;
-    color: #0A0A0A;
-    margin-bottom: 12px;
-    text-transform: uppercase;
     letter-spacing: 1px;
 }
 
-.oled-examples-row {
+/* OLED body (centered value) */
+.oled-body-centered {
+    flex: 1;
     display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+    padding: 8px;
 }
 
-/* Responsive adjustments for mini screens */
+/* OLED chord display (centered, large) */
+.oled-chord-display {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: 2px;
+}
+
+/* Chord name label (after OLED) */
+.chord-name-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #6B6B6B;
+    min-width: 100px;
+    text-align: left;
+}
+
+/* Responsive adjustments for mobile */
 @media (max-width: 768px) {
-    .joystick-grid {
+    .single-test-row {
+        flex-direction: column;
         gap: 12px;
         padding: 16px;
     }
 
-    .joy-test-item,
-    .function-test-item {
-        flex-direction: column;
-        gap: 16px;
-    }
-
-    .arrow-connector,
-    .arrow-connector-big {
+    .arrow-single {
         transform: rotate(90deg);
-        font-size: 24px;
+        font-size: 20px;
     }
 
-    .oled-screen-mini {
-        width: 96px;
-        height: 48px;
+    .oled-screen-full {
+        width: 160px;
+        height: 80px;
     }
 
-    .oled-chord-text {
-        font-size: 18px;
+    .oled-chord-display {
+        font-size: 26px;
     }
 
-    .oled-menu-value {
-        font-size: 14px;
+    .oled-body-centered {
+        font-size: 20px;
     }
 
-    .chord-grid,
-    .menu-examples {
-        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-        gap: 12px;
+    .button-icon-display {
+        min-width: 80px;
+    }
+
+    .chord-name-label {
+        text-align: center;
+        min-width: auto;
     }
 }

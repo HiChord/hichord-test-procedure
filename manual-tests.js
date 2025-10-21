@@ -86,9 +86,21 @@ const manualTests = [
         oled: {
             type: "function3",
             menus: [
-                { button: "F1", name: "Settings", items: ["KEY → C", "OCTAVE → +1", "PRESET → 1"] },
-                { button: "F2", name: "Effects", items: ["GLIDE → OFF", "REVERB → OFF", "CHORUS → OFF"] },
-                { button: "F3", name: "Modes", items: ["NORMAL", "STRUM", "REPEAT"] }
+                { button: "F1", name: "Settings", color: "#2C2C2C", icon: "⚙", items: [
+                    { header: "KEY", value: "C" },
+                    { header: "OCTAVE", value: "+1" },
+                    { header: "PRESET", value: "1" }
+                ]},
+                { button: "F2", name: "Effects", color: "#FFD700", icon: "〜", items: [
+                    { header: "GLIDE", value: "OFF" },
+                    { header: "REVERB", value: "OFF" },
+                    { header: "CHORUS", value: "OFF" }
+                ]},
+                { button: "F3", name: "Modes", color: "#FF4500", icon: "⏱", items: [
+                    { single: "NORMAL" },
+                    { single: "STRUM" },
+                    { single: "REPEAT" }
+                ]}
             ]
         }
     },
@@ -369,23 +381,23 @@ function renderOLED(oledData) {
             </div>
         `,
         joystick8: (data) => {
-            // Show each joystick direction with its OLED display side-by-side
-            // Much clearer than a 3x3 grid!
+            // Show ONE direction → ONE fully simulated OLED screen per row
             const directions = data.directions;
-
-            let html = '<div class="joystick-test-list">';
+            let html = '<div class="single-test-list">';
 
             // Center position first (highlighted)
             const center = directions[0];
             html += `
-                <div class="joy-test-item center-item">
-                    <div class="joy-direction-icon">
-                        <div class="joy-arrow-big">●</div>
-                        <div class="joy-direction-label">CENTER (Release joystick)</div>
+                <div class="single-test-row center-highlight">
+                    <div class="button-icon-display">
+                        <div class="joy-arrow-icon">●</div>
+                        <div class="button-label">CENTER</div>
                     </div>
-                    <div class="arrow-connector">→</div>
-                    <div class="oled-screen-mini">
-                        <div class="oled-chord-text">${center.chord}</div>
+
+                    <div class="arrow-single">→</div>
+
+                    <div class="oled-screen-full">
+                        <div class="oled-chord-display">${center.chord}</div>
                     </div>
                 </div>
             `;
@@ -405,14 +417,16 @@ function renderOLED(oledData) {
             directionOrder.forEach(({idx, arrow, label}) => {
                 const dir = directions[idx];
                 html += `
-                    <div class="joy-test-item">
-                        <div class="joy-direction-icon">
-                            <div class="joy-arrow-big">${arrow}</div>
-                            <div class="joy-direction-label">${label}</div>
+                    <div class="single-test-row">
+                        <div class="button-icon-display">
+                            <div class="joy-arrow-icon">${arrow}</div>
+                            <div class="button-label">${label}</div>
                         </div>
-                        <div class="arrow-connector">→</div>
-                        <div class="oled-screen-mini">
-                            <div class="oled-chord-text">${dir.chord}</div>
+
+                        <div class="arrow-single">→</div>
+
+                        <div class="oled-screen-full">
+                            <div class="oled-chord-display">${dir.chord}</div>
                         </div>
                     </div>
                 `;
@@ -422,78 +436,57 @@ function renderOLED(oledData) {
             return html;
         },
         chord7: (data) => {
-            // Create a grid showing all 7 chord button displays
+            // Show ONE chord button → ONE fully simulated OLED screen per row
             const chords = data.chords;
-            let gridHTML = '<div class="chord-grid">';
+            let html = '<div class="single-test-list">';
+
             chords.forEach(chord => {
-                gridHTML += `
-                    <div class="chord-cell">
-                        <div class="oled-screen-mini">
-                            <div class="oled-chord-text">${chord.chord}</div>
+                html += `
+                    <div class="single-test-row">
+                        <div class="button-icon-display">
+                            <div class="chord-button-number">${chord.button}</div>
+                            <div class="button-label">Button ${chord.button}</div>
                         </div>
-                        <div class="chord-label">Button ${chord.button}: ${chord.name}</div>
+
+                        <div class="arrow-single">→</div>
+
+                        <div class="oled-screen-full">
+                            <div class="oled-chord-display">${chord.chord}</div>
+                        </div>
+
+                        <div class="chord-name-label">${chord.name}</div>
                     </div>
                 `;
             });
-            gridHTML += '</div>';
-            return gridHTML;
+
+            html += '</div>';
+            return html;
         },
         function3: (data) => {
-            // Show button icon → what appears on OLED
+            // Show ONE button → ONE OLED screen per menu item
             const menus = data.menus;
-
-            // Button colors and icons from manual
-            const buttonInfo = {
-                'F1': { color: '#2C2C2C', icon: '⚙', label: 'Settings (Gray)' },
-                'F2': { color: '#FFD700', icon: '〜', label: 'Effects (Yellow)' },
-                'F3': { color: '#FF4500', icon: '⏱', label: 'Modes (Red)' }
-            };
-
-            let html = '<div class="function-test-list">';
+            let html = '<div class="single-test-list">';
 
             menus.forEach(menu => {
-                const btn = buttonInfo[menu.button];
-                html += `
-                    <div class="function-test-item">
-                        <div class="function-button-display">
-                            <div class="function-button-icon" style="background-color: ${btn.color}; color: ${btn.color === '#FFD700' ? '#000' : '#FFF'};">
-                                ${btn.icon}
-                            </div>
-                            <div class="function-button-label">${menu.button} - ${btn.label}</div>
-                        </div>
-
-                        <div class="arrow-connector-big">→</div>
-
-                        <div class="function-oled-examples">
-                            <div class="function-menu-title">${menu.name} Menu</div>
-                            <div class="oled-examples-row">
-                `;
-
                 menu.items.forEach(item => {
-                    const parts = item.split(' → ');
-                    if (parts.length === 2) {
-                        // Item with value (e.g., "KEY → C")
-                        html += `
-                            <div class="oled-screen-mini">
-                                <div class="oled-menu-header">${parts[0]}</div>
-                                <div class="oled-menu-value">${parts[1]}</div>
+                    html += `
+                        <div class="single-test-row">
+                            <div class="button-icon-display">
+                                <div class="button-icon-square" style="background-color: ${menu.color}; color: ${menu.color === '#FFD700' ? '#000' : '#FFF'};">
+                                    ${menu.icon}
+                                </div>
+                                <div class="button-label">${menu.button}</div>
                             </div>
-                        `;
-                    } else {
-                        // Item without value (e.g., "NORMAL")
-                        html += `
-                            <div class="oled-screen-mini">
-                                <div class="oled-menu-single">${item}</div>
-                            </div>
-                        `;
-                    }
-                });
 
-                html += `
+                            <div class="arrow-single">→</div>
+
+                            <div class="oled-screen-full">
+                                <div class="oled-header-inverted">${item.header || menu.name}</div>
+                                <div class="oled-body-centered">${item.value || item.single}</div>
                             </div>
                         </div>
-                    </div>
-                `;
+                    `;
+                });
             });
 
             html += '</div>';
