@@ -13,6 +13,18 @@
             <p class="subtitle">Production Quality Assurance Protocol</p>
         </header>
 
+        <!-- Test Mode Selector -->
+        <div class="test-mode-selector">
+            <button class="test-mode-btn active" id="manualTestBtn">
+                <span class="mode-icon">📋</span>
+                <span class="mode-name">Manual Tests</span>
+            </button>
+            <button class="test-mode-btn" id="autoTestBtn">
+                <span class="mode-icon">🔌</span>
+                <span class="mode-name">Automated Hardware Test</span>
+            </button>
+        </div>
+
         <!-- Manual Mode Container -->
         <div id="manualMode" class="test-mode active">
 
@@ -36,6 +48,117 @@
                 <button class="nav-btn" id="prevBtnBottom" disabled>← Previous</button>
                 <button class="nav-btn" id="nextBtnBottom">Next →</button>
             </nav>
+        </div>
+
+        <!-- Automated Hardware Test Mode -->
+        <div id="automatedMode" class="test-mode" style="display: none;">
+            <!-- Connection Panel -->
+            <div class="connection-panel">
+                <div class="connection-status" id="connectionStatus">
+                    <div class="status-indicator disconnected" id="statusIndicator"></div>
+                    <div class="status-text">
+                        <div id="statusTitle">Not Connected</div>
+                        <div id="statusSubtitle">Connect HiChord™ via USB-C</div>
+                    </div>
+                </div>
+                <button class="btn-connect" id="connectBtn">Connect to HiChord</button>
+            </div>
+
+            <!-- Hardware Info -->
+            <div class="hardware-info" id="hardwareInfo" style="display: none;">
+                <h3>Detected Hardware</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Firmware:</span>
+                        <span class="info-value" id="detectedFirmware">—</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">PCB Batch:</span>
+                        <span class="info-value" id="detectedBatch">—</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Button System:</span>
+                        <span class="info-value" id="detectedButtonSystem">—</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Test Controls -->
+            <div class="test-controls" id="testControls" style="display: none;">
+                <button class="btn-primary" id="startTestBtn">Start Automated Test Sequence</button>
+                <div class="test-info-box">
+                    <p><strong>This will test:</strong></p>
+                    <ul>
+                        <li>All 7 chord buttons</li>
+                        <li>All 3 function buttons (F1, F2, F3)</li>
+                        <li>Joystick (8 directions + click)</li>
+                        <li>Volume wheel</li>
+                    </ul>
+                    <p>Follow the on-screen instructions for each test.</p>
+                </div>
+            </div>
+
+            <!-- Test Progress -->
+            <div class="test-progress-container" id="testProgressContainer" style="display: none;">
+                <h3>Test Progress</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text" id="progressText">0 / 0 tests completed</div>
+            </div>
+
+            <!-- Current Test Display -->
+            <div class="current-test" id="currentTest" style="display: none;">
+                <h3 id="currentTestTitle">Waiting for input...</h3>
+                <p id="currentTestInstruction">Please follow the instructions below</p>
+                <div class="test-display" id="testDisplay">
+                    <!-- Dynamic test content -->
+                </div>
+                <div class="test-status" id="testStatus"></div>
+            </div>
+
+            <!-- ADC Monitor (for ADC-based PCBs) -->
+            <div class="adc-monitor" id="adcMonitor" style="display: none;">
+                <h4>ADC Values (Real-time)</h4>
+                <div class="adc-grid" id="adcGrid">
+                    <!-- Will be populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Test Results Summary -->
+            <div class="test-results" id="testResults" style="display: none;">
+                <h3>Automated Test Results</h3>
+                <div class="results-summary">
+                    <div class="result-item passed">
+                        <span class="result-label">Passed:</span>
+                        <span class="result-value" id="autoPassedCount">0</span>
+                    </div>
+                    <div class="result-item failed">
+                        <span class="result-label">Failed:</span>
+                        <span class="result-value" id="autoFailedCount">0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Total:</span>
+                        <span class="result-value" id="autoTotalCount">0</span>
+                    </div>
+                </div>
+                <div class="results-detail" id="resultsDetail">
+                    <!-- Detailed results will be added here -->
+                </div>
+                <div class="results-actions">
+                    <button class="btn-primary" onclick="printAutoResults()">Print Results</button>
+                    <button class="btn-secondary" onclick="resetAutoTests()">Run Tests Again</button>
+                </div>
+            </div>
+
+            <!-- Console Log -->
+            <div class="console-log">
+                <h4>Diagnostic Log</h4>
+                <div class="log-output" id="logOutput">
+                    <div class="log-item info">System ready. Connect HiChord to begin.</div>
+                </div>
+                <button class="btn-secondary btn-small" onclick="clearLog()">Clear Log</button>
+            </div>
         </div>
 
         <!-- Summary Section -->
@@ -73,5 +196,6 @@
 
     <script src="manual-tests.js"></script>
     <script src="app.js"></script>
+    <script src="automated-hardware-test.js"></script>
 </body>
 </html>

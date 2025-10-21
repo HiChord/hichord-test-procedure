@@ -6,6 +6,7 @@ class TestProcedureApp {
         this.currentTestIndex = 0;
         this.totalTests = 13;
         this.testResults = {};
+        this.currentMode = 'manual';  // 'manual' or 'automated'
 
         this.init();
     }
@@ -13,7 +14,29 @@ class TestProcedureApp {
     init() {
         this.loadManualTests();
         this.setupNavigation();
+        this.setupModeSelector();
         this.loadTestResults();
+    }
+
+    setupModeSelector() {
+        const manualBtn = document.getElementById('manualTestBtn');
+        const autoBtn = document.getElementById('autoTestBtn');
+
+        manualBtn.addEventListener('click', () => this.switchMode('manual'));
+        autoBtn.addEventListener('click', () => this.switchMode('automated'));
+    }
+
+    switchMode(mode) {
+        this.currentMode = mode;
+
+        // Update button states
+        document.getElementById('manualTestBtn').classList.toggle('active', mode === 'manual');
+        document.getElementById('autoTestBtn').classList.toggle('active', mode === 'automated');
+
+        // Show/hide mode containers
+        document.getElementById('manualMode').style.display = mode === 'manual' ? 'block' : 'none';
+        document.getElementById('automatedMode').style.display = mode === 'automated' ? 'block' : 'none';
+        document.getElementById('summarySection').style.display = 'none';
     }
 
     loadManualTests() {

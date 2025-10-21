@@ -625,5 +625,16 @@ function resetTests() {
 
 // Initialize app when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-    window.testApp = new HiChordTestApp();
+    window.autoTestApp = new HiChordTestApp();
 });
+
+// Global functions for automated test mode
+function printAutoResults() {
+    window.print();
+}
+
+function resetAutoTests() {
+    if (window.autoTestApp) {
+        location.reload();
+    }
+}
