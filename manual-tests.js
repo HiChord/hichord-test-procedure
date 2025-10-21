@@ -39,43 +39,6 @@ const manualTests = [
     },
     {
         id: 3,
-        name: "Comprehensive Button Test",
-        image: "images/Front View.png",
-        procedure: [
-            "This test verifies ALL buttons are working correctly",
-            "",
-            "CHORD BUTTONS (7 buttons):",
-            "  Press each chord button 1-7 in sequence",
-            "  Each should produce sound and show chord on OLED",
-            "",
-            "FUNCTION BUTTONS (3 buttons):",
-            "  Press F1 (Settings) - should show KEY/OCTAVE menu",
-            "  Press F2 (Effects) - should show effect selection",
-            "  Press F3 (BPM/Mode) - should show BPM menu",
-            "",
-            "JOYSTICK:",
-            "  Hold button 1, move joystick in all 8 directions",
-            "  Each direction should modify chord display",
-            "  Click joystick - should show looper GUI",
-            "",
-            "VOLUME WHEEL:",
-            "  Press button 1, rotate volume wheel fully",
-            "  OLED should show volume indicator",
-            "  Audio level should change smoothly"
-        ],
-        expected: [
-            "All 7 chord buttons respond immediately",
-            "All 3 function buttons open correct menus",
-            "Joystick registers all 8 directions + click",
-            "Volume wheel changes audio level smoothly",
-            "OLED updates correctly for each input",
-            "No stuck, missed, or double-registered buttons"
-        ],
-        oled: null,
-        note: "ADC vs I2C: Batch 1-3 use ADC buttons (analog), Batch 4+ use I2C buttons (digital). Both should respond instantly with no difference in behavior."
-    },
-    {
-        id: 4,
         name: "Volume Control",
         image: "images/Top View.png",
         procedure: [
@@ -96,7 +59,7 @@ const manualTests = [
         }
     },
     {
-        id: 5,
+        id: 3,
         name: "Function Buttons (F1, F2, F3)",
         image: "images/BUtton numbers 2.png",
         procedure: [
@@ -144,7 +107,7 @@ const manualTests = [
         }
     },
     {
-        id: 6,
+        id: 3,
         name: "Chord Buttons (1-7) in C Major",
         image: "images/BUtton numbers 2.png",
         procedure: [
@@ -173,7 +136,7 @@ const manualTests = [
         }
     },
     {
-        id: 7,
+        id: 3,
         name: "Joystick Chord Modification (Hold Button 1)",
         image: "images/Top View.png",
         procedure: [
@@ -206,7 +169,7 @@ const manualTests = [
         }
     },
     {
-        id: 8,
+        id: 3,
         name: "Joystick Click (Looper)",
         image: "images/Top View.png",
         procedure: [
@@ -229,7 +192,7 @@ const manualTests = [
         }
     },
     {
-        id: 9,
+        id: 3,
         name: "Headphone Output",
         image: "images/Top View.png",
         procedure: [
@@ -249,7 +212,7 @@ const manualTests = [
         oled: null
     },
     {
-        id: 10,
+        id: 3,
         name: "USB-C Audio Output",
         image: "images/Side View.png",
         procedure: [
@@ -272,7 +235,7 @@ const manualTests = [
         oled: null
     },
     {
-        id: 11,
+        id: 3,
         name: "MIDI Output",
         image: "images/Side View.png",
         procedure: [
@@ -293,7 +256,7 @@ const manualTests = [
         oled: null
     },
     {
-        id: 12,
+        id: 3,
         name: "Microphone Input",
         batch: "4+",
         skipBatch: ["1", "2", "3"],
@@ -324,7 +287,7 @@ const manualTests = [
         note: "BATCH 4+ ONLY - Skip for Batch 1-3 (no microphone)"
     },
     {
-        id: 13,
+        id: 3,
         name: "Battery Indicator",
         batch: "2+",
         skipBatch: ["1"],
