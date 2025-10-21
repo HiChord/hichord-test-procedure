@@ -39,6 +39,43 @@ const manualTests = [
     },
     {
         id: 3,
+        name: "Comprehensive Button Test",
+        image: "images/Front View.png",
+        procedure: [
+            "This test verifies ALL buttons are working correctly",
+            "",
+            "CHORD BUTTONS (7 buttons):",
+            "  Press each chord button 1-7 in sequence",
+            "  Each should produce sound and show chord on OLED",
+            "",
+            "FUNCTION BUTTONS (3 buttons):",
+            "  Press F1 (Settings) - should show KEY/OCTAVE menu",
+            "  Press F2 (Effects) - should show effect selection",
+            "  Press F3 (BPM/Mode) - should show BPM menu",
+            "",
+            "JOYSTICK:",
+            "  Hold button 1, move joystick in all 8 directions",
+            "  Each direction should modify chord display",
+            "  Click joystick - should show looper GUI",
+            "",
+            "VOLUME WHEEL:",
+            "  Press button 1, rotate volume wheel fully",
+            "  OLED should show volume indicator",
+            "  Audio level should change smoothly"
+        ],
+        expected: [
+            "All 7 chord buttons respond immediately",
+            "All 3 function buttons open correct menus",
+            "Joystick registers all 8 directions + click",
+            "Volume wheel changes audio level smoothly",
+            "OLED updates correctly for each input",
+            "No stuck, missed, or double-registered buttons"
+        ],
+        oled: null,
+        note: "ADC vs I2C: Batch 1-3 use ADC buttons (analog), Batch 4+ use I2C buttons (digital). Both should respond instantly with no difference in behavior."
+    },
+    {
+        id: 4,
         name: "Volume Control",
         image: "images/Top View.png",
         procedure: [
@@ -59,7 +96,7 @@ const manualTests = [
         }
     },
     {
-        id: 4,
+        id: 5,
         name: "Function Buttons (F1, F2, F3)",
         image: "images/BUtton numbers 2.png",
         procedure: [
@@ -107,7 +144,7 @@ const manualTests = [
         }
     },
     {
-        id: 5,
+        id: 6,
         name: "Chord Buttons (1-7) in C Major",
         image: "images/BUtton numbers 2.png",
         procedure: [
@@ -136,7 +173,7 @@ const manualTests = [
         }
     },
     {
-        id: 6,
+        id: 7,
         name: "Joystick Chord Modification (Hold Button 1)",
         image: "images/Top View.png",
         procedure: [
@@ -169,7 +206,7 @@ const manualTests = [
         }
     },
     {
-        id: 7,
+        id: 8,
         name: "Joystick Click (Looper)",
         image: "images/Top View.png",
         procedure: [
@@ -192,132 +229,7 @@ const manualTests = [
         }
     },
     {
-        id: 8,
-        name: "OLD TEST - Joystick (deprecated)",
-        deprecated: true,
-        procedure: [
-            "THIS TEST HAS BEEN REPLACED BY TESTS 6 & 7"
-        ],
-        expected: ["See new tests"],
-        oled: {
-            type: "function3",
-            menus: [
-                { button: "F1", name: "Settings", color: "#2C2C2C", icon: "⚙", items: [
-                    { header: "KEY", value: "C" },
-                    { header: "OCTAVE", value: "+1" },
-                    { header: "PRESET", value: "1" }
-                ]},
-                { button: "F2", name: "Effects", color: "#FFD700", icon: "〜", items: [
-                    { header: "GLIDE", value: "OFF" },
-                    { header: "REVERB", value: "OFF" },
-                    { header: "CHORUS", value: "OFF" }
-                ]},
-                { button: "F3", name: "Modes", color: "#FF4500", icon: "⏱", items: [
-                    { single: "NORMAL" },
-                    { single: "STRUM" },
-                    { single: "REPEAT" }
-                ]}
-            ]
-        }
-    },
-    {
-        id: 5,
-        name: "Joystick (8 Directions)",
-        image: "images/Front View.png",
-        procedure: [
-            "Press and HOLD chord button 1",
-            "While holding button 1, move joystick in each direction:",
-            "  ↑ UP: OLED shows \"Cm\"",
-            "  ↗ UP-RIGHT: OLED shows \"C7\"",
-            "  → RIGHT: OLED shows \"CM7\"",
-            "  ↘ DOWN-RIGHT: OLED shows \"CM9\"",
-            "  ↓ DOWN: OLED shows \"Csus4\"",
-            "  ↙ DOWN-LEFT: OLED shows \"C6\"",
-            "  ← LEFT: OLED shows \"Cdim\"",
-            "  ↖ UP-LEFT: OLED shows \"C+\"",
-            "  ● CENTER (release): OLED shows \"C\"",
-            "Release chord button when test complete"
-        ],
-        expected: [
-            "All 8 directions register correctly",
-            "Chord name changes instantly with joystick",
-            "Audio changes to match displayed chord",
-            "Joystick returns to center when released",
-            "No drift or phantom inputs"
-        ],
-        oled: {
-            type: "joystick8",
-            // Index mapping: 0=CENTER, 1=UP, 2=UP-RIGHT, 3=RIGHT, 4=DOWN-RIGHT, 5=DOWN, 6=DOWN-LEFT, 7=LEFT, 8=UP-LEFT
-            directions: [
-                { dir: "CENTER", chord: "C" },         // 0
-                { dir: "UP", chord: "Cm" },            // 1
-                { dir: "UP-RIGHT", chord: "C7" },      // 2
-                { dir: "RIGHT", chord: "CM7" },        // 3
-                { dir: "DOWN-RIGHT", chord: "CM9" },   // 4
-                { dir: "DOWN", chord: "Csus4" },       // 5
-                { dir: "DOWN-LEFT", chord: "C6" },     // 6
-                { dir: "LEFT", chord: "Cdim" },        // 7
-                { dir: "UP-LEFT", chord: "C+" }        // 8
-            ]
-        }
-    },
-    {
-        id: 6,
-        name: "Joystick Button Press",
-        image: "images/Front View.png",
-        procedure: [
-            "Press F2 to enter Effects menu",
-            "Use joystick directions to navigate",
-            "Press down on joystick (click) to select",
-            "Verify selection is confirmed on OLED"
-        ],
-        expected: [
-            "Joystick click registers as button press",
-            "Selection confirmed with visual feedback",
-            "Tactile click feel when pressed",
-            "No accidental triggers from movement"
-        ],
-        oled: null
-    },
-    {
-        id: 7,
-        name: "Built-in Speaker",
-        image: "images/Front View.png",
-        procedure: [
-            "Ensure no headphones or USB cable connected",
-            "Set volume to 50%",
-            "Press each chord button 1-7 sequentially:",
-            "  • Button 1: Should show \"C\" and play C major chord",
-            "  • Button 2: Should show \"Dm\" and play D minor chord",
-            "  • Button 3: Should show \"Em\" and play E minor chord",
-            "  • Button 4: Should show \"F\" and play F major chord",
-            "  • Button 5: Should show \"G\" and play G major chord",
-            "  • Button 6: Should show \"Am\" and play A minor chord",
-            "  • Button 7: Should show \"Bdim\" and play B diminished chord",
-            "Listen for audio from internal speaker"
-        ],
-        expected: [
-            "Clear audio from speaker",
-            "All 7 chord buttons produce sound",
-            "OLED displays correct chord name for each button",
-            "No distortion, crackling, or buzzing",
-            "Adequate volume and clarity"
-        ],
-        oled: {
-            type: "chord7",
-            chords: [
-                { button: "1", chord: "C", name: "C major" },
-                { button: "2", chord: "Dm", name: "D minor" },
-                { button: "3", chord: "Em", name: "E minor" },
-                { button: "4", chord: "F", name: "F major" },
-                { button: "5", chord: "G", name: "G major" },
-                { button: "6", chord: "Am", name: "A minor" },
-                { button: "7", chord: "Bdim", name: "B dim" }
-            ]
-        }
-    },
-    {
-        id: 8,
+        id: 9,
         name: "Headphone Output",
         image: "images/Side View.png",
         procedure: [
@@ -337,7 +249,7 @@ const manualTests = [
         oled: null
     },
     {
-        id: 9,
+        id: 10,
         name: "USB-C Audio Output",
         image: "images/Side View.png",
         procedure: [
@@ -360,7 +272,7 @@ const manualTests = [
         oled: null
     },
     {
-        id: 10,
+        id: 11,
         name: "MIDI Output",
         image: "images/Side View.png",
         procedure: [
@@ -381,7 +293,7 @@ const manualTests = [
         oled: null
     },
     {
-        id: 11,
+        id: 12,
         name: "Microphone Input",
         batch: "4+",
         skipBatch: ["1", "2", "3"],
@@ -412,7 +324,7 @@ const manualTests = [
         note: "BATCH 4+ ONLY - Skip for Batch 1-3 (no microphone)"
     },
     {
-        id: 12,
+        id: 13,
         name: "Battery Indicator",
         batch: "2+",
         skipBatch: ["1"],

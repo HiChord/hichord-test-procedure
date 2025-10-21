@@ -4,7 +4,7 @@
 class TestProcedureApp {
     constructor() {
         this.currentTestIndex = 0;
-        this.totalTests = 12;
+        this.totalTests = 13;
         this.testResults = {};
 
         this.init();
