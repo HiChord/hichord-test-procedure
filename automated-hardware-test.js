@@ -323,156 +323,158 @@ class HiChordTestApp {
                 instruction: 'Press CHORD BUTTON 1',
                 type: 'button',
                 expectedButtonId: 1,
-                timeout: 10000
+                timeout: 20000
             },
             {
                 name: 'Chord Button 2',
                 instruction: 'Press CHORD BUTTON 2',
                 type: 'button',
                 expectedButtonId: 2,
-                timeout: 10000
+                timeout: 20000
             },
             {
                 name: 'Chord Button 3',
                 instruction: 'Press CHORD BUTTON 3',
                 type: 'button',
                 expectedButtonId: 3,
-                timeout: 10000
+                timeout: 20000
             },
             {
                 name: 'Chord Button 4',
                 instruction: 'Press CHORD BUTTON 4',
                 type: 'button',
                 expectedButtonId: 4,
-                timeout: 10000
+                timeout: 20000
             },
             {
                 name: 'Chord Button 5',
                 instruction: 'Press CHORD BUTTON 5',
                 type: 'button',
                 expectedButtonId: 5,
-                timeout: 10000
+                timeout: 20000
             },
             {
                 name: 'Chord Button 6',
                 instruction: 'Press CHORD BUTTON 6',
                 type: 'button',
                 expectedButtonId: 6,
-                timeout: 10000
+                timeout: 20000
             },
             {
                 name: 'Chord Button 7',
                 instruction: 'Press CHORD BUTTON 7',
                 type: 'button',
                 expectedButtonId: 7,
-                timeout: 10000
+                timeout: 20000
             },
             {
                 name: 'Function Button F1',
                 instruction: 'Press FUNCTION BUTTON F1 (Settings)',
                 type: 'button',
                 expectedButtonId: 8,
-                timeout: 10000
+                timeout: 20000
             },
             {
                 name: 'Function Button F2',
                 instruction: 'Press FUNCTION BUTTON F2 (Effects)',
                 type: 'button',
                 expectedButtonId: 9,
-                timeout: 10000
+                timeout: 20000
             },
             {
                 name: 'Function Button F3',
                 instruction: 'Press FUNCTION BUTTON F3 (BPM/Mode)',
                 type: 'button',
                 expectedButtonId: 10,
-                timeout: 10000
+                timeout: 20000
             },
             {
                 name: 'Joystick UP',
                 instruction: 'Move Joystick UP',
                 type: 'joystick',
                 expectedButtonId: 11,
-                timeout: 10000
+                timeout: 20000
             },
             {
                 name: 'Joystick UP-RIGHT',
                 instruction: 'Move Joystick UP-RIGHT (diagonal)',
                 type: 'joystick',
                 expectedButtonId: 16,
-                timeout: 10000
+                timeout: 20000
             },
             {
                 name: 'Joystick RIGHT',
                 instruction: 'Move Joystick RIGHT',
                 type: 'joystick',
                 expectedButtonId: 14,
-                timeout: 10000
+                timeout: 20000
             },
             {
                 name: 'Joystick DOWN-RIGHT',
                 instruction: 'Move Joystick DOWN-RIGHT (diagonal)',
                 type: 'joystick',
                 expectedButtonId: 18,
-                timeout: 10000
+                timeout: 20000
             },
             {
                 name: 'Joystick DOWN',
                 instruction: 'Move Joystick DOWN',
                 type: 'joystick',
                 expectedButtonId: 12,
-                timeout: 10000
+                timeout: 20000
             },
             {
                 name: 'Joystick DOWN-LEFT',
                 instruction: 'Move Joystick DOWN-LEFT (diagonal)',
                 type: 'joystick',
                 expectedButtonId: 17,
-                timeout: 10000
+                timeout: 20000
             },
             {
                 name: 'Joystick LEFT',
                 instruction: 'Move Joystick LEFT',
                 type: 'joystick',
                 expectedButtonId: 13,
-                timeout: 10000
+                timeout: 20000
             },
             {
                 name: 'Joystick UP-LEFT',
                 instruction: 'Move Joystick UP-LEFT (diagonal)',
                 type: 'joystick',
                 expectedButtonId: 15,
-                timeout: 10000
+                timeout: 20000
             },
             {
                 name: 'Joystick Click',
                 instruction: 'Click the Joystick (press down)',
                 type: 'button',
                 expectedButtonId: 19,
-                timeout: 10000
+                timeout: 20000
             },
             {
                 name: 'Volume Wheel',
                 instruction: 'Rotate the Volume Wheel significantly',
                 type: 'volume',
                 expectedButtonId: 20,
-                timeout: 15000
+                timeout: 25000
             },
             {
                 name: 'MIDI Output',
-                instruction: 'Press any chord button to verify MIDI output',
+                instruction: 'ENSURE DEVICE IS IN MIDI MODE - Press any chord button',
                 type: 'midi',
                 expectedInput: 'midi_note',
-                timeout: 10000,
-                verify: 'Listening for MIDI note messages...'
+                timeout: 30000,
+                verify: 'Device must be in MIDI mode (not USB Audio). Press chord button to send MIDI note.',
+                note: 'If device is in USB Audio mode, this test will fail. Check USB mode on device.'
             },
             {
                 name: 'USB Audio Output',
-                instruction: 'Press any chord button - listen for audio through computer speakers',
+                instruction: 'ENSURE DEVICE IS IN USB AUDIO MODE - Press chord button and listen',
                 type: 'audio',
                 expectedInput: 'manual_verify',
-                timeout: 15000,
-                verify: 'Manually verify digital audio plays through computer speakers/headphones'
+                timeout: 30000,
+                verify: 'Device must be in USB Audio mode. Press chord button - you should hear audio through computer speakers/headphones.',
+                note: 'If no audio, check: 1) Device is in USB Audio mode, 2) Computer audio output is set to HiChord, 3) Volume is up'
             }
         ];
     }
@@ -508,9 +510,17 @@ class HiChordTestApp {
 
         document.getElementById('currentTestInstruction').textContent = test.instruction;
 
+        // Show note if present (for MIDI/audio tests)
+        let noteHTML = '';
+        if (test.note) {
+            noteHTML = `<div style="background: #FEF3C7; border: 2px solid #F59E0B; border-radius: 6px; padding: 12px; margin-bottom: 16px; font-size: 13px; color: #92400E;">
+                <strong>⚠ Note:</strong> ${test.note}
+            </div>`;
+        }
+
         // For manual verification tests (audio), show pass/fail buttons
         if (test.type === 'audio') {
-            document.getElementById('testDisplay').innerHTML = `
+            document.getElementById('testDisplay').innerHTML = noteHTML + `
                 <div style="display: flex; gap: 15px; justify-content: center;">
                     <button onclick="autoTestApp.audioTestPassed()"
                         style="padding: 20px 40px; font-size: 16px; font-weight: 700; background: #10B981; color: white; border: none; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">
@@ -522,6 +532,8 @@ class HiChordTestApp {
                     </button>
                 </div>
             `;
+        } else if (test.note) {
+            document.getElementById('testDisplay').innerHTML = noteHTML;
         } else {
             document.getElementById('testDisplay').innerHTML = '';
         }
@@ -539,7 +551,7 @@ class HiChordTestApp {
 
         // Set timeout for test
         this.testTimeout = setTimeout(() => {
-            this.failCurrentTest('Timeout - no input received');
+            this.handleTestTimeout();
         }, test.timeout);
     }
 
@@ -617,26 +629,75 @@ class HiChordTestApp {
         await this.runNextTest();
     }
 
-    async failCurrentTest(reason) {
+    handleTestTimeout() {
+        if (!this.waitingForInput) return;
+
         const test = this.testDefinitions[this.currentTestIndex];
-        this.testResults.push({ name: test.name, passed: false, reason });
+        this.waitingForInput = false;
+
+        this.log(`⏱ ${test.name} TIMEOUT`, 'warning');
+
+        // Show retry/skip options
+        this.showRetrySkipOptions('Timeout - no input received within ' + (test.timeout / 1000) + ' seconds');
+    }
+
+    showRetrySkipOptions(reason) {
+        const test = this.testDefinitions[this.currentTestIndex];
 
         document.getElementById('testDisplay').innerHTML = `
-            <div style="text-align: center; font-size: 13px; color: #DC2626; font-weight: 600;">
-                ${reason}
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="font-size: 16px; color: #DC2626; font-weight: 700; margin-bottom: 12px;">TEST FAILED</div>
+                <div style="font-size: 13px; color: #6B6B6B; margin-bottom: 20px;">${reason}</div>
+            </div>
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <button onclick="autoTestApp.retryCurrentTest()"
+                    style="padding: 16px 32px; font-size: 14px; font-weight: 700; background: #FF6B35; color: white; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">
+                    ↻ RETRY
+                </button>
+                <button onclick="autoTestApp.skipCurrentTest()"
+                    style="padding: 16px 32px; font-size: 14px; font-weight: 700; background: #6B6B6B; color: white; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">
+                    → SKIP
+                </button>
+                <button onclick="autoTestApp.abortTests()"
+                    style="padding: 16px 32px; font-size: 14px; font-weight: 700; background: #EF4444; color: white; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">
+                    ✕ ABORT
+                </button>
             </div>
         `;
 
         const statusIndicator = document.getElementById('testStatus');
         statusIndicator.className = 'test-status-indicator failed';
         document.getElementById('statusIcon').textContent = '✗';
-        document.getElementById('statusText').textContent = 'FAILED';
+        document.getElementById('statusText').textContent = 'AWAITING ACTION';
+    }
+
+    async retryCurrentTest() {
+        this.log('Retrying test...', 'info');
+        await this.runNextTest();
+    }
+
+    async skipCurrentTest() {
+        const test = this.testDefinitions[this.currentTestIndex];
+        this.testResults.push({ name: test.name, passed: false, reason: 'Skipped by user' });
+        this.log(`⊘ ${test.name} SKIPPED`, 'warning');
+
+        this.currentTestIndex++;
+        await this.runNextTest();
+    }
+
+    async abortTests() {
+        this.log('Test sequence aborted by user', 'error');
+        this.waitingForInput = false;
+        await this.finishTests();
+    }
+
+    async failCurrentTest(reason) {
+        const test = this.testDefinitions[this.currentTestIndex];
 
         this.log(`✗ ${test.name} FAILED: ${reason}`, 'error');
 
-        await this.wait(1500);
-        this.currentTestIndex++;
-        await this.runNextTest();
+        // Show retry/skip options instead of auto-continuing
+        this.showRetrySkipOptions(reason);
     }
 
     async finishTests() {
