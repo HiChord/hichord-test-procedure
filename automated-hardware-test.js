@@ -751,7 +751,6 @@ function printAutoResults() {
 }
 
 function resetAutoTests() {
-    if (window.autoTestApp) {
-        location.reload();
-    }
+    console.log('Resetting automated tests...');
+    location.reload();
 }
