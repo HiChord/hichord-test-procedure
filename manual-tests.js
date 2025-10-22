@@ -59,7 +59,7 @@ const manualTests = [
         }
     },
     {
-        id: 3,
+        id: 4,
         name: "Function Buttons (F1, F2, F3)",
         image: "images/BUtton numbers 2.png",
         procedure: [
@@ -107,7 +107,7 @@ const manualTests = [
         }
     },
     {
-        id: 3,
+        id: 5,
         name: "Chord Buttons (1-7) in C Major",
         image: "images/BUtton numbers 2.png",
         procedure: [
@@ -136,7 +136,7 @@ const manualTests = [
         }
     },
     {
-        id: 3,
+        id: 6,
         name: "Joystick Chord Modification (Hold Button 1)",
         image: "images/Top View.png",
         procedure: [
@@ -169,7 +169,7 @@ const manualTests = [
         }
     },
     {
-        id: 3,
+        id: 7,
         name: "Joystick Click (Looper)",
         image: "images/Top View.png",
         procedure: [
@@ -193,7 +193,7 @@ const manualTests = [
         }
     },
     {
-        id: 3,
+        id: 8,
         name: "Headphone Output",
         image: "images/Top View.png",
         procedure: [
@@ -213,7 +213,7 @@ const manualTests = [
         oled: null
     },
     {
-        id: 3,
+        id: 9,
         name: "USB-C Audio Output",
         image: "images/Side View.png",
         procedure: [
@@ -236,7 +236,7 @@ const manualTests = [
         oled: null
     },
     {
-        id: 3,
+        id: 10,
         name: "MIDI Output",
         image: "images/Side View.png",
         procedure: [
@@ -257,7 +257,7 @@ const manualTests = [
         oled: null
     },
     {
-        id: 3,
+        id: 11,
         name: "Microphone Input",
         batch: "4+",
         skipBatch: ["1", "2", "3"],
@@ -288,7 +288,7 @@ const manualTests = [
         note: "BATCH 4+ ONLY - Skip for Batch 1-3 (no microphone)"
     },
     {
-        id: 3,
+        id: 12,
         name: "Battery Indicator",
         batch: "2+",
         skipBatch: ["1"],
