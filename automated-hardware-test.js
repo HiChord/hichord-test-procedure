@@ -421,7 +421,10 @@ class HiChordTestApp {
 
         this.waitingForInput = true;
 
-        document.getElementById('currentTestInstruction').textContent = test.instruction;
+        // Show instruction (may have been hidden during retry/skip display)
+        const instructionEl = document.getElementById('currentTestInstruction');
+        instructionEl.style.display = 'block';
+        instructionEl.textContent = test.instruction;
 
         // Show note if present (for MIDI/audio tests)
         let noteHTML = '';
@@ -557,31 +560,31 @@ class HiChordTestApp {
     showRetrySkipOptions(reason) {
         const test = this.testDefinitions[this.currentTestIndex];
 
+        // Hide instruction to prevent overlap
+        document.getElementById('currentTestInstruction').style.display = 'none';
+
         document.getElementById('testDisplay').innerHTML = `
-            <div style="text-align: center; margin-bottom: 20px;">
-                <div style="font-size: 16px; color: #DC2626; font-weight: 700; margin-bottom: 12px;">TEST FAILED</div>
-                <div style="font-size: 13px; color: #6B6B6B; margin-bottom: 20px;">${reason}</div>
+            <div style="text-align: center; margin-bottom: 24px;">
+                <div style="font-size: 20px; color: #DC2626; font-weight: 700; margin-bottom: 16px;">⚠ TEST FAILED</div>
+                <div style="font-size: 14px; color: #0A0A0A; font-weight: 600; margin-bottom: 8px;">${test.name}</div>
+                <div style="font-size: 13px; color: #6B6B6B; padding: 12px; background: #F9FAFB; border-radius: 6px;">${reason}</div>
             </div>
-            <div style="display: flex; gap: 12px; justify-content: center;">
-                <button onclick="autoTestApp.retryCurrentTest()"
-                    style="padding: 16px 32px; font-size: 14px; font-weight: 700; background: #FF6B35; color: white; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">
-                    ↻ RETRY
-                </button>
-                <button onclick="autoTestApp.skipCurrentTest()"
-                    style="padding: 16px 32px; font-size: 14px; font-weight: 700; background: #6B6B6B; color: white; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">
-                    → SKIP
-                </button>
-                <button onclick="autoTestApp.abortTests()"
-                    style="padding: 16px 32px; font-size: 14px; font-weight: 700; background: #EF4444; color: white; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">
-                    ✕ ABORT
-                </button>
+            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                <button id="retryBtn" class="test-action-btn retry-btn">↻ RETRY</button>
+                <button id="skipBtn" class="test-action-btn skip-btn">→ SKIP</button>
+                <button id="abortBtn" class="test-action-btn abort-btn">✕ ABORT</button>
             </div>
         `;
 
+        // Attach event listeners after DOM insertion
+        document.getElementById('retryBtn').addEventListener('click', () => this.retryCurrentTest());
+        document.getElementById('skipBtn').addEventListener('click', () => this.skipCurrentTest());
+        document.getElementById('abortBtn').addEventListener('click', () => this.abortTests());
+
         const statusIndicator = document.getElementById('testStatus');
         statusIndicator.className = 'test-status-indicator failed';
-        document.getElementById('statusIcon').textContent = '✗';
-        document.getElementById('statusText').textContent = 'AWAITING ACTION';
+        document.getElementById('statusIcon').textContent = '⚠';
+        document.getElementById('statusText').textContent = 'CHOOSE ACTION';
     }
 
     async retryCurrentTest() {

@@ -1607,6 +1607,54 @@ footer {
     margin-bottom: 32px;
 }
 
+/* Test Action Buttons (Retry/Skip/Abort) */
+.test-action-btn {
+    padding: 16px 32px;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 2px solid;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.retry-btn {
+    background: #FF6B35;
+    color: white;
+    border-color: #FF6B35;
+}
+
+.retry-btn:hover {
+    background: #FF8555;
+    border-color: #FF8555;
+    transform: translateY(-1px);
+}
+
+.skip-btn {
+    background: #6B6B6B;
+    color: white;
+    border-color: #6B6B6B;
+}
+
+.skip-btn:hover {
+    background: #858585;
+    border-color: #858585;
+}
+
+.abort-btn {
+    background: #EF4444;
+    color: white;
+    border-color: #EF4444;
+}
+
+.abort-btn:hover {
+    background: #F87171;
+    border-color: #F87171;
+}
+
 /* Slim Progress Bar */
 .test-progress-bar-slim {
     width: 100%;
