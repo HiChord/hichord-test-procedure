@@ -293,23 +293,24 @@ const manualTests = [
         batch: "2+",
         skipBatch: ["1"],
         procedure: [
-            "Disconnect USB-C cable (run on battery)",
-            "Observe top-right corner of OLED",
-            "Battery percentage should be visible",
-            "Connect USB-C and verify charging icon"
+            "Press and hold F1 + F2 buttons together",
+            "Battery display should show voltage and percentage",
+            "Display shows: 'Bat: X.XV XX%' with battery bar",
+            "Verify voltage reading is reasonable (3.0-4.2V if battery present)",
+            "Release buttons to return to normal operation"
         ],
         expected: [
-            "Battery percentage displays in top-right",
-            "Level updates accurately",
-            "Low battery warning below 20%",
-            "Charging icon when USB connected",
-            "Battery icon renders correctly"
+            "F1 + F2 combo triggers battery display",
+            "Voltage and percentage shown clearly",
+            "Battery bar graphic displays with proper fill level",
+            "Display shows even if 0V/0% (for debugging)",
+            "Returns to normal display after release"
         ],
         oled: {
             type: "battery",
-            content: ["85%", "▮▮▮▯"]
+            content: ["3.8V 65%", "▮▮▮▯"]
         },
-        note: "BATCH 2+ ONLY - Skip for Batch 1 (no battery detection)"
+        note: "BATCH 2+ ONLY - F1+F2 combo always shows battery info (even 0V for debugging early PCBs)"
     }
 ];
 
