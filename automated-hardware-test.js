@@ -218,11 +218,6 @@ class HiChordTestApp {
             document.getElementById('detectedFirmware').textContent = `v${this.firmwareVersion}`;
             document.getElementById('detectedBatch').textContent = `Batch ${this.pcbBatch}`;
             document.getElementById('detectedButtonSystem').textContent = this.buttonSystem;
-
-            // Show ADC monitor for ADC-based systems
-            if (this.buttonSystem === 'ADC') {
-                this.setupADCMonitor();
-            }
         }
 
         // Test response (0x12)
@@ -231,88 +226,6 @@ class HiChordTestApp {
             const successFlag = data[3];
             this.handleTestResponse(buttonId, successFlag);
         }
-
-        // ADC values response (0x16)
-        if (command === this.SYSEX_ADC_VALUES_RESPONSE && data.length >= 2) {
-            this.handleADCValues(data.slice(2));
-        }
-    }
-
-    setupADCMonitor() {
-        const monitor = document.getElementById('adcMonitor');
-        monitor.style.display = 'block';
-
-        const grid = document.getElementById('adcGrid');
-        grid.innerHTML = '';
-
-        // Create ADC value displays for all inputs
-        const labels = ['Btn 1', 'Btn 2', 'Btn 3', 'Btn 4', 'Btn 5', 'Btn 6', 'Btn 7',
-                       'F1', 'F2', 'F3', 'Joy X', 'Joy Y', 'Volume'];
-
-        labels.forEach((label, idx) => {
-            const item = document.createElement('div');
-            item.className = 'adc-item';
-            item.innerHTML = `
-                <div class="adc-label">${label}</div>
-                <div class="adc-value" id="adc${idx}">0</div>
-            `;
-            grid.appendChild(item);
-        });
-
-        // Start periodic ADC monitoring
-        this.startADCMonitoring();
-    }
-
-    startADCMonitoring() {
-        if (this.adcMonitorInterval) return;
-
-        this.adcMonitorInterval = setInterval(() => {
-            // Request ADC values via SysEx
-            const sysex = [0xF0, this.SYSEX_MANUFACTURER_ID, 0x15, 0xF7]; // 0x15 = Request ADC values
-            if (this.midiOutput) {
-                this.midiOutput.send(sysex);
-            }
-        }, 100); // Update every 100ms
-    }
-
-    stopADCMonitoring() {
-        if (this.adcMonitorInterval) {
-            clearInterval(this.adcMonitorInterval);
-            this.adcMonitorInterval = null;
-        }
-    }
-
-    handleADCValues(data) {
-        // Decode ADC values from SysEx response
-        // Format: [chord_hi] [chord_lo] [joyX_hi] [joyX_lo] [joyY_hi] [joyY_lo] [vol_hi] [vol_lo]
-        // Each value is 12-bit split into two 7-bit MIDI bytes
-
-        if (data.length < 8) return; // Need all 8 bytes
-
-        const chordADC = (data[0] << 7) | data[1];
-        const joyXADC = (data[2] << 7) | data[3];
-        const joyYADC = (data[4] << 7) | data[5];
-        const volumeADC = (data[6] << 7) | data[7];
-
-        // Update ADC display
-        // For ADC mode, chord buttons share one ADC channel, so show the chord ADC value
-        // Layout: Chord (idx 0-6 all show same), Joy X (10), Joy Y (11), Volume (12)
-
-        // Update chord button ADC (show on first button)
-        const chordEl = document.getElementById('adc0');
-        if (chordEl) chordEl.textContent = chordADC;
-
-        // Update joystick X
-        const joyXEl = document.getElementById('adc10');
-        if (joyXEl) joyXEl.textContent = joyXADC;
-
-        // Update joystick Y
-        const joyYEl = document.getElementById('adc11');
-        if (joyYEl) joyYEl.textContent = joyYADC;
-
-        // Update volume
-        const volumeEl = document.getElementById('adc12');
-        if (volumeEl) volumeEl.textContent = volumeADC;
     }
 
     // Test definitions
@@ -673,6 +586,15 @@ class HiChordTestApp {
 
     async retryCurrentTest() {
         this.log('Retrying test...', 'info');
+
+        // Clear any existing timeout
+        if (this.testTimeout) {
+            clearTimeout(this.testTimeout);
+            this.testTimeout = null;
+        }
+
+        // Reset state and re-run the same test
+        this.waitingForInput = false;
         await this.runNextTest();
     }
 
@@ -695,6 +617,14 @@ class HiChordTestApp {
         const test = this.testDefinitions[this.currentTestIndex];
 
         this.log(`✗ ${test.name} FAILED: ${reason}`, 'error');
+
+        // Clear timeout if it exists
+        if (this.testTimeout) {
+            clearTimeout(this.testTimeout);
+            this.testTimeout = null;
+        }
+
+        this.waitingForInput = false;
 
         // Show retry/skip options instead of auto-continuing
         this.showRetrySkipOptions(reason);
