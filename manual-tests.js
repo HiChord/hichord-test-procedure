@@ -241,20 +241,22 @@ const manualTests = [
         image: "images/Side View.png",
         procedure: [
             "Connect HiChord to computer via USB-C",
-            "Click 'TEST MIDI' button below to:",
-            "  • Enable MIDI output on HiChord",
-            "  • Detect MIDI connection",
-            "  • Monitor incoming MIDI messages",
+            "Use the interactive MIDI test app below:",
+            "  1. Click 'CONNECT & TEST MIDI' button",
+            "  2. App automatically enables MIDI output on HiChord",
+            "  3. Connection status shows when HiChord is detected",
             "Press chord buttons 1-7 on HiChord",
-            "Verify MIDI note messages appear in the test app"
+            "Watch MIDI messages appear in real-time log",
+            "Verify note-on/note-off messages for each button press"
         ],
         expected: [
-            "HiChord appears as USB MIDI device",
-            "MIDI note-on/note-off messages sent",
-            "Each chord sends correct note data",
-            "MIDI timing is accurate",
-            "CC messages sent for controls",
-            "No stuck notes or errors"
+            "HiChord detected as USB MIDI device",
+            "Connection successful with green status indicator",
+            "MIDI messages appear in log when buttons pressed",
+            "Each chord sends correct note-on/note-off data",
+            "MIDI timing is accurate with no delay",
+            "CC messages sent for volume/controls",
+            "No stuck notes or missing messages"
         ],
         oled: null,
         midiTest: true
@@ -793,6 +795,46 @@ function buildManualTestHTML(test) {
         </div>
     ` : '';
 
+    const midiTestHTML = test.midiTest ? `
+        <div class="midi-test-app">
+            <div class="midi-test-header">
+                <h3>🎹 Interactive MIDI Test App</h3>
+                <p>One-click test for MIDI connection and input detection</p>
+            </div>
+
+            <div class="midi-test-instructions">
+                <h4>How This Works:</h4>
+                <ol>
+                    <li><strong>Click "TEST MIDI"</strong> below - the app will automatically enable MIDI output on HiChord</li>
+                    <li><strong>Watch the status indicator</strong> - it will show when HiChord is connected</li>
+                    <li><strong>Press any chord button</strong> (1-7) on HiChord - MIDI messages will appear in the log</li>
+                </ol>
+                <p style="margin-top: 12px; font-size: 13px; opacity: 0.9;">
+                    <strong>✓ Tests:</strong> MIDI connection detection, MIDI output enable, and real-time message monitoring
+                </p>
+            </div>
+
+            <div class="midi-connection-status" id="midiConnectionStatus">
+                <div class="status-dot disconnected"></div>
+                <span class="status-text">Not Connected</span>
+            </div>
+
+            <button class="btn-midi-test" id="btnMidiTest" onclick="startMidiTest()">
+                CONNECT & TEST MIDI
+            </button>
+
+            <div class="midi-log-container" id="midiLogContainer" style="display: none;">
+                <div class="midi-log-header">
+                    <span>📊 Live MIDI Monitor</span>
+                    <button class="btn-clear-log" onclick="clearMidiLog()">Clear</button>
+                </div>
+                <div class="midi-log" id="midiLog">
+                    <div class="midi-log-empty">Waiting for MIDI messages...<br><span style="font-size: 12px; opacity: 0.7;">Press any chord button on HiChord</span></div>
+                </div>
+            </div>
+        </div>
+    ` : '';
+
     return `
         <div class="manual-test" data-test-id="${test.id}">
             <div class="test-header">
@@ -809,6 +851,8 @@ function buildManualTestHTML(test) {
                     <ol>${procedureHTML}</ol>
                 </div>
 
+                ${midiTestHTML}
+
                 ${oledHTML}
 
                 <div class="expected-section">
@@ -820,4 +864,170 @@ function buildManualTestHTML(test) {
             </div>
         </div>
     `;
+}
+
+// ========================================
+// MIDI Test Functionality
+// ========================================
+
+let midiInput = null;
+let midiOutput = null;
+let midiTestActive = false;
+
+async function startMidiTest() {
+    const btn = document.getElementById('btnMidiTest');
+    const statusEl = document.getElementById('midiConnectionStatus');
+    const logContainer = document.getElementById('midiLogContainer');
+
+    try {
+        btn.disabled = true;
+        btn.textContent = 'Connecting...';
+
+        // Request MIDI access
+        const midiAccess = await navigator.requestMIDIAccess({ sysex: true });
+
+        // Find HiChord device
+        let hichordInput = null;
+        let hichordOutput = null;
+
+        for (const input of midiAccess.inputs.values()) {
+            if (input.name && input.name.toLowerCase().includes('hichord')) {
+                hichordInput = input;
+                break;
+            }
+        }
+
+        for (const output of midiAccess.outputs.values()) {
+            if (output.name && output.name.toLowerCase().includes('hichord')) {
+                hichordOutput = output;
+                break;
+            }
+        }
+
+        if (!hichordInput || !hichordOutput) {
+            throw new Error('HiChord not found. Please connect HiChord via USB-C and refresh the page.');
+        }
+
+        midiInput = hichordInput;
+        midiOutput = hichordOutput;
+
+        // Update status
+        statusEl.innerHTML = '<div class="status-dot connected"></div><span class="status-text">✓ Connected: ' + hichordInput.name + '</span>';
+
+        // Enable MIDI output on HiChord (SysEx: F0 7D 00 01 F7)
+        const enableMidiSysEx = [0xF0, 0x7D, 0x00, 0x01, 0xF7];
+        midiOutput.send(enableMidiSysEx);
+
+        logMidiMessage('✓ System', 'HiChord MIDI output enabled successfully', 'info');
+        logMidiMessage('System', 'Listening for MIDI messages... Press any chord button on HiChord', 'info');
+
+        // Show log container
+        logContainer.style.display = 'block';
+
+        // Start listening for MIDI messages
+        midiInput.onmidimessage = handleMidiMessage;
+
+        btn.textContent = '✓ CONNECTED & READY';
+        btn.style.backgroundColor = '#28a745';
+        btn.style.color = 'white';
+        midiTestActive = true;
+
+    } catch (error) {
+        console.error('MIDI connection error:', error);
+        statusEl.innerHTML = '<div class="status-dot disconnected"></div><span class="status-text">✗ Error: ' + error.message + '</span>';
+        btn.disabled = false;
+        btn.textContent = 'CONNECT & TEST MIDI';
+        btn.style.backgroundColor = '';
+        btn.style.color = '';
+        logMidiMessage('✗ Error', error.message, 'error');
+        logContainer.style.display = 'block';
+    }
+}
+
+function handleMidiMessage(message) {
+    const [status, data1, data2] = message.data;
+    const channel = (status & 0x0F) + 1;
+    const command = status & 0xF0;
+
+    let msgType = '';
+    let msgData = '';
+    let msgClass = 'note';
+
+    switch (command) {
+        case 0x90: // Note On
+            if (data2 > 0) {
+                msgType = 'Note On';
+                msgData = `Note: ${getMidiNoteName(data1)}, Velocity: ${data2}`;
+                msgClass = 'note-on';
+            } else {
+                msgType = 'Note Off';
+                msgData = `Note: ${getMidiNoteName(data1)}`;
+                msgClass = 'note-off';
+            }
+            break;
+
+        case 0x80: // Note Off
+            msgType = 'Note Off';
+            msgData = `Note: ${getMidiNoteName(data1)}`;
+            msgClass = 'note-off';
+            break;
+
+        case 0xB0: // Control Change
+            msgType = 'Control Change';
+            msgData = `CC ${data1}: ${data2}`;
+            msgClass = 'cc';
+            break;
+
+        case 0xC0: // Program Change
+            msgType = 'Program Change';
+            msgData = `Program: ${data1}`;
+            msgClass = 'pc';
+            break;
+
+        default:
+            msgType = 'Other';
+            msgData = `Status: 0x${status.toString(16)}, Data: ${data1}, ${data2}`;
+            msgClass = 'other';
+    }
+
+    logMidiMessage(msgType, msgData, msgClass);
+}
+
+function getMidiNoteName(note) {
+    const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+    const octave = Math.floor(note / 12) - 1;
+    const noteName = noteNames[note % 12];
+    return `${noteName}${octave} (${note})`;
+}
+
+function logMidiMessage(type, data, cssClass = '') {
+    const logEl = document.getElementById('midiLog');
+
+    // Remove empty message if present
+    const emptyMsg = logEl.querySelector('.midi-log-empty');
+    if (emptyMsg) {
+        emptyMsg.remove();
+    }
+
+    const timestamp = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit', fractionalSecondDigits: 3 });
+
+    const msgEl = document.createElement('div');
+    msgEl.className = `midi-message ${cssClass}`;
+    msgEl.innerHTML = `
+        <span class="midi-time">${timestamp}</span>
+        <span class="midi-type">${type}</span>
+        <span class="midi-data">${data}</span>
+    `;
+
+    logEl.insertBefore(msgEl, logEl.firstChild);
+
+    // Keep only last 50 messages
+    while (logEl.children.length > 50) {
+        logEl.removeChild(logEl.lastChild);
+    }
+}
+
+function clearMidiLog() {
+    const logEl = document.getElementById('midiLog');
+    logEl.innerHTML = '<div class="midi-log-empty">Waiting for MIDI messages...</div>';
 }
