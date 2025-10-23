@@ -140,45 +140,32 @@ class HiChordTest {
         this.testRunning = true;
         this.results = [];
 
-        // Hide controls, show progress
+        // Hide controls, show simple "follow device" message
         document.getElementById('testControls').style.display = 'none';
         document.getElementById('currentTest').style.display = 'block';
 
-        // Reset progress
-        document.getElementById('progressText').textContent = '0 / 21';
+        // Show simple message - all action is on the HiChord OLED
+        document.getElementById('progressText').textContent = 'TEST RUNNING';
         document.getElementById('progressFill').style.width = '0%';
-        document.getElementById('currentTestInstruction').textContent = 'Waiting for first button...';
-        document.getElementById('statusIcon').textContent = '▶';
-        document.getElementById('statusText').textContent = 'Ready';
+        document.getElementById('currentTestInstruction').innerHTML = '<strong>Follow the HiChord OLED</strong><br/>Press each button as shown on device';
+        document.getElementById('statusIcon').textContent = '👀';
+        document.getElementById('statusText').textContent = 'Watch Device';
         document.getElementById('testStatus').className = 'test-status-indicator waiting';
 
-        // Enter test mode (device will wait 500ms before accepting buttons)
+        // Enter test mode
         console.log('[Test] Sending SysEx 0x10 to enter test mode');
         this.sendSysEx([0xF0, 0x7D, 0x10, 0xF7]);
 
-        console.log('[Test] Test mode activated - device waiting 500ms, then ready for button presses');
-        console.log('[Test] Web app ready to receive updates via SysEx 0x12');
+        console.log('[Test] Test running - technician follows HiChord OLED');
     }
 
     updateProgress(stepNum, passed, buttonPressed) {
+        // Just update progress bar silently - all feedback is on the device OLED
         const progress = (stepNum / 21) * 100;
-        const expectedName = this.testNames[stepNum - 1];
-
-        document.getElementById('progressText').textContent = `${stepNum} / 21`;
         document.getElementById('progressFill').style.width = `${progress}%`;
-        document.getElementById('currentTestInstruction').textContent = expectedName;
 
-        if (passed) {
-            document.getElementById('statusIcon').textContent = '✓';
-            document.getElementById('statusText').textContent = 'PASS';
-            document.getElementById('testStatus').className = 'test-status-indicator pass';
-        } else {
-            // Show what was pressed vs what was expected
-            const pressedName = this.testNames[buttonPressed - 1] || `Button ${buttonPressed}`;
-            document.getElementById('statusIcon').textContent = '✗';
-            document.getElementById('statusText').textContent = `FAIL: Got ${pressedName}`;
-            document.getElementById('testStatus').className = 'test-status-indicator fail';
-        }
+        // Log for debugging
+        console.log(`[Test] Progress: ${stepNum}/21 - ${passed ? 'PASS' : 'FAIL'}`);
     }
 
     showResults(passedCount, failedCount) {
