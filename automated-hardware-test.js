@@ -116,6 +116,10 @@ class HiChordTest {
             await this.delay(500);
             this.sendSysEx([0xF0, 0x7D, 0x10, 0xF7]);
 
+            // CRITICAL: Wait for test mode to settle and flush any initial button states
+            console.log('[HiChord Test] Waiting for test mode to settle (1 second)...');
+            await this.delay(1000);
+
             // Show hardware info and test controls
             document.getElementById('hardwareInfo').style.display = 'block';
             document.getElementById('testControls').style.display = 'block';
@@ -158,11 +162,16 @@ class HiChordTest {
                 document.getElementById('detectedButtonSystem').textContent = this.hardwareInfo.buttonSystem;
             }
 
-            // Test response (0x12)
-            if (cmd === 0x12 && data.length >= 5 && this.testRunning) {
+            // Test response (0x12) - ONLY process if test is actively running
+            if (cmd === 0x12 && data.length >= 5) {
                 const buttonId = data[3];
-                console.log(`[HiChord Test] Test response: button ${buttonId}`);
-                this.handleButtonDetected(buttonId);
+
+                if (this.testRunning) {
+                    console.log(`[HiChord Test] ✓ Test response: button ${buttonId} (accepting)`);
+                    this.handleButtonDetected(buttonId);
+                } else {
+                    console.log(`[HiChord Test] ⊘ Test response: button ${buttonId} (IGNORED - test not running)`);
+                }
             }
         }
     }
