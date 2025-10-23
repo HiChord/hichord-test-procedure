@@ -241,10 +241,12 @@ const manualTests = [
         image: "images/Side View.png",
         procedure: [
             "Connect HiChord to computer via USB-C",
-            "Open DAW or MIDI monitor software",
-            "Select \"HiChord\" as MIDI input device",
-            "Press chord buttons 1-7",
-            "Verify MIDI note messages in monitor"
+            "Click 'TEST MIDI' button below to:",
+            "  • Enable MIDI output on HiChord",
+            "  • Detect MIDI connection",
+            "  • Monitor incoming MIDI messages",
+            "Press chord buttons 1-7 on HiChord",
+            "Verify MIDI note messages appear in the test app"
         ],
         expected: [
             "HiChord appears as USB MIDI device",
@@ -254,7 +256,8 @@ const manualTests = [
             "CC messages sent for controls",
             "No stuck notes or errors"
         ],
-        oled: null
+        oled: null,
+        midiTest: true
     },
     {
         id: 11,
