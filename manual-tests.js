@@ -237,7 +237,7 @@ const manualTests = [
     },
     {
         id: 10,
-        name: "MIDI Output",
+        name: "MIDI over USB-C",
         image: "images/Side View.png",
         procedure: [
             "Connect HiChord to computer via USB-C",
