@@ -9,12 +9,12 @@ class HiChordTest {
         this.testRunning = false;
         this.results = [];
 
-        // Test names (19 tests)
+        // Test names (19 tests) - matches firmware exactly
         this.testNames = [
             'Chord 1', 'Chord 2', 'Chord 3', 'Chord 4', 'Chord 5', 'Chord 6', 'Chord 7',
-            'Settings (F1)', 'Effects (F2)', 'BPM (F3)',
-            'Joystick UP', 'Joystick DOWN', 'Joystick LEFT', 'Joystick RIGHT',
-            'Joystick UP-LEFT', 'Joystick UP-RIGHT', 'Joystick DOWN-LEFT', 'Joystick DOWN-RIGHT',
+            'Menu Button 1', 'Menu Button 2', 'Menu Button 3',
+            'Joystick ↑', 'Joystick ↓', 'Joystick ←', 'Joystick →',
+            'Joystick ↖', 'Joystick ↗', 'Joystick ↙', 'Joystick ↘',
             'Joystick CLICK'
         ];
     }
@@ -98,15 +98,22 @@ class HiChordTest {
                 console.log(`[Test] Hardware: v${version}, Batch ${batch}, ${buttonSystem}`);
             }
 
-            // Test progress update (0x12): [step number] [pass/fail]
-            if (cmd === 0x12 && data.length >= 5 && this.testRunning) {
+            // Test progress update (0x12): [step number] [pass/fail] [button pressed]
+            if (cmd === 0x12 && data.length >= 6 && this.testRunning) {
                 const stepNum = data[3];  // 1-19
                 const passed = data[4] === 0x01;
+                const buttonPressed = data[5];  // What button was actually pressed
 
-                console.log(`[Test] Step ${stepNum}: ${passed ? 'PASS' : 'FAIL'}`);
+                console.log(`[Test] Step ${stepNum}: ${passed ? 'PASS' : 'FAIL'} (pressed ${buttonPressed}, expected ${stepNum})`);
 
-                this.results[stepNum - 1] = passed;
-                this.updateProgress(stepNum);
+                // Store result with additional info
+                this.results[stepNum - 1] = {
+                    passed: passed,
+                    buttonPressed: buttonPressed,
+                    expectedButton: stepNum
+                };
+
+                this.updateProgress(stepNum, passed, buttonPressed);
             }
 
             // Final test report (0x15): [passed count] [failed count]
@@ -142,22 +149,23 @@ class HiChordTest {
         console.log('[Test] Started - device is now running test sequence');
     }
 
-    updateProgress(stepNum) {
+    updateProgress(stepNum, passed, buttonPressed) {
         const progress = (stepNum / 19) * 100;
-        const testName = this.testNames[stepNum - 1];
-        const passed = this.results[stepNum - 1];
+        const expectedName = this.testNames[stepNum - 1];
 
         document.getElementById('progressText').textContent = `${stepNum} / 19`;
         document.getElementById('progressFill').style.width = `${progress}%`;
-        document.getElementById('currentTestInstruction').textContent = testName;
+        document.getElementById('currentTestInstruction').textContent = expectedName;
 
         if (passed) {
             document.getElementById('statusIcon').textContent = '✓';
             document.getElementById('statusText').textContent = 'PASS';
             document.getElementById('testStatus').className = 'test-status-indicator pass';
         } else {
+            // Show what was pressed vs what was expected
+            const pressedName = this.testNames[buttonPressed - 1] || `Button ${buttonPressed}`;
             document.getElementById('statusIcon').textContent = '✗';
-            document.getElementById('statusText').textContent = 'FAIL';
+            document.getElementById('statusText').textContent = `FAIL: Got ${pressedName}`;
             document.getElementById('testStatus').className = 'test-status-indicator fail';
         }
     }
@@ -182,13 +190,24 @@ class HiChordTest {
         const detailDiv = document.getElementById('resultsDetail');
         if (detailDiv) {
             detailDiv.innerHTML = '';
-            this.results.forEach((passed, i) => {
+            this.results.forEach((result, i) => {
+                if (!result) return; // Skip if no result for this test
+
                 const div = document.createElement('div');
-                div.className = `result-row ${passed ? 'pass' : 'fail'}`;
+                div.className = `result-row ${result.passed ? 'pass' : 'fail'}`;
+
+                let statusText = result.passed ? '✓' : '✗';
+                let failInfo = '';
+
+                if (!result.passed && result.buttonPressed) {
+                    const pressedName = this.testNames[result.buttonPressed - 1] || `Button ${result.buttonPressed}`;
+                    failInfo = `<span class="fail-detail"> (got ${pressedName})</span>`;
+                }
+
                 div.innerHTML = `
                     <span class="result-number">${i + 1}</span>
-                    <span class="result-name">${this.testNames[i]}</span>
-                    <span class="result-status">${passed ? '✓' : '✗'}</span>
+                    <span class="result-name">${this.testNames[i]}${failInfo}</span>
+                    <span class="result-status">${statusText}</span>
                 `;
                 detailDiv.appendChild(div);
             });
