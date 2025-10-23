@@ -1,5 +1,5 @@
-// HiChord Automated Hardware Test - SIMPLE AND FAST
-// Commercial-grade reliability
+// HiChord Automated Hardware Test - SIMPLE MONITOR
+// Device runs the test, web app just displays progress
 
 class HiChordTest {
     constructor() {
@@ -7,30 +7,15 @@ class HiChordTest {
         this.midiInput = null;
         this.midiOutput = null;
         this.testRunning = false;
-        this.currentTestIndex = 0;
         this.results = [];
 
-        // 19 button tests
-        this.tests = [
-            {id: 1, name: 'Chord Button 1'},
-            {id: 2, name: 'Chord Button 2'},
-            {id: 3, name: 'Chord Button 3'},
-            {id: 4, name: 'Chord Button 4'},
-            {id: 5, name: 'Chord Button 5'},
-            {id: 6, name: 'Chord Button 6'},
-            {id: 7, name: 'Chord Button 7'},
-            {id: 8, name: 'Function 1 (Settings)'},
-            {id: 9, name: 'Function 2 (Effects)'},
-            {id: 10, name: 'Function 3 (BPM)'},
-            {id: 11, name: 'Joystick UP'},
-            {id: 12, name: 'Joystick DOWN'},
-            {id: 13, name: 'Joystick LEFT'},
-            {id: 14, name: 'Joystick RIGHT'},
-            {id: 15, name: 'Joystick UP-LEFT'},
-            {id: 16, name: 'Joystick UP-RIGHT'},
-            {id: 17, name: 'Joystick DOWN-LEFT'},
-            {id: 18, name: 'Joystick DOWN-RIGHT'},
-            {id: 19, name: 'Joystick CLICK'}
+        // Test names (19 tests)
+        this.testNames = [
+            'Chord 1', 'Chord 2', 'Chord 3', 'Chord 4', 'Chord 5', 'Chord 6', 'Chord 7',
+            'Settings (F1)', 'Effects (F2)', 'BPM (F3)',
+            'Joystick UP', 'Joystick DOWN', 'Joystick LEFT', 'Joystick RIGHT',
+            'Joystick UP-LEFT', 'Joystick UP-RIGHT', 'Joystick DOWN-LEFT', 'Joystick DOWN-RIGHT',
+            'Joystick CLICK'
         ];
     }
 
@@ -76,11 +61,6 @@ class HiChordTest {
 
             // Get hardware info
             this.sendSysEx([0xF0, 0x7D, 0x13, 0xF7]);
-            await this.delay(100);
-
-            // Enter test mode
-            this.sendSysEx([0xF0, 0x7D, 0x10, 0xF7]);
-            await this.delay(300);
 
             // Show test controls
             document.getElementById('hardwareInfo').style.display = 'block';
@@ -118,121 +98,109 @@ class HiChordTest {
                 console.log(`[Test] Hardware: v${version}, Batch ${batch}, ${buttonSystem}`);
             }
 
-            // Test button response (0x12)
+            // Test progress update (0x12): [step number] [pass/fail]
             if (cmd === 0x12 && data.length >= 5 && this.testRunning) {
-                const buttonId = data[3];
-                console.log(`[Test] Button detected: ${buttonId}`);
-                this.checkButton(buttonId);
+                const stepNum = data[3];  // 1-19
+                const passed = data[4] === 0x01;
+
+                console.log(`[Test] Step ${stepNum}: ${passed ? 'PASS' : 'FAIL'}`);
+
+                this.results[stepNum - 1] = passed;
+                this.updateProgress(stepNum);
+            }
+
+            // Final test report (0x15): [passed count] [failed count]
+            if (cmd === 0x15 && data.length >= 5) {
+                const passedCount = data[3];
+                const failedCount = data[4];
+
+                console.log(`[Test] Complete: ${passedCount} passed, ${failedCount} failed`);
+                this.showResults(passedCount, failedCount);
             }
         }
     }
 
     startTest() {
         this.testRunning = true;
-        this.currentTestIndex = 0;
         this.results = [];
 
+        // Hide controls, show progress
         document.getElementById('testControls').style.display = 'none';
         document.getElementById('currentTest').style.display = 'block';
 
-        this.showTest();
-    }
-
-    showTest() {
-        if (this.currentTestIndex >= this.tests.length) {
-            this.finish();
-            return;
-        }
-
-        const test = this.tests[this.currentTestIndex];
-        const num = this.currentTestIndex + 1;
-
-        document.getElementById('progressText').textContent = `${num} / ${this.tests.length}`;
-        document.getElementById('progressFill').style.width = `${(num / this.tests.length) * 100}%`;
-        document.getElementById('currentTestInstruction').textContent = `Press ${test.name}`;
-        document.getElementById('statusIcon').textContent = '⏳';
-        document.getElementById('statusText').textContent = 'Waiting...';
+        // Reset progress
+        document.getElementById('progressText').textContent = '0 / 19';
+        document.getElementById('progressFill').style.width = '0%';
+        document.getElementById('currentTestInstruction').textContent = 'Test Starting...';
+        document.getElementById('statusIcon').textContent = '▶';
+        document.getElementById('statusText').textContent = 'Running';
         document.getElementById('testStatus').className = 'test-status-indicator waiting';
+
+        // Enter test mode
+        this.sendSysEx([0xF0, 0x7D, 0x10, 0xF7]);
+
+        console.log('[Test] Started - device is now running test sequence');
     }
 
-    checkButton(buttonId) {
-        const test = this.tests[this.currentTestIndex];
+    updateProgress(stepNum) {
+        const progress = (stepNum / 19) * 100;
+        const testName = this.testNames[stepNum - 1];
+        const passed = this.results[stepNum - 1];
 
-        if (buttonId === test.id) {
-            // PASS
-            this.results.push({name: test.name, pass: true});
+        document.getElementById('progressText').textContent = `${stepNum} / 19`;
+        document.getElementById('progressFill').style.width = `${progress}%`;
+        document.getElementById('currentTestInstruction').textContent = testName;
+
+        if (passed) {
             document.getElementById('statusIcon').textContent = '✓';
             document.getElementById('statusText').textContent = 'PASS';
             document.getElementById('testStatus').className = 'test-status-indicator pass';
-
-            // Move to next test after brief delay
-            setTimeout(() => {
-                this.currentTestIndex++;
-                this.showTest();
-            }, 400);
-
         } else {
-            // FAIL
-            this.results.push({name: test.name, pass: false, reason: `Got button ${buttonId}`});
             document.getElementById('statusIcon').textContent = '✗';
-            document.getElementById('statusText').textContent = `FAIL: Got button ${buttonId}`;
+            document.getElementById('statusText').textContent = 'FAIL';
             document.getElementById('testStatus').className = 'test-status-indicator fail';
-
-            // Auto-advance after showing error
-            setTimeout(() => {
-                this.currentTestIndex++;
-                this.showTest();
-            }, 1500);
         }
     }
 
-    finish() {
+    showResults(passedCount, failedCount) {
         this.testRunning = false;
-        this.sendSysEx([0xF0, 0x7D, 0x11, 0xF7]); // Exit test mode
 
-        const passed = this.results.filter(r => r.pass).length;
-        const failed = this.results.filter(r => !r.pass).length;
+        // Exit test mode
+        this.sendSysEx([0xF0, 0x7D, 0x11, 0xF7]);
 
+        // Hide progress, show results
         document.getElementById('currentTest').style.display = 'none';
         document.getElementById('testResults').style.display = 'block';
 
-        document.getElementById('verdictText').textContent = failed === 0 ? 'ALL TESTS PASSED' : `${failed} FAILED`;
-        document.getElementById('verdictIcon').textContent = failed === 0 ? '✓' : '✗';
-        document.getElementById('passedCount').textContent = passed;
-        document.getElementById('failedCount').textContent = failed;
+        document.getElementById('verdictText').textContent = failedCount === 0 ? 'ALL TESTS PASSED' : `${failedCount} FAILED`;
+        document.getElementById('verdictIcon').textContent = failedCount === 0 ? '✓' : '✗';
+        document.getElementById('passedCount').textContent = passedCount;
+        document.getElementById('failedCount').textContent = failedCount;
+        document.getElementById('totalCount').textContent = '19';
 
-        // Show results
-        const list = document.getElementById('detailedResultsList');
-        if (list) {
-            list.innerHTML = '';
-            this.results.forEach((r, i) => {
+        // Show detailed results
+        const detailDiv = document.getElementById('resultsDetail');
+        if (detailDiv) {
+            detailDiv.innerHTML = '';
+            this.results.forEach((passed, i) => {
                 const div = document.createElement('div');
-                div.className = `result-row ${r.pass ? 'pass' : 'fail'}`;
+                div.className = `result-row ${passed ? 'pass' : 'fail'}`;
                 div.innerHTML = `
                     <span class="result-number">${i + 1}</span>
-                    <span class="result-name">${r.name}</span>
-                    <span class="result-status">${r.pass ? '✓' : '✗'}</span>
+                    <span class="result-name">${this.testNames[i]}</span>
+                    <span class="result-status">${passed ? '✓' : '✗'}</span>
                 `;
-                list.appendChild(div);
+                detailDiv.appendChild(div);
             });
         }
 
-        const restartBtn = document.getElementById('restartTestBtn');
-        if (restartBtn) {
-            restartBtn.onclick = () => location.reload();
-        }
-
-        console.log(`[Test] Complete: ${passed} passed, ${failed} failed`);
+        console.log(`[Test] Results displayed: ${passedCount}/${19} passed`);
     }
 
     sendSysEx(data) {
         if (this.midiOutput) {
             this.midiOutput.send(data);
         }
-    }
-
-    delay(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
     }
 }
 
@@ -260,3 +228,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     console.log('[Test] Ready. Click Connect to begin.');
 });
+
+// Helper functions for results
+function resetAutoTests() {
+    location.reload();
+}
+
+function printAutoResults() {
+    window.print();
+}
