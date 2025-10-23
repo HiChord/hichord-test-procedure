@@ -295,14 +295,14 @@ class HiChordTest {
     }
 }
 
-// Global instance
-let testApp;
+// Global instance - use unique name to avoid conflict with app.js
+let automatedTestApp;
 
 // Initialize when DOM loads
 document.addEventListener('DOMContentLoaded', () => {
     console.log('[HiChord Test] DOM loaded, initializing...');
 
-    testApp = new HiChordTest();
+    automatedTestApp = new HiChordTest();
 
     const connectBtn = document.getElementById('connectBtn');
     if (!connectBtn) {
@@ -316,7 +316,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('[HiChord Test] Connect button clicked');
         connectBtn.disabled = true;
         connectBtn.textContent = 'Connecting...';
-        await testApp.connect();
+        await automatedTestApp.connect();
     });
 
     // Start test button
@@ -324,7 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (startBtn) {
         startBtn.addEventListener('click', () => {
             console.log('[HiChord Test] Start test button clicked');
-            testApp.startTest();
+            automatedTestApp.startTest();
         });
     } else {
         console.warn('[HiChord Test] Warning: Start test button not found (will be available after connection)');
