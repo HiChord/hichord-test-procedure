@@ -9,13 +9,14 @@ class HiChordTest {
         this.testRunning = false;
         this.results = [];
 
-        // Test names (19 tests) - matches firmware exactly
+        // Test names (21 tests) - matches firmware exactly
         this.testNames = [
             'Chord 1', 'Chord 2', 'Chord 3', 'Chord 4', 'Chord 5', 'Chord 6', 'Chord 7',
             'Menu Button 1', 'Menu Button 2', 'Menu Button 3',
-            'Joystick ↑', 'Joystick ↓', 'Joystick ←', 'Joystick →',
-            'Joystick ↖', 'Joystick ↗', 'Joystick ↙', 'Joystick ↘',
-            'Joystick CLICK'
+            'Joystick UP', 'Joystick DOWN', 'Joystick LEFT', 'Joystick RIGHT',
+            'Joystick UP-LEFT', 'Joystick UP-RIGHT', 'Joystick DOWN-LEFT', 'Joystick DOWN-RIGHT',
+            'Joystick CLICK',
+            'Volume LEFT', 'Volume RIGHT'
         ];
     }
 
@@ -99,10 +100,17 @@ class HiChordTest {
             }
 
             // Test progress update (0x12): [step number] [pass/fail] [button pressed]
-            if (cmd === 0x12 && data.length >= 6 && this.testRunning) {
+            if (cmd === 0x12 && data.length >= 6) {
                 const stepNum = data[3];  // 1-19
                 const passed = data[4] === 0x01;
                 const buttonPressed = data[5];  // What button was actually pressed
+
+                console.log(`[Test] Received 0x12: Step ${stepNum}, testRunning=${this.testRunning}`);
+
+                if (!this.testRunning) {
+                    console.warn(`[Test] Ignoring message - test not running!`);
+                    return;
+                }
 
                 console.log(`[Test] Step ${stepNum}: ${passed ? 'PASS' : 'FAIL'} (pressed ${buttonPressed}, expected ${stepNum})`);
 
@@ -128,6 +136,7 @@ class HiChordTest {
     }
 
     startTest() {
+        console.log('[Test] Starting test - setting testRunning = true');
         this.testRunning = true;
         this.results = [];
 
@@ -136,24 +145,26 @@ class HiChordTest {
         document.getElementById('currentTest').style.display = 'block';
 
         // Reset progress
-        document.getElementById('progressText').textContent = '0 / 19';
+        document.getElementById('progressText').textContent = '0 / 21';
         document.getElementById('progressFill').style.width = '0%';
-        document.getElementById('currentTestInstruction').textContent = 'Test Starting...';
+        document.getElementById('currentTestInstruction').textContent = 'Waiting for first button...';
         document.getElementById('statusIcon').textContent = '▶';
-        document.getElementById('statusText').textContent = 'Running';
+        document.getElementById('statusText').textContent = 'Ready';
         document.getElementById('testStatus').className = 'test-status-indicator waiting';
 
-        // Enter test mode
+        // Enter test mode (device will wait 500ms before accepting buttons)
+        console.log('[Test] Sending SysEx 0x10 to enter test mode');
         this.sendSysEx([0xF0, 0x7D, 0x10, 0xF7]);
 
-        console.log('[Test] Started - device is now running test sequence');
+        console.log('[Test] Test mode activated - device waiting 500ms, then ready for button presses');
+        console.log('[Test] Web app ready to receive updates via SysEx 0x12');
     }
 
     updateProgress(stepNum, passed, buttonPressed) {
-        const progress = (stepNum / 19) * 100;
+        const progress = (stepNum / 21) * 100;
         const expectedName = this.testNames[stepNum - 1];
 
-        document.getElementById('progressText').textContent = `${stepNum} / 19`;
+        document.getElementById('progressText').textContent = `${stepNum} / 21`;
         document.getElementById('progressFill').style.width = `${progress}%`;
         document.getElementById('currentTestInstruction').textContent = expectedName;
 
@@ -184,7 +195,7 @@ class HiChordTest {
         document.getElementById('verdictIcon').textContent = failedCount === 0 ? '✓' : '✗';
         document.getElementById('passedCount').textContent = passedCount;
         document.getElementById('failedCount').textContent = failedCount;
-        document.getElementById('totalCount').textContent = '19';
+        document.getElementById('totalCount').textContent = '21';
 
         // Show detailed results
         const detailDiv = document.getElementById('resultsDetail');
@@ -213,7 +224,7 @@ class HiChordTest {
             });
         }
 
-        console.log(`[Test] Results displayed: ${passedCount}/${19} passed`);
+        console.log(`[Test] Results displayed: ${passedCount}/21 passed`);
     }
 
     sendSysEx(data) {
