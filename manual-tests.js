@@ -681,12 +681,18 @@ function renderOLED(oledData) {
         },
         bar_select: (data) => {
             // Show looper bar select menu - WAITING screen
+            // Extract bar count from "4  BARS <>" format
+            const barInfo = data.content[2];
+            const barNumber = barInfo.split(' ')[0]; // Get "4" from "4  BARS <>"
+
             return `
                 <div class="oled-screen-full">
-                    <div class="oled-bar-select">
-                        <div class="bar-select-header">${data.content[0]}</div>
-                        <div class="bar-select-line"></div>
-                        <div class="bar-select-info">${data.content[2]}</div>
+                    <div class="oled-bar-select-accurate">
+                        <div class="bar-select-waiting">WAITING</div>
+                        <div class="bar-select-separator"></div>
+                        <div class="bar-select-number">${barNumber}</div>
+                        <div class="bar-select-label">BARS</div>
+                        <div class="bar-select-arrows">&lt;&gt;</div>
                     </div>
                 </div>
             `;

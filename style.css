@@ -1445,34 +1445,71 @@ footer {
     line-height: 1;
 }
 
-/* Bar Select Display (Looper Waiting) */
-.oled-bar-select {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 4px 8px;
+/* Bar Select Display (Looper Waiting) - Pixel Perfect */
+/* Real OLED: 64x32px, CSS: 192x96px (3x scale) */
+.oled-bar-select-accurate {
+    position: relative;
     width: 100%;
     height: 100%;
 }
 
-.bar-select-header {
-    font-size: 12px;
+/* "WAITING": x=8, y=10 baseline, font 7x14B (14px) */
+/* 3x scale: x=24, y=30 baseline, font 42px */
+.bar-select-waiting {
+    position: absolute;
+    left: 24px;
+    top: 20px;
+    font-size: 38px;
     font-weight: 700;
     letter-spacing: 1px;
-    margin-bottom: 2px;
+    line-height: 1;
 }
 
-.bar-select-line {
+/* Line: y=12, from x=0 to x=63 */
+/* 3x scale: y=36, full width */
+.bar-select-separator {
+    position: absolute;
+    left: 0;
+    top: 36px;
     width: 100%;
-    height: 1px;
+    height: 3px;
     background: #FFFFFF;
-    margin-bottom: 6px;
 }
 
-.bar-select-info {
-    font-size: 11px;
+/* Bar number "4": x=8, y=24 baseline, font 7x14B (14px, LARGE) */
+/* 3x scale: x=24, y=72 baseline, font 42px */
+.bar-select-number {
+    position: absolute;
+    left: 24px;
+    top: 58px;
+    font-size: 38px;
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 1;
+}
+
+/* "BARS": x=35, y=22 baseline, font 5x7 (7px, small) */
+/* 3x scale: x=105, y=66 baseline, font 21px */
+.bar-select-label {
+    position: absolute;
+    left: 105px;
+    top: 54px;
+    font-size: 18px;
     font-weight: 600;
     letter-spacing: 0.5px;
+    line-height: 1;
+}
+
+/* "<>": x=50, y=22 baseline, font 5x7 (7px, small) */
+/* 3x scale: x=150, y=66 baseline, font 21px */
+.bar-select-arrows {
+    position: absolute;
+    left: 150px;
+    top: 54px;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 1;
 }
 
 /* PIXEL-PERFECT F1/F2/F3 Displays */
