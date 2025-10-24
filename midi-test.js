@@ -18,8 +18,8 @@ async function startMidiTest() {
         btn.textContent = 'Connecting...';
         statusEl.innerHTML = '<div class="status-dot connecting"></div><span class="status-text">Connecting to HiChord...</span>';
 
-        // Request MIDI access with SysEx for enabling MIDI output
-        const midiAccess = await navigator.requestMIDIAccess({ sysex: true });
+        // Request MIDI access (no SysEx needed, we use standard CC messages)
+        const midiAccess = await navigator.requestMIDIAccess({ sysex: false });
 
         // Find HiChord device
         let hichordInput = null;
@@ -46,9 +46,12 @@ async function startMidiTest() {
         midiInput = hichordInput;
         midiOutput = hichordOutput;
 
-        // Enable MIDI output on HiChord (SysEx: F0 7D 00 01 F7)
-        const enableMidiSysEx = [0xF0, 0x7D, 0x00, 0x01, 0xF7];
-        midiOutput.send(enableMidiSysEx);
+        // Enable MIDI output on HiChord by sending CC #127 with value 1
+        // This is the "web app connection handshake" that auto-enables MIDI OUT
+        const controlChange = 0xB0; // Control Change on channel 1
+        const ccNumber = 127;
+        const ccValue = 1;
+        midiOutput.send([controlChange, ccNumber, ccValue]);
 
         // Update status - Connected
         statusEl.innerHTML = '<div class="status-dot connected"></div><span class="status-text">Connected: ' + hichordInput.name + '</span>';
