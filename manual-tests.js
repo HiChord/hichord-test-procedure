@@ -171,29 +171,24 @@ const manualTests = [
     },
     {
         id: 7,
-        name: "Joystick Click (Inversion Select)",
+        name: "Joystick Click (Bar Select Menu)",
         image: "images/Top View.png",
         procedure: [
-            "Press and HOLD chord button 1",
-            "While holding, click joystick button (press down)",
-            "Release chord button and observe OLED",
-            "Repeat: Hold button 1 + click again",
-            "Cycle through inversions: Root → 1Inv → 2Inv → Root"
+            "From default startup, click joystick button (press down)",
+            "OLED shows \"WAITING\" screen with bar selection",
+            "Use joystick LEFT/RIGHT to adjust bar count",
+            "Verify bar count changes (FREE, 1, 2, 4, 8, etc.)"
         ],
         expected: [
-            "Joystick click registers immediately when held with chord",
-            "First click shows \"1Inv\" in small box on OLED",
-            "Second click shows \"2Inv\" in small box on OLED",
-            "Third click removes box (back to root position)",
-            "Inversion indicator appears in bottom-right of chord display"
+            "Joystick click opens bar select menu immediately",
+            "OLED displays: \"WAITING\" header with line separator",
+            "Shows bar count (FREE or number) with \"BARS <>\" label",
+            "Joystick LEFT/RIGHT adjusts bar count",
+            "Display updates when bar count changes"
         ],
         oled: {
-            type: "inversion",
-            states: [
-                { state: "ROOT", text: "", box: false },
-                { state: "1ST", text: "1Inv", box: true },
-                { state: "2ND", text: "2Inv", box: true }
-            ]
+            type: "bar_select",
+            content: ["WAITING", "___", "4  BARS <>"]
         }
     },
     {
@@ -667,35 +662,17 @@ function renderOLED(oledData) {
             html += '</div>';
             return html;
         },
-        inversion: (data) => {
-            // Show chord inversion states - displays "1Inv" or "2Inv" in box at bottom right
-            const states = data.states;
-            let html = '<div class="single-test-list">';
-
-            states.forEach((state, idx) => {
-                html += `
-                    <div class="single-test-row">
-                        <div class="button-icon-display">
-                            <div class="joy-arrow-icon">⏺</div>
-                            <div class="button-label">Click ${idx + 1}</div>
-                        </div>
-
-                        <div class="arrow-single">→</div>
-
-                        <div class="oled-screen-full">
-                            <div class="oled-chord-accurate">
-                                <div class="oled-chord-number-circle">1</div>
-                                <div class="oled-chord-key-letter">C</div>
-                                <div class="oled-chord-name-center">C</div>
-                                ${state.box ? `<div class="oled-inversion-box">${state.text}</div>` : ''}
-                            </div>
-                        </div>
+        bar_select: (data) => {
+            // Show looper bar select menu - WAITING screen
+            return `
+                <div class="oled-screen-full">
+                    <div class="oled-bar-select">
+                        <div class="bar-select-header">${data.content[0]}</div>
+                        <div class="bar-select-line"></div>
+                        <div class="bar-select-info">${data.content[2]}</div>
                     </div>
-                `;
-            });
-
-            html += '</div>';
-            return html;
+                </div>
+            `;
         }
     };
 
@@ -730,11 +707,11 @@ function renderOLED(oledData) {
         `;
     }
 
-    if (oledData.type === 'inversion') {
+    if (oledData.type === 'bar_select') {
         return `
-            <div class="oled-mockup inversion-mockup">
+            <div class="oled-mockup bar-select-mockup">
                 ${renderer(oledData)}
-                <div class="mockup-label">Expected OLED Display (Hold Chord + Joystick Click)</div>
+                <div class="mockup-label">Expected OLED Display (Joystick Click)</div>
             </div>
         `;
     }
