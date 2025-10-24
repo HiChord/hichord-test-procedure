@@ -269,16 +269,13 @@ const manualTests = [
         skipBatch: ["1"],
         procedure: [
             "Press and hold F1 + F2 buttons together",
-            "Battery display should show voltage and percentage",
-            "Display shows: 'Bat: X.XV XX%' with battery bar",
-            "Verify voltage reading is reasonable (3.0-4.2V if battery present)",
+            "Observe battery voltage and percentage on OLED",
             "Release buttons to return to normal operation"
         ],
         expected: [
-            "F1 + F2 combo triggers battery display",
-            "Voltage and percentage shown clearly",
-            "Battery bar graphic displays with proper fill level",
-            "Display shows even if 0V/0% (for debugging)",
+            "Shows voltage (3.0-4.2V) and percentage",
+            "Shows 100% when plugged into USB power",
+            "Battery bar displays with fill level",
             "Returns to normal display after release"
         ],
         oled: {
