@@ -1392,48 +1392,51 @@ footer {
     padding-left: 4px;
 }
 
-/* Pixel-Perfect Chord Display (matches firmware) */
+/* Pixel-Perfect Chord Display (matches firmware exactly) */
+/* ALL elements at y=10 baseline on 64x32px OLED */
 .oled-chord-accurate {
     position: relative;
     width: 100%;
     height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
+/* Chord Number: Circle at (10, 10), radius 9px */
 .oled-chord-number-circle {
     position: absolute;
-    left: 15px;
-    top: 15px;
-    width: 27px;
-    height: 27px;
+    left: 10px;
+    top: 10px;
+    width: 18px;
+    height: 18px;
     border: 2px solid #FFFFFF;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
+    transform: translate(-50%, -50%);
 }
 
+/* Key Letter: Right-aligned, x = 64 - width - 2, y = 10 */
 .oled-chord-key-letter {
     position: absolute;
-    right: 8px;
-    top: 15px;
-    font-size: 11px;
+    right: 2px;
+    top: 10px;
+    font-size: 10px;
     font-weight: 600;
     letter-spacing: 0;
+    transform: translateY(-50%);
 }
 
+/* Chord Name: Centered horizontally, y = 10, font 8x13B */
 .oled-chord-name-center {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 700;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
     position: absolute;
-    top: 12px;
+    top: 10px;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, -50%);
 }
 
 /* Bar Select Display (Looper Waiting) */
