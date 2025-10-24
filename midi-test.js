@@ -77,22 +77,29 @@ async function startMidiTest() {
 }
 
 function handleMidiMessage(message) {
-    if (!midiReceived) {
-        midiReceived = true;
+    const [status, data1, data2] = message.data;
+    const command = status & 0xF0;
 
-        // Hide instruction
-        const instructionEl = document.getElementById('midiInstruction');
-        instructionEl.style.display = 'none';
+    // Only respond to Note On messages (0x90) from button presses
+    // Ignore Control Change messages from connection handshake
+    if (command === 0x90 && data2 > 0) {
+        if (!midiReceived) {
+            midiReceived = true;
 
-        // Show success
-        const resultEl = document.getElementById('midiResult');
-        resultEl.innerHTML = `
-            <div class="midi-success">
-                <div class="success-icon">✓</div>
-                <div class="success-text">Success!</div>
-                <div class="success-subtext">MIDI communication working correctly</div>
-            </div>
-        `;
-        resultEl.style.display = 'block';
+            // Hide instruction
+            const instructionEl = document.getElementById('midiInstruction');
+            instructionEl.style.display = 'none';
+
+            // Show success
+            const resultEl = document.getElementById('midiResult');
+            resultEl.innerHTML = `
+                <div class="midi-success">
+                    <div class="success-icon">✓</div>
+                    <div class="success-text">Success!</div>
+                    <div class="success-subtext">MIDI communication working correctly</div>
+                </div>
+            `;
+            resultEl.style.display = 'block';
+        }
     }
 }
