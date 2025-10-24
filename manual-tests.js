@@ -216,25 +216,6 @@ const manualTests = [
     },
     {
         id: 9,
-        name: "USB-C Connection",
-        image: "images/Side View.png",
-        procedure: [
-            "Connect HiChord to computer via USB-C",
-            "Verify USB connection is stable",
-            "Computer should recognize device (no driver needed)",
-            "Check LED indicator shows charging/connected status"
-        ],
-        expected: [
-            "USB connection establishes immediately",
-            "Device powers on via USB if battery low",
-            "Charging LED indicator functions correctly",
-            "No connection errors or dropouts"
-        ],
-        note: "HiChord supports two USB modes: MIDI (default) and USB Audio. Mode can be toggled via F2 menu → USB Mode → requires reboot. USB Audio mode disables internal speaker.",
-        oled: null
-    },
-    {
-        id: 10,
         name: "MIDI over USB-C",
         image: "images/Side View.png",
         procedure: [
@@ -260,7 +241,7 @@ const manualTests = [
         midiTest: true
     },
     {
-        id: 11,
+        id: 10,
         name: "Microphone Input",
         batch: "4+",
         skipBatch: ["1", "2", "3"],
@@ -291,7 +272,7 @@ const manualTests = [
         note: "BATCH 4+ ONLY - Skip for Batch 1-3 (no microphone)"
     },
     {
-        id: 12,
+        id: 11,
         name: "Battery Indicator",
         batch: "2+",
         skipBatch: ["1"],
