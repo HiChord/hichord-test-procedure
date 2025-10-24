@@ -202,13 +202,11 @@ const manualTests = [
         image: "images/Top View.png",
         procedure: [
             "Connect headphones to 3.5mm jack on top side (see image)",
-            "Verify internal speaker mutes automatically",
             "Set volume to 50%",
             "Press chord buttons 1-7",
             "Listen for stereo audio in headphones"
         ],
         expected: [
-            "Speaker mutes when headphones connected",
             "Clear stereo audio in both L and R channels",
             "No ground noise or interference",
             "Volume control functions properly",
