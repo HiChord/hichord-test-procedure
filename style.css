@@ -1505,6 +1505,7 @@ footer {
 }
 
 /* F2: SOUND ^ (inverted) / < VERB > / ON/OFF v (inverted) triple display */
+/* Exact proportions: 12px (37.5%) / 12px (37.5%) / 8px (25%) */
 .oled-f2-triple {
     position: relative;
     width: 100%;
@@ -1517,7 +1518,7 @@ footer {
     background: #FFFFFF;
     color: #000000;
     width: 100%;
-    height: 12px;
+    height: 37.5%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1530,7 +1531,7 @@ footer {
     background: #000000;
     color: #FFFFFF;
     width: 100%;
-    flex: 1;
+    height: 37.5%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1543,7 +1544,7 @@ footer {
     background: #FFFFFF;
     color: #000000;
     width: 100%;
-    height: 8px;
+    height: 25%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1553,6 +1554,7 @@ footer {
 }
 
 /* F3: MODE ^ / BPM <> 120 (inverted box) display */
+/* Exact proportions: 12px top (37.5%) / 1px line / 19px inverted box (59.4%) */
 .oled-f3-bpm {
     position: relative;
     width: 100%;
@@ -1565,7 +1567,7 @@ footer {
     background: #000000;
     color: #FFFFFF;
     width: 100%;
-    height: 10px;
+    height: 37.5%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1576,15 +1578,16 @@ footer {
 
 .f3-divider-line {
     width: 100%;
-    height: 1px;
+    height: 3%;
     background: #FFFFFF;
+    min-height: 1px;
 }
 
 .f3-bpm-inverted-box {
     background: #FFFFFF;
     color: #000000;
     width: 100%;
-    flex: 1;
+    height: 59.5%;
     display: flex;
     align-items: center;
     justify-content: center;
