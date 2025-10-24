@@ -61,7 +61,7 @@ const manualTests = [
     {
         id: 4,
         name: "Function Buttons (F1, F2, F3)",
-        image: "images/BUtton numbers 2.png",
+        image: "images/BUtton numbers 3.png",
         procedure: [
             "Press each function button ONCE after startup",
             "Move joystick to see different menu values",
