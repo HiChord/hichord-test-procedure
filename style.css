@@ -1454,12 +1454,12 @@ footer {
 }
 
 /* "WAITING": x=8, baseline y=10, font 7x14B (14px tall, top at y≈0, bottom at y≈12) */
-/* 3x scale: x=24, top at y≈0, bottom at y≈36, font 42px */
+/* 3x scale: x=24, top at y≈0, font reduced to 32px for better visual balance */
 .bar-select-waiting {
     position: absolute;
     left: 24px;
-    top: 0px;
-    font-size: 42px;
+    top: 4px;
+    font-size: 32px;
     font-weight: 700;
     letter-spacing: 1px;
     line-height: 1;
@@ -1477,12 +1477,12 @@ footer {
 }
 
 /* Bar number "4": x=8, baseline y=24, font 7x14B (14px tall, top at y≈12) */
-/* 3x scale: x=24, top at y≈36 (just below line), font 42px */
+/* 3x scale: x=24, top at y≈36 (just below line), font 32px for better balance */
 .bar-select-number {
     position: absolute;
     left: 24px;
-    top: 36px;
-    font-size: 42px;
+    top: 40px;
+    font-size: 32px;
     font-weight: 700;
     letter-spacing: 0;
     line-height: 1;

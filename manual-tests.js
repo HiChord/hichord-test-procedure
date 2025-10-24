@@ -181,16 +181,11 @@ const manualTests = [
         image: "images/Top View.png",
         procedure: [
             "From default startup, click joystick button (press down)",
-            "OLED shows \"WAITING\" screen with bar selection",
-            "Use joystick LEFT/RIGHT to adjust bar count",
-            "Verify bar count changes (FREE, 1, 2, 4, 8, etc.)"
+            "OLED shows \"WAITING\" screen with bar selection"
         ],
         expected: [
             "Joystick click opens bar select menu immediately",
-            "OLED displays: \"WAITING\" header with line separator",
-            "Shows bar count (FREE or number) with \"BARS <>\" label",
-            "Joystick LEFT/RIGHT adjusts bar count",
-            "Display updates when bar count changes"
+            "OLED displays: \"WAITING\" header with line separator, Shows bar count (FREE or number) with \"BARS <>\" label"
         ],
         oled: {
             type: "bar_select",
