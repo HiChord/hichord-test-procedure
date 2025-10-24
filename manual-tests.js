@@ -171,25 +171,28 @@ const manualTests = [
     },
     {
         id: 7,
-        name: "Joystick Click (Looper)",
+        name: "Joystick Click (Inversion Select)",
         image: "images/Top View.png",
         procedure: [
-            "Click joystick button (press down)",
-            "Verify looper GUI appears on OLED",
-            "Click again to cycle through: REC → PLAY → STOP"
+            "Press and HOLD chord button 1",
+            "While holding, click joystick button (press down)",
+            "Release chord button and observe OLED",
+            "Repeat: Hold button 1 + click again",
+            "Cycle through inversions: Root → 1Inv → 2Inv → Root"
         ],
         expected: [
-            "Joystick click registers immediately",
-            "Looper GUI displays with \"rec loop\" icon",
-            "Second click shows \"play loop\" icon",
-            "Third click clears loop"
+            "Joystick click registers immediately when held with chord",
+            "First click shows \"1Inv\" in small box on OLED",
+            "Second click shows \"2Inv\" in small box on OLED",
+            "Third click removes box (back to root position)",
+            "Inversion indicator appears in bottom-right of chord display"
         ],
         oled: {
-            type: "looper",
+            type: "inversion",
             states: [
-                { state: "REC", icon: "⏺", text: "rec loop" },
-                { state: "PLAY", icon: "⏵", text: "play loop" },
-                { state: "STOP", icon: "⏹", text: "stop loop" }
+                { state: "ROOT", text: "", box: false },
+                { state: "1ST", text: "1Inv", box: true },
+                { state: "2ND", text: "2Inv", box: true }
             ]
         }
     },
@@ -692,6 +695,36 @@ function renderOLED(oledData) {
 
             html += '</div>';
             return html;
+        },
+        inversion: (data) => {
+            // Show chord inversion states - displays "1Inv" or "2Inv" in box at bottom right
+            const states = data.states;
+            let html = '<div class="single-test-list">';
+
+            states.forEach((state, idx) => {
+                html += `
+                    <div class="single-test-row">
+                        <div class="button-icon-display">
+                            <div class="joy-arrow-icon">⏺</div>
+                            <div class="button-label">Click ${idx + 1}</div>
+                        </div>
+
+                        <div class="arrow-single">→</div>
+
+                        <div class="oled-screen-full">
+                            <div class="oled-chord-accurate">
+                                <div class="oled-chord-number-circle">1</div>
+                                <div class="oled-chord-key-letter">C</div>
+                                <div class="oled-chord-name-center">C</div>
+                                ${state.box ? `<div class="oled-inversion-box">${state.text}</div>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            return html;
         }
     };
 
@@ -722,6 +755,15 @@ function renderOLED(oledData) {
             <div class="oled-mockup joystick-mockup">
                 ${renderer(oledData)}
                 <div class="mockup-label">Expected OLED Display (Hold Button 1 + Move Joystick)</div>
+            </div>
+        `;
+    }
+
+    if (oledData.type === 'inversion') {
+        return `
+            <div class="oled-mockup inversion-mockup">
+                ${renderer(oledData)}
+                <div class="mockup-label">Expected OLED Display (Hold Chord + Joystick Click)</div>
             </div>
         `;
     }
