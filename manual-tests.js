@@ -27,14 +27,14 @@ const manualTests = [
             "Verify firmware version appears"
         ],
         expected: [
-            "Display shows \"HICHORD\" title with animation",
-            "Version \"REV 1.95\" appears below title",
+            "Display shows \"HiChord\" title with animated ghost",
+            "Version \"REV 1.97\" appears below title",
             "Boot sequence completes within 3 seconds",
             "No screen artifacts or glitches"
         ],
         oled: {
             type: "boot",
-            content: ["HICHORD", "REV 1.95"]
+            content: ["HiChord", "REV 1.97"]
         }
     },
     {
@@ -64,45 +64,53 @@ const manualTests = [
         image: "images/BUtton numbers 2.png",
         procedure: [
             "Press each function button ONCE after startup",
-            "Verify expected menu appears on OLED",
-            "Check button registers and displays correct default menu"
+            "Move joystick to see different menu values",
+            "Verify OLED shows correct displays"
         ],
         expected: [
             "Each button press registers immediately",
-            "Correct menu appears with default startup values",
-            "OLED displays clearly with inverted header bar"
+            "F1: Shows KEY or OCTAVE (one at a time) when joystick moved",
+            "F2: Press Up to enter waveform submenu with left/right arrows",
+            "F3: Shows BPM display with inverted box and border frame",
+            "All displays have professional formatting"
         ],
         oled: {
-            type: "function3_startup",
+            type: "function3_startup_accurate",
             buttons: [
                 {
                     button: "F1",
-                    name: "Settings",
+                    name: "Settings (KEY/OCTAVE)",
                     color: "#666666",
                     icon: "⚙",
-                    display: "dual",
-                    line1: { label: "KEY", value: "", arrows: "< >" },
-                    line2: { label: "OCTAVE", value: "", arrows: "^ v" }
+                    display: "single_value",
+                    examples: [
+                        { label: "KEY", value: "C", desc: "Shows when joystick moved L/R" },
+                        { label: "OCTAVE", value: "+1", desc: "Shows when joystick moved U/D" }
+                    ]
                 },
                 {
                     button: "F2",
-                    name: "Effects",
+                    name: "Effects/Waveform",
                     color: "#FFD700",
                     icon: "〜",
-                    display: "effect",
-                    topLabel: "SOUND ^",
-                    effectName: "< VERB >",
-                    hint: ""
+                    display: "waveform_submenu",
+                    submenuTrigger: "Press joystick UP",
+                    waveformName: "Saw",
+                    arrows: "< >",
+                    hasPreview: true
                 },
                 {
                     button: "F3",
                     name: "BPM/Mode",
                     color: "#FF4500",
                     icon: "⏱",
-                    display: "bpm",
-                    bpm: "120",
-                    topHint: "MODE ^",
-                    bottomHint: "BPM < >"
+                    display: "bpm_framed",
+                    topText: "MODE ^",
+                    bpmNumber: "120",
+                    bpmLabel: "BPM",
+                    arrows: "< >",
+                    hasInvertedBox: true,
+                    hasBorder: true
                 }
             ]
         }
@@ -257,8 +265,11 @@ const manualTests = [
             "Pitch detection works accurately"
         ],
         oled: {
-            type: "recording",
-            content: ["● REC", "███░░░░░"]
+            type: "mic_recording",
+            title: "MIC SAMPLE",
+            recText: "REC 0.5s",
+            progressBar: { x: 4, y: 18, width: 56, height: 6, filled: 28 },
+            rmsMeter: { x: 4, y: 26, width: 56, height: 4, filled: 40 }
         },
         note: "BATCH 4+ ONLY - Skip for Batch 1-3 (no microphone)"
     },
@@ -279,8 +290,18 @@ const manualTests = [
             "Returns to normal display after release"
         ],
         oled: {
-            type: "battery",
-            content: ["3.8V 65%", "▮▮▮▯"]
+            type: "battery_accurate",
+            text: "Bat: 3.8V 65%",
+            batteryBar: {
+                x: 12,
+                y: 20,
+                width: 40,
+                height: 12,
+                tipWidth: 2,
+                tipHeight: 8,
+                fillPercentage: 65,
+                hasDividers: true
+            }
         },
         note: "BATCH 2+ ONLY - F1+F2 combo always shows battery info (even 0V for debugging early PCBs)"
     }
@@ -670,6 +691,124 @@ function renderOLED(oledData) {
                     </div>
                 </div>
             `;
+        },
+        function3_startup_accurate: (data) => {
+            // Show 3 function buttons with ACCURATE pixel-perfect OLED displays
+            const buttons = data.buttons;
+            let html = '<div class="single-test-list">';
+
+            buttons.forEach(btn => {
+                let oledContent = '';
+
+                if (btn.display === 'single_value') {
+                    // F1: Shows KEY or OCTAVE (one at a time) in inverted header format
+                    const examples = btn.examples || [];
+                    oledContent = `
+                        <div class="oled-single-value-examples">
+                            ${examples.map(ex => `
+                                <div class="value-example">
+                                    <div class="example-label">${ex.desc}</div>
+                                    <div class="oled-header-bar">
+                                        <div class="oled-text">${ex.label}</div>
+                                    </div>
+                                    <div class="oled-body centered">
+                                        <div class="oled-text-large">${ex.value}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                } else if (btn.display === 'waveform_submenu') {
+                    // F2: Waveform selection submenu (press UP to enter)
+                    oledContent = `
+                        <div class="oled-waveform-submenu">
+                            <div class="waveform-name-centered">${btn.waveformName}</div>
+                            <div class="waveform-arrows">${btn.arrows}</div>
+                            ${btn.hasPreview ? '<div class="waveform-preview">▲▼▲▼</div>' : ''}
+                        </div>
+                    `;
+                } else if (btn.display === 'bpm_framed') {
+                    // F3: BPM display with inverted box and border frame
+                    oledContent = `
+                        <div class="oled-bpm-framed">
+                            ${btn.hasBorder ? '<div class="bpm-border-frame"></div>' : ''}
+                            <div class="bpm-top-text">${btn.topText}</div>
+                            <div class="bpm-divider-line"></div>
+                            ${btn.hasInvertedBox ? `
+                                <div class="bpm-inverted-box">
+                                    <div class="bpm-label">${btn.bpmLabel}</div>
+                                    <div class="bpm-arrows">${btn.arrows}</div>
+                                    <div class="bpm-number-large">${btn.bpmNumber}</div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }
+
+                html += `
+                    <div class="single-test-row">
+                        <div class="button-icon-display">
+                            <div class="button-icon-square" style="background-color: ${btn.color}; color: ${btn.color === '#FFD700' ? '#000' : '#FFF'};">
+                                ${btn.icon}
+                            </div>
+                            <div class="button-label">${btn.button}</div>
+                        </div>
+
+                        <div class="arrow-single">→</div>
+
+                        <div class="oled-screen-full">
+                            ${oledContent}
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            return html;
+        },
+        mic_recording: (data) => {
+            // Show MIC SAMPLE recording display with title, progress bar, and RMS meter
+            const progressFillWidth = (data.progressBar.filled / data.progressBar.width) * 100;
+            const rmsFillWidth = (data.rmsMeter.filled / data.rmsMeter.width) * 100;
+
+            return `
+                <div class="oled-screen-full">
+                    <div class="oled-mic-recording">
+                        <div class="mic-title">${data.title}</div>
+                        <div class="mic-rec-text">${data.recText}</div>
+                        <div class="mic-progress-bar" style="width: ${data.progressBar.width}px; height: ${data.progressBar.height}px;">
+                            <div class="mic-progress-fill" style="width: ${progressFillWidth}%; height: 100%;"></div>
+                        </div>
+                        <div class="mic-rms-meter" style="width: ${data.rmsMeter.width}px; height: ${data.rmsMeter.height}px; margin-top: 2px;">
+                            <div class="mic-rms-fill" style="width: ${rmsFillWidth}%; height: 100%;"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        },
+        battery_accurate: (data) => {
+            // Show battery display with centered text and battery bar with dividers
+            const bar = data.batteryBar;
+            const fillWidth = (bar.fillPercentage / 100) * (bar.width - 2);
+
+            return `
+                <div class="oled-screen-full">
+                    <div class="oled-battery-accurate">
+                        <div class="battery-text-centered">${data.text}</div>
+                        <div class="battery-bar-container" style="margin-left: ${bar.x}px; margin-top: ${bar.y}px;">
+                            <div class="battery-bar-frame" style="width: ${bar.width}px; height: ${bar.height}px;">
+                                <div class="battery-fill" style="width: ${fillWidth}px; height: ${bar.height - 2}px;"></div>
+                                ${bar.hasDividers ? `
+                                    <div class="battery-divider" style="left: ${(bar.width - 2) * 0.25 + 1}px;"></div>
+                                    <div class="battery-divider" style="left: ${(bar.width - 2) * 0.50 + 1}px;"></div>
+                                    <div class="battery-divider" style="left: ${(bar.width - 2) * 0.75 + 1}px;"></div>
+                                ` : ''}
+                            </div>
+                            <div class="battery-tip" style="left: ${bar.width}px; top: ${(bar.height - bar.tipHeight) / 2}px; width: ${bar.tipWidth}px; height: ${bar.tipHeight}px;"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
         }
     };
 
@@ -718,6 +857,33 @@ function renderOLED(oledData) {
             <div class="oled-mockup looper-mockup">
                 ${renderer(oledData)}
                 <div class="mockup-label">Expected OLED Display (Joystick Click)</div>
+            </div>
+        `;
+    }
+
+    if (oledData.type === 'function3_startup_accurate') {
+        return `
+            <div class="oled-mockup function-mockup">
+                ${renderer(oledData)}
+                <div class="mockup-label">Expected OLED Display (Press Each Button + Move Joystick)</div>
+            </div>
+        `;
+    }
+
+    if (oledData.type === 'mic_recording') {
+        return `
+            <div class="oled-mockup mic-mockup">
+                ${renderer(oledData)}
+                <div class="mockup-label">Expected OLED Display (Recording in Progress)</div>
+            </div>
+        `;
+    }
+
+    if (oledData.type === 'battery_accurate') {
+        return `
+            <div class="oled-mockup battery-mockup">
+                ${renderer(oledData)}
+                <div class="mockup-label">Expected OLED Display (F1 + F2 Held)</div>
             </div>
         `;
     }

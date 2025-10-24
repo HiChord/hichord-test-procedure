@@ -9,14 +9,14 @@ class HiChordTest {
         this.testRunning = false;
         this.results = [];
 
-        // Test names (21 tests) - matches firmware exactly
+        // Test names (20 tests) - matches firmware exactly
         this.testNames = [
             'Chord 1', 'Chord 2', 'Chord 3', 'Chord 4', 'Chord 5', 'Chord 6', 'Chord 7',
             'Menu Button 1', 'Menu Button 2', 'Menu Button 3',
             'Joystick UP', 'Joystick DOWN', 'Joystick LEFT', 'Joystick RIGHT',
             'Joystick UP-LEFT', 'Joystick UP-RIGHT', 'Joystick DOWN-LEFT', 'Joystick DOWN-RIGHT',
             'Joystick CLICK',
-            'Volume LEFT', 'Volume RIGHT'
+            'Volume Wheel'
         ];
     }
 
@@ -145,11 +145,14 @@ class HiChordTest {
         document.getElementById('currentTest').style.display = 'block';
 
         // Show simple message - all action is on the HiChord OLED
-        document.getElementById('progressText').textContent = 'TEST RUNNING';
+        document.getElementById('progressText').textContent = '0 / 20';
         document.getElementById('progressFill').style.width = '0%';
-        document.getElementById('currentTestInstruction').innerHTML = '<strong>Follow the HiChord OLED</strong><br/>Press each button as shown on device';
-        document.getElementById('statusIcon').textContent = '👀';
-        document.getElementById('statusText').textContent = 'Watch Device';
+        document.getElementById('currentTestInstruction').innerHTML = 'Follow the instructions on the HiChord OLED display';
+
+        // Clear test display and status
+        document.getElementById('testDisplay').innerHTML = '';
+        document.getElementById('statusIcon').textContent = '';
+        document.getElementById('statusText').textContent = 'Testing in progress - refer to device';
         document.getElementById('testStatus').className = 'test-status-indicator waiting';
 
         // Enter test mode
@@ -160,12 +163,13 @@ class HiChordTest {
     }
 
     updateProgress(stepNum, passed, buttonPressed) {
-        // Just update progress bar silently - all feedback is on the device OLED
-        const progress = (stepNum / 21) * 100;
+        // Update progress bar and counter
+        const progress = (stepNum / 20) * 100;
         document.getElementById('progressFill').style.width = `${progress}%`;
+        document.getElementById('progressText').textContent = `${stepNum} / 20`;
 
         // Log for debugging
-        console.log(`[Test] Progress: ${stepNum}/21 - ${passed ? 'PASS' : 'FAIL'}`);
+        console.log(`[Test] Progress: ${stepNum}/20 - ${passed ? 'PASS' : 'FAIL'}`);
     }
 
     showResults(passedCount, failedCount) {
@@ -182,7 +186,7 @@ class HiChordTest {
         document.getElementById('verdictIcon').textContent = failedCount === 0 ? '✓' : '✗';
         document.getElementById('passedCount').textContent = passedCount;
         document.getElementById('failedCount').textContent = failedCount;
-        document.getElementById('totalCount').textContent = '21';
+        document.getElementById('totalCount').textContent = '20';
 
         // Show detailed results
         const detailDiv = document.getElementById('resultsDetail');
@@ -211,7 +215,7 @@ class HiChordTest {
             });
         }
 
-        console.log(`[Test] Results displayed: ${passedCount}/21 passed`);
+        console.log(`[Test] Results displayed: ${passedCount}/20 passed`);
     }
 
     sendSysEx(data) {
