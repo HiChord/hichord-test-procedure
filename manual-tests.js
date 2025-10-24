@@ -7,7 +7,7 @@ const manualTests = [
         name: "Charging Indicator",
         procedure: [
             "Locate USB-C port on side of HiChord™",
-            "Connect USB-C cable to HiChord and power source",
+            "Connect USB-C cable to HiChord",
             "Observe LED indicator on side panel"
         ],
         expected: [
@@ -81,8 +81,8 @@ const manualTests = [
                     color: "#666666",
                     icon: "⚙",
                     display: "dual",
-                    line1: { label: "KEY", value: "C", arrows: "←→" },
-                    line2: { label: "OCTAVE", value: "+1", arrows: "↑↓" }
+                    line1: { label: "KEY", value: "", arrows: "< >" },
+                    line2: { label: "OCTAVE", value: "", arrows: "^ v" }
                 },
                 {
                     button: "F2",
@@ -90,8 +90,9 @@ const manualTests = [
                     color: "#FFD700",
                     icon: "〜",
                     display: "effect",
+                    topLabel: "SOUND ^",
                     effectName: "< VERB >",
-                    hint: "↑ change sound"
+                    hint: ""
                 },
                 {
                     button: "F3",
@@ -519,8 +520,9 @@ function renderOLED(oledData) {
                     // F2: Effect selection display
                     oledContent = `
                         <div class="oled-effect-display">
+                            ${btn.topLabel ? `<div class="oled-effect-top">${btn.topLabel}</div>` : ''}
                             <div class="oled-effect-name">${btn.effectName}</div>
-                            <div class="oled-hint">${btn.hint}</div>
+                            ${btn.hint ? `<div class="oled-hint">${btn.hint}</div>` : ''}
                         </div>
                     `;
                 } else if (btn.display === 'bpm') {
