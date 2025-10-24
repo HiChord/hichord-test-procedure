@@ -236,30 +236,28 @@ const manualTests = [
         skipBatch: ["1", "2", "3"],
         procedure: [
             "Press F3 button to open mode selection menu",
-            "Move joystick RIGHT repeatedly to cycle modes until \"MIC SAMPLE\" appears",
-            "  (Mode order: ONESHOT → STRUM → REPEAT → SEQUENCER → CHORDHIRO → EARTRAINER → TUNER → MIC SAMPLE)",
-            "OLED should display: \"MIC SAMPLE\" / \"Hold Chord Btn 1 to Record\"",
+            "Move joystick LEFT once to reach \"MIC SAMPLE\" mode",
+            "OLED displays: \"MIC SAMPLE\" title with \"Hold Btn 1\" / \"to Record\"",
             "Press and HOLD chord button 1 to start recording",
             "Speak or sing a note into the microphone (located on front panel)",
-            "Release chord button 1 to stop recording (max 5.0 seconds)",
+            "Release chord button 1 to stop recording (max 3.0 seconds)",
             "OLED shows sample length and detected pitch",
-            "Press chord buttons 1-7 to play back sample chromatically",
-            "Verify pitch shifts correctly across all buttons"
+            "Press chord buttons 1-7 to play back sample chromatically"
         ],
         expected: [
             "Microphone captures audio clearly",
-            "Recording indicator shows on OLED",
+            "Recording indicator shows on OLED during recording",
             "Recorded sample plays back correctly",
-            "Sample mapped chromatically across buttons",
+            "Sample mapped chromatically across all 7 buttons",
             "No excessive noise or clipping",
             "Pitch detection works accurately"
         ],
         oled: {
             type: "mic_recording",
-            title: "MIC SAMPLE",
-            recText: "REC 0.5s",
-            progressBar: { x: 4, y: 18, width: 56, height: 6, filled: 28 },
-            rmsMeter: { x: 4, y: 26, width: 56, height: 4, filled: 40 }
+            title: "RECORDING",
+            timeText: "0.5 sec",
+            progressBar: { x: 4, y: 22, width: 56, height: 4, filled: 28 },
+            rmsMeter: { x: 4, y: 28, width: 56, height: 4, filled: 40 }
         },
         note: "BATCH 4+ ONLY - Skip for Batch 1-3 (no microphone)"
     },
@@ -753,7 +751,8 @@ function renderOLED(oledData) {
             return html;
         },
         mic_recording: (data) => {
-            // Show MIC SAMPLE recording display with title, progress bar, and RMS meter
+            // Show MIC SAMPLE recording display with "RECORDING" title, time, progress bar, and RMS meter
+            // Matches main.cpp lines 7913-7943
             const progressFillWidth = (data.progressBar.filled / data.progressBar.width) * 100;
             const rmsFillWidth = (data.rmsMeter.filled / data.rmsMeter.width) * 100;
 
@@ -761,11 +760,11 @@ function renderOLED(oledData) {
                 <div class="oled-screen-full">
                     <div class="oled-mic-recording">
                         <div class="mic-title">${data.title}</div>
-                        <div class="mic-rec-text">${data.recText}</div>
-                        <div class="mic-progress-bar" style="width: ${data.progressBar.width}px; height: ${data.progressBar.height}px;">
+                        <div class="mic-time-text">${data.timeText}</div>
+                        <div class="mic-progress-bar" style="width: ${data.progressBar.width * 3}px; height: ${data.progressBar.height * 3}px; margin: 4px auto;">
                             <div class="mic-progress-fill" style="width: ${progressFillWidth}%; height: 100%;"></div>
                         </div>
-                        <div class="mic-rms-meter" style="width: ${data.rmsMeter.width}px; height: ${data.rmsMeter.height}px; margin-top: 2px;">
+                        <div class="mic-rms-meter" style="width: ${data.rmsMeter.width * 3}px; height: ${data.rmsMeter.height * 3}px; margin: 2px auto;">
                             <div class="mic-rms-fill" style="width: ${rmsFillWidth}%; height: 100%;"></div>
                         </div>
                     </div>
