@@ -1393,14 +1393,14 @@ footer {
 }
 
 /* Pixel-Perfect Chord Display (matches firmware exactly) */
-/* ALL elements at y=10 baseline on 64x32px OLED */
+/* Chord Number & Key at y=10 (top), Chord Name at y=30 (bottom) on 64x32px OLED */
 .oled-chord-accurate {
     position: relative;
     width: 100%;
     height: 100%;
 }
 
-/* Chord Number: Circle at (10, 10), radius 9px */
+/* Chord Number: Circle at (10, 10), radius 9px, font 5x7 (small) */
 .oled-chord-number-circle {
     position: absolute;
     left: 10px;
@@ -1417,7 +1417,7 @@ footer {
     transform: translate(-50%, -50%);
 }
 
-/* Key Letter: Right-aligned, x = 64 - width - 2, y = 10 */
+/* Key Letter: Right-aligned at (64-width-2, 10), font 5x7 (small) */
 .oled-chord-key-letter {
     position: absolute;
     right: 2px;
@@ -1428,13 +1428,13 @@ footer {
     transform: translateY(-50%);
 }
 
-/* Chord Name: Centered horizontally, y = 10, font 8x13B */
+/* Chord Name: Centered at y=30 (near bottom), font 8x13B (MUCH BIGGER) */
 .oled-chord-name-center {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 700;
     letter-spacing: 0.5px;
     position: absolute;
-    top: 10px;
+    top: 30px;
     left: 50%;
     transform: translate(-50%, -50%);
 }
