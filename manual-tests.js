@@ -220,13 +220,9 @@ const manualTests = [
         image: "images/Side View.png",
         procedure: [
             "Connect HiChord to computer via USB-C",
-            "Use the interactive MIDI test app below:",
-            "  1. Click 'CONNECT & TEST MIDI' button",
-            "  2. App automatically enables MIDI output on HiChord",
-            "  3. Connection status shows when HiChord is detected",
-            "Press chord buttons 1-7 on HiChord",
-            "Watch MIDI messages appear in real-time log",
-            "Verify note-on/note-off messages for each button press"
+            "Click 'CONNECT & TEST MIDI' button below",
+            "Wait for connection status indicator",
+            "Press chord buttons 1-7 on HiChord"
         ],
         expected: [
             "HiChord detected as USB MIDI device",
@@ -816,23 +812,6 @@ function buildManualTestHTML(test) {
 
     const midiTestHTML = test.midiTest ? `
         <div class="midi-test-app">
-            <div class="midi-test-header">
-                <h3>🎹 Interactive MIDI Test App</h3>
-                <p>One-click test for MIDI connection and input detection</p>
-            </div>
-
-            <div class="midi-test-instructions">
-                <h4>How This Works:</h4>
-                <ol>
-                    <li><strong>Click "TEST MIDI"</strong> below - the app will automatically enable MIDI output on HiChord</li>
-                    <li><strong>Watch the status indicator</strong> - it will show when HiChord is connected</li>
-                    <li><strong>Press any chord button</strong> (1-7) on HiChord - MIDI messages will appear in the log</li>
-                </ol>
-                <p style="margin-top: 12px; font-size: 13px; opacity: 0.9;">
-                    <strong>✓ Tests:</strong> MIDI connection detection, MIDI output enable, and real-time message monitoring
-                </p>
-            </div>
-
             <div class="midi-connection-status" id="midiConnectionStatus">
                 <div class="status-dot disconnected"></div>
                 <span class="status-text">Not Connected</span>
