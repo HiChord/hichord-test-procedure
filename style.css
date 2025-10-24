@@ -1393,7 +1393,7 @@ footer {
 }
 
 /* Pixel-Perfect Chord Display (matches firmware exactly) */
-/* Real OLED: 64x32px, CSS: 320x160px (5x scale) */
+/* Real OLED: 64x32px, CSS: 192x96px (3x scale) */
 /* Chord Number & Key at y=10 (top), Chord Name at y=30 (bottom) */
 .oled-chord-accurate {
     position: relative;
@@ -1402,44 +1402,44 @@ footer {
 }
 
 /* Chord Number: Circle at (10, 10), radius 9px, font 5x7 */
-/* Scaled 5x: (50px, 50px), radius 45px, font ~35px */
+/* 3x scale: center (30, 30), radius 27px (diameter 54px), font 21px */
 .oled-chord-number-circle {
     position: absolute;
-    left: 50px;
-    top: 50px;
-    width: 90px;
-    height: 90px;
+    left: 30px;
+    top: 30px;
+    width: 54px;
+    height: 54px;
     border: 3px solid #FFFFFF;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 28px;
+    font-size: 18px;
     font-weight: 600;
+    line-height: 1;
     transform: translate(-50%, -50%);
 }
 
 /* Key Letter: Right-aligned at x=(64-width-2), y=10, font 5x7 */
-/* Scaled 5x: x=310px (right-aligned), y=50px baseline */
+/* 3x scale: right 6px, baseline at y=30, font 21px */
 .oled-chord-key-letter {
     position: absolute;
-    right: 10px;
-    top: 32px;
-    font-size: 28px;
+    right: 6px;
+    top: 20px;
+    font-size: 18px;
     font-weight: 600;
     letter-spacing: 0;
     line-height: 1;
 }
 
-/* Chord Name: Centered, baseline at y=30 (near bottom), font 8x13B */
-/* 13px tall font, baseline at y=30 means bottom at y≈32 */
-/* Scaled 5x: font 65px, bottom at 160px (container bottom) */
+/* Chord Name: Centered, baseline at y=30 (bottom), font 8x13B (13px tall) */
+/* 3x scale: font 39px, baseline at y=90 (bottom edge of 96px container) */
 .oled-chord-name-center {
-    font-size: 52px;
+    font-size: 32px;
     font-weight: 700;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
     position: absolute;
-    bottom: 0px;
+    bottom: 2px;
     left: 50%;
     transform: translateX(-50%);
     line-height: 1;
