@@ -1,21 +1,24 @@
 // ========================================
-// MIDI Test Functionality
+// MIDI Test Functionality - Simplified
 // ========================================
 
 let midiInput = null;
 let midiOutput = null;
 let midiTestActive = false;
+let midiReceived = false;
 
 async function startMidiTest() {
     const btn = document.getElementById('btnMidiTest');
     const statusEl = document.getElementById('midiConnectionStatus');
-    const logContainer = document.getElementById('midiLogContainer');
+    const instructionEl = document.getElementById('midiInstruction');
+    const resultEl = document.getElementById('midiResult');
 
     try {
         btn.disabled = true;
         btn.textContent = 'Connecting...';
+        statusEl.innerHTML = '<div class="status-dot connecting"></div><span class="status-text">Connecting to HiChord...</span>';
 
-        // Request MIDI access
+        // Request MIDI access with SysEx for enabling MIDI output
         const midiAccess = await navigator.requestMIDIAccess({ sysex: true });
 
         // Find HiChord device
@@ -43,119 +46,50 @@ async function startMidiTest() {
         midiInput = hichordInput;
         midiOutput = hichordOutput;
 
-        // Update status
-        statusEl.innerHTML = '<div class="status-dot connected"></div><span class="status-text">Connected: ' + hichordInput.name + '</span>';
-
         // Enable MIDI output on HiChord (SysEx: F0 7D 00 01 F7)
         const enableMidiSysEx = [0xF0, 0x7D, 0x00, 0x01, 0xF7];
         midiOutput.send(enableMidiSysEx);
 
-        logMidiMessage('System', 'MIDI output enabled on HiChord', 'info');
+        // Update status - Connected
+        statusEl.innerHTML = '<div class="status-dot connected"></div><span class="status-text">Connected: ' + hichordInput.name + '</span>';
+        btn.textContent = 'Connected ✓';
+        btn.style.backgroundColor = '#28a745';
+        btn.style.color = 'white';
 
-        // Show log container
-        logContainer.style.display = 'block';
+        // Show instruction
+        instructionEl.style.display = 'block';
 
         // Start listening for MIDI messages
         midiInput.onmidimessage = handleMidiMessage;
-
-        btn.textContent = 'Connected ✓';
-        btn.style.backgroundColor = '#28a745';
         midiTestActive = true;
 
     } catch (error) {
         console.error('MIDI connection error:', error);
         statusEl.innerHTML = '<div class="status-dot disconnected"></div><span class="status-text">Error: ' + error.message + '</span>';
         btn.disabled = false;
-        btn.textContent = 'TEST MIDI';
-        logMidiMessage('Error', error.message, 'error');
-        logContainer.style.display = 'block';
+        btn.textContent = 'CONNECT & TEST MIDI';
+        btn.style.backgroundColor = '';
+        btn.style.color = '';
     }
 }
 
 function handleMidiMessage(message) {
-    const [status, data1, data2] = message.data;
-    const channel = (status & 0x0F) + 1;
-    const command = status & 0xF0;
+    if (!midiReceived) {
+        midiReceived = true;
 
-    let msgType = '';
-    let msgData = '';
-    let msgClass = 'note';
+        // Hide instruction
+        const instructionEl = document.getElementById('midiInstruction');
+        instructionEl.style.display = 'none';
 
-    switch (command) {
-        case 0x90: // Note On
-            if (data2 > 0) {
-                msgType = 'Note On';
-                msgData = `Note: ${getMidiNoteName(data1)}, Velocity: ${data2}`;
-                msgClass = 'note-on';
-            } else {
-                msgType = 'Note Off';
-                msgData = `Note: ${getMidiNoteName(data1)}`;
-                msgClass = 'note-off';
-            }
-            break;
-
-        case 0x80: // Note Off
-            msgType = 'Note Off';
-            msgData = `Note: ${getMidiNoteName(data1)}`;
-            msgClass = 'note-off';
-            break;
-
-        case 0xB0: // Control Change
-            msgType = 'Control Change';
-            msgData = `CC ${data1}: ${data2}`;
-            msgClass = 'cc';
-            break;
-
-        case 0xC0: // Program Change
-            msgType = 'Program Change';
-            msgData = `Program: ${data1}`;
-            msgClass = 'pc';
-            break;
-
-        default:
-            msgType = 'Other';
-            msgData = `Status: 0x${status.toString(16)}, Data: ${data1}, ${data2}`;
-            msgClass = 'other';
+        // Show success
+        const resultEl = document.getElementById('midiResult');
+        resultEl.innerHTML = `
+            <div class="midi-success">
+                <div class="success-icon">✓</div>
+                <div class="success-text">Success!</div>
+                <div class="success-subtext">MIDI communication working correctly</div>
+            </div>
+        `;
+        resultEl.style.display = 'block';
     }
-
-    logMidiMessage(msgType, msgData, msgClass);
-}
-
-function getMidiNoteName(note) {
-    const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-    const octave = Math.floor(note / 12) - 1;
-    const noteName = noteNames[note % 12];
-    return `${noteName}${octave} (${note})`;
-}
-
-function logMidiMessage(type, data, cssClass = '') {
-    const logEl = document.getElementById('midiLog');
-
-    // Remove empty message if present
-    const emptyMsg = logEl.querySelector('.midi-log-empty');
-    if (emptyMsg) {
-        emptyMsg.remove();
-    }
-
-    const timestamp = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit', fractionalSecondDigits: 3 });
-
-    const msgEl = document.createElement('div');
-    msgEl.className = `midi-message ${cssClass}`;
-    msgEl.innerHTML = `
-        <span class="midi-time">${timestamp}</span>
-        <span class="midi-type">${type}</span>
-        <span class="midi-data">${data}</span>
-    `;
-
-    logEl.insertBefore(msgEl, logEl.firstChild);
-
-    // Keep only last 50 messages
-    while (logEl.children.length > 50) {
-        logEl.removeChild(logEl.lastChild);
-    }
-}
-
-function clearMidiLog() {
-    const logEl = document.getElementById('midiLog');
-    logEl.innerHTML = '<div class="midi-log-empty">Waiting for MIDI messages...</div>';
 }

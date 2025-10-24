@@ -218,16 +218,13 @@ const manualTests = [
             "Connect HiChord to computer via USB-C",
             "Click 'CONNECT & TEST MIDI' button below",
             "Wait for connection status indicator",
-            "Press chord buttons 1-7 on HiChord"
+            "Press any button on HiChord"
         ],
         expected: [
             "HiChord detected as USB MIDI device",
             "Connection successful with green status indicator",
-            "MIDI messages appear in log when buttons pressed",
-            "Each chord sends correct note-on/note-off data",
-            "MIDI timing is accurate with no delay",
-            "CC messages sent for volume/controls",
-            "No stuck notes or missing messages"
+            "App automatically enables MIDI output on HiChord",
+            "Success message appears when button pressed"
         ],
         oled: null,
         midiTest: true
@@ -950,14 +947,12 @@ function buildManualTestHTML(test) {
                 CONNECT & TEST MIDI
             </button>
 
-            <div class="midi-log-container" id="midiLogContainer" style="display: none;">
-                <div class="midi-log-header">
-                    <span>📊 Live MIDI Monitor</span>
-                    <button class="btn-clear-log" onclick="clearMidiLog()">Clear</button>
-                </div>
-                <div class="midi-log" id="midiLog">
-                    <div class="midi-log-empty">Waiting for MIDI messages...<br><span style="font-size: 12px; opacity: 0.7;">Press any chord button on HiChord</span></div>
-                </div>
+            <div class="midi-instruction" id="midiInstruction" style="display: none;">
+                <div class="instruction-icon">🎹</div>
+                <div class="instruction-text">Press any button on HiChord</div>
+            </div>
+
+            <div class="midi-result" id="midiResult" style="display: none;">
             </div>
         </div>
     ` : '';
