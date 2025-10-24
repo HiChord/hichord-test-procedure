@@ -75,36 +75,35 @@ const manualTests = [
             "All displays have professional formatting"
         ],
         oled: {
-            type: "function3_startup_accurate",
+            type: "function3_pixelperfect",
             buttons: [
                 {
                     button: "F1",
-                    name: "Settings (KEY/OCTAVE)",
+                    name: "Settings",
                     color: "#666666",
                     icon: "⚙",
-                    display: "single_value",
-                    examples: [
-                        { label: "KEY", value: "C", desc: "Shows when joystick moved L/R" },
-                        { label: "OCTAVE", value: "+1", desc: "Shows when joystick moved U/D" }
-                    ]
+                    display: "key_octave_dual",
+                    topLine: { text: "KEY < >", inverted: true },
+                    bottomLine: { text: "OCTAVE ^ v", inverted: false },
+                    hasBorder: true
                 },
                 {
                     button: "F2",
-                    name: "Effects/Waveform",
+                    name: "Effects",
                     color: "#FFD700",
                     icon: "〜",
-                    display: "waveform_submenu",
-                    submenuTrigger: "Press joystick UP",
-                    waveformName: "Saw",
-                    arrows: "< >",
-                    hasPreview: true
+                    display: "sound_effect_onoff",
+                    topLine: { text: "SOUND ^", inverted: true },
+                    middleLine: { text: "< VERB >", inverted: false },
+                    bottomLine: { text: "ON / OFF v", inverted: true },
+                    hasBorder: true
                 },
                 {
                     button: "F3",
                     name: "BPM/Mode",
                     color: "#FF4500",
                     icon: "⏱",
-                    display: "bpm_framed",
+                    display: "bpm_mode",
                     topText: "MODE ^",
                     bpmNumber: "120",
                     bpmLabel: "BPM",
@@ -692,55 +691,45 @@ function renderOLED(oledData) {
                 </div>
             `;
         },
-        function3_startup_accurate: (data) => {
-            // Show 3 function buttons with ACCURATE pixel-perfect OLED displays
+        function3_pixelperfect: (data) => {
+            // Show 3 function buttons with PIXEL-PERFECT OLED displays (exactly as they appear on button press)
             const buttons = data.buttons;
             let html = '<div class="single-test-list">';
 
             buttons.forEach(btn => {
                 let oledContent = '';
 
-                if (btn.display === 'single_value') {
-                    // F1: Shows KEY or OCTAVE (one at a time) in inverted header format
-                    const examples = btn.examples || [];
+                if (btn.display === 'key_octave_dual') {
+                    // F1: Dual-line display with KEY (inverted) and OCTAVE (normal)
                     oledContent = `
-                        <div class="oled-single-value-examples">
-                            ${examples.map(ex => `
-                                <div class="value-example">
-                                    <div class="example-label">${ex.desc}</div>
-                                    <div class="oled-header-bar">
-                                        <div class="oled-text">${ex.label}</div>
-                                    </div>
-                                    <div class="oled-body centered">
-                                        <div class="oled-text-large">${ex.value}</div>
-                                    </div>
-                                </div>
-                            `).join('')}
+                        <div class="oled-f1-dual">
+                            ${btn.hasBorder ? '<div class="oled-border-frame"></div>' : ''}
+                            <div class="f1-top-inverted">${btn.topLine.text}</div>
+                            <div class="f1-bottom-normal">${btn.bottomLine.text}</div>
                         </div>
                     `;
-                } else if (btn.display === 'waveform_submenu') {
-                    // F2: Waveform selection submenu (press UP to enter)
+                } else if (btn.display === 'sound_effect_onoff') {
+                    // F2: Triple-line display with SOUND (inverted), effect name, ON/OFF (inverted)
                     oledContent = `
-                        <div class="oled-waveform-submenu">
-                            <div class="waveform-name-centered">${btn.waveformName}</div>
-                            <div class="waveform-arrows">${btn.arrows}</div>
-                            ${btn.hasPreview ? '<div class="waveform-preview">▲▼▲▼</div>' : ''}
+                        <div class="oled-f2-triple">
+                            ${btn.hasBorder ? '<div class="oled-border-frame"></div>' : ''}
+                            <div class="f2-top-inverted">${btn.topLine.text}</div>
+                            <div class="f2-middle-normal">${btn.middleLine.text}</div>
+                            <div class="f2-bottom-inverted">${btn.bottomLine.text}</div>
                         </div>
                     `;
-                } else if (btn.display === 'bpm_framed') {
-                    // F3: BPM display with inverted box and border frame
+                } else if (btn.display === 'bpm_mode') {
+                    // F3: BPM display with MODE ^, line, and inverted BPM box
                     oledContent = `
-                        <div class="oled-bpm-framed">
-                            ${btn.hasBorder ? '<div class="bpm-border-frame"></div>' : ''}
-                            <div class="bpm-top-text">${btn.topText}</div>
-                            <div class="bpm-divider-line"></div>
-                            ${btn.hasInvertedBox ? `
-                                <div class="bpm-inverted-box">
-                                    <div class="bpm-label">${btn.bpmLabel}</div>
-                                    <div class="bpm-arrows">${btn.arrows}</div>
-                                    <div class="bpm-number-large">${btn.bpmNumber}</div>
-                                </div>
-                            ` : ''}
+                        <div class="oled-f3-bpm">
+                            ${btn.hasBorder ? '<div class="oled-border-frame"></div>' : ''}
+                            <div class="f3-mode-text">${btn.topText}</div>
+                            <div class="f3-divider-line"></div>
+                            <div class="f3-bpm-inverted-box">
+                                <div class="f3-bpm-label">${btn.bpmLabel}</div>
+                                <div class="f3-bpm-arrows">${btn.arrows}</div>
+                                <div class="f3-bpm-number">${btn.bpmNumber}</div>
+                            </div>
                         </div>
                     `;
                 }
@@ -861,11 +850,11 @@ function renderOLED(oledData) {
         `;
     }
 
-    if (oledData.type === 'function3_startup_accurate') {
+    if (oledData.type === 'function3_pixelperfect') {
         return `
             <div class="oled-mockup function-mockup">
                 ${renderer(oledData)}
-                <div class="mockup-label">Expected OLED Display (Press Each Button + Move Joystick)</div>
+                <div class="mockup-label">Expected OLED Display (Press Each Button ONCE)</div>
             </div>
         `;
     }
