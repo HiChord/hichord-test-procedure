@@ -216,25 +216,21 @@ const manualTests = [
     },
     {
         id: 9,
-        name: "USB-C Audio Output",
+        name: "USB-C Connection",
         image: "images/Side View.png",
         procedure: [
             "Connect HiChord to computer via USB-C",
-            "  Note: HiChord uses unified USB mode (Audio + MIDI simultaneously)",
-            "Computer should recognize \"HiChord\" audio device automatically",
-            "Set computer audio output to \"HiChord\"",
-            "Press chord buttons 1-7 and verify audio on computer speakers",
-            "Test at different volume levels (adjust HiChord volume wheel)",
-            "Verify low latency and clean digital audio"
+            "Verify USB connection is stable",
+            "Computer should recognize device (no driver needed)",
+            "Check LED indicator shows charging/connected status"
         ],
         expected: [
-            "HiChord appears as USB audio device",
-            "Class-compliant (no driver needed)",
-            "Clean digital audio output",
-            "Low latency (<20ms)",
-            "No dropouts or glitches",
-            "USB connection stable"
+            "USB connection establishes immediately",
+            "Device powers on via USB if battery low",
+            "Charging LED indicator functions correctly",
+            "No connection errors or dropouts"
         ],
+        note: "HiChord supports two USB modes: MIDI (default) and USB Audio. Mode can be toggled via F2 menu → USB Mode → requires reboot. USB Audio mode disables internal speaker.",
         oled: null
     },
     {
