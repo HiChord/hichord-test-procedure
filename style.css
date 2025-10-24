@@ -1453,19 +1453,19 @@ footer {
     height: 100%;
 }
 
-/* "WAITING": x=8, y=10 baseline, font 7x14B (14px) */
-/* 3x scale: x=24, y=30 baseline, font 42px */
+/* "WAITING": x=8, baseline y=10, font 7x14B (14px tall, top at y≈0, bottom at y≈12) */
+/* 3x scale: x=24, top at y≈0, bottom at y≈36, font 42px */
 .bar-select-waiting {
     position: absolute;
     left: 24px;
-    top: 20px;
-    font-size: 38px;
+    top: 0px;
+    font-size: 42px;
     font-weight: 700;
     letter-spacing: 1px;
     line-height: 1;
 }
 
-/* Line: y=12, from x=0 to x=63 */
+/* Line: y=12 (just below WAITING bottom) */
 /* 3x scale: y=36, full width */
 .bar-select-separator {
     position: absolute;
@@ -1476,37 +1476,37 @@ footer {
     background: #FFFFFF;
 }
 
-/* Bar number "4": x=8, y=24 baseline, font 7x14B (14px, LARGE) */
-/* 3x scale: x=24, y=72 baseline, font 42px */
+/* Bar number "4": x=8, baseline y=24, font 7x14B (14px tall, top at y≈12) */
+/* 3x scale: x=24, top at y≈36 (just below line), font 42px */
 .bar-select-number {
     position: absolute;
     left: 24px;
-    top: 58px;
-    font-size: 38px;
+    top: 36px;
+    font-size: 42px;
     font-weight: 700;
     letter-spacing: 0;
     line-height: 1;
 }
 
-/* "BARS": x=35, y=22 baseline, font 5x7 (7px, small) */
-/* 3x scale: x=105, y=66 baseline, font 21px */
+/* "BARS": x=35, baseline y=22, font 5x7 (7px tall, top at y≈17) */
+/* 3x scale: x=105, top at y≈51, font 21px */
 .bar-select-label {
     position: absolute;
     left: 105px;
-    top: 54px;
-    font-size: 18px;
+    top: 48px;
+    font-size: 21px;
     font-weight: 600;
     letter-spacing: 0.5px;
     line-height: 1;
 }
 
-/* "<>": x=50, y=22 baseline, font 5x7 (7px, small) */
-/* 3x scale: x=150, y=66 baseline, font 21px */
+/* "<>": x=50, baseline y=22, font 5x7 (7px tall, top at y≈17) */
+/* 3x scale: x=150, top at y≈51, font 21px */
 .bar-select-arrows {
     position: absolute;
     left: 150px;
-    top: 54px;
-    font-size: 18px;
+    top: 48px;
+    font-size: 21px;
     font-weight: 600;
     letter-spacing: 0;
     line-height: 1;
