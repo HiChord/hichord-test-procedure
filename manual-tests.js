@@ -70,9 +70,8 @@ const manualTests = [
         expected: [
             "Each button press registers immediately",
             "F1: Shows KEY or OCTAVE (one at a time) when joystick moved",
-            "F2: Press Up to enter waveform submenu with left/right arrows",
-            "F3: Shows BPM display with inverted box and border frame",
-            "All displays have professional formatting"
+            "F2: Shows Press Up to enter Sound menu, left and right to change effect",
+            "F3: Shows Press up to enter Mode menu, and left and right to change BPM, shows current BPM"
         ],
         oled: {
             type: "function3_pixelperfect",
