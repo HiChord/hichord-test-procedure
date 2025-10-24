@@ -80,8 +80,8 @@ const manualTests = [
                 {
                     button: "F1",
                     name: "Settings",
-                    color: "#666666",
-                    icon: "⚙",
+                    color: "#808080",
+                    iconSvg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="14" r="3.5"/><line x1="9.5" y1="11.5" x2="18" y2="3"/><line x1="16" y1="5" x2="16" y2="3"/></svg>',
                     display: "key_octave_dual",
                     topLine: { text: "KEY < >", inverted: true },
                     bottomLine: { text: "OCTAVE ^ v", inverted: false },
@@ -90,8 +90,8 @@ const manualTests = [
                 {
                     button: "F2",
                     name: "Effects",
-                    color: "#FFD700",
-                    icon: "〜",
+                    color: "#FFB800",
+                    iconSvg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3,17 3,9 7,9 7,17 11,17 11,9 15,9 15,17 19,17 19,9 21,9"/></svg>',
                     display: "sound_effect_onoff",
                     topLine: { text: "SOUND ^", inverted: true },
                     middleLine: { text: "< VERB >", inverted: false },
@@ -101,8 +101,8 @@ const manualTests = [
                 {
                     button: "F3",
                     name: "BPM/Mode",
-                    color: "#FF4500",
-                    icon: "⏱",
+                    color: "#ef4444",
+                    iconSvg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="12" x2="12" y2="6"/><line x1="12" y1="12" x2="17" y2="12"/></svg>',
                     display: "bpm_mode",
                     topText: "MODE ^",
                     bpmNumber: "120",
@@ -737,8 +737,8 @@ function renderOLED(oledData) {
                 html += `
                     <div class="single-test-row">
                         <div class="button-icon-display">
-                            <div class="button-icon-square" style="background-color: ${btn.color}; color: ${btn.color === '#FFD700' ? '#000' : '#FFF'};">
-                                ${btn.icon}
+                            <div class="button-icon-square function-button-icon" style="background: linear-gradient(135deg, ${btn.color}dd 0%, ${btn.color} 50%, ${btn.color}aa 100%);">
+                                ${btn.iconSvg || btn.icon}
                             </div>
                             <div class="button-label">${btn.button}</div>
                         </div>
