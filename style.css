@@ -1393,50 +1393,56 @@ footer {
 }
 
 /* Pixel-Perfect Chord Display (matches firmware exactly) */
-/* Chord Number & Key at y=10 (top), Chord Name at y=30 (bottom) on 64x32px OLED */
+/* Real OLED: 64x32px, CSS: 320x160px (5x scale) */
+/* Chord Number & Key at y=10 (top), Chord Name at y=30 (bottom) */
 .oled-chord-accurate {
     position: relative;
     width: 100%;
     height: 100%;
 }
 
-/* Chord Number: Circle at (10, 10), radius 9px, font 5x7 (small) */
+/* Chord Number: Circle at (10, 10), radius 9px, font 5x7 */
+/* Scaled 5x: (50px, 50px), radius 45px, font ~35px */
 .oled-chord-number-circle {
     position: absolute;
-    left: 10px;
-    top: 10px;
-    width: 18px;
-    height: 18px;
-    border: 2px solid #FFFFFF;
+    left: 50px;
+    top: 50px;
+    width: 90px;
+    height: 90px;
+    border: 3px solid #FFFFFF;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 10px;
+    font-size: 28px;
     font-weight: 600;
     transform: translate(-50%, -50%);
 }
 
-/* Key Letter: Right-aligned at (64-width-2, 10), font 5x7 (small) */
+/* Key Letter: Right-aligned at x=(64-width-2), y=10, font 5x7 */
+/* Scaled 5x: x=310px (right-aligned), y=50px baseline */
 .oled-chord-key-letter {
     position: absolute;
-    right: 2px;
-    top: 10px;
-    font-size: 10px;
+    right: 10px;
+    top: 32px;
+    font-size: 28px;
     font-weight: 600;
     letter-spacing: 0;
-    transform: translateY(-50%);
+    line-height: 1;
 }
 
-/* Chord Name: Centered at y=30 (near bottom), font 8x13B (MUCH BIGGER) */
+/* Chord Name: Centered, baseline at y=30 (near bottom), font 8x13B */
+/* 13px tall font, baseline at y=30 means bottom at y≈32 */
+/* Scaled 5x: font 65px, bottom at 160px (container bottom) */
 .oled-chord-name-center {
-    font-size: 20px;
+    font-size: 52px;
     font-weight: 700;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
     position: absolute;
-    top: 30px;
+    bottom: 0px;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%);
+    line-height: 1;
 }
 
 /* Bar Select Display (Looper Waiting) */
