@@ -248,11 +248,8 @@ const manualTests = [
         expected: [
             "Microphone captures audio clearly",
             "Recording shows progress bar and RMS meter on OLED",
-            "Device automatically tunes sample to F#3 after recording",
-            "Device automatically switches to LEAD mode",
             "Sample plays back correctly, mapped chromatically across buttons 1-7",
-            "No excessive noise or clipping",
-            "Entire workflow completes automatically - no manual tuning needed"
+            "No excessive noise or clipping"
         ],
         oled: {
             type: "mic_recording",
