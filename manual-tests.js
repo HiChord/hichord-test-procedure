@@ -28,14 +28,15 @@ const manualTests = [
         ],
         expected: [
             "Display shows \"HiChord\" title with animated ghost",
-            "Version \"REV 1.97\" appears below title",
+            "Version \"REV 1.98\" appears below title",
             "Boot sequence completes within 3 seconds",
             "No screen artifacts or glitches"
         ],
         oled: {
             type: "boot",
-            content: ["HiChord", "REV 1.97"]
-        }
+            content: ["HiChord", "REV 1.98"]
+        },
+        image: "images/boot_logo.bmp"
     },
     {
         id: 3,
