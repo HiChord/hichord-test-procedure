@@ -242,16 +242,17 @@ const manualTests = [
             "Press and HOLD chord button 1 to start recording",
             "Speak or sing a note into the microphone (located on front panel)",
             "Release chord button 1 to stop recording (max 3.0 seconds)",
-            "OLED shows sample length and detected pitch",
-            "Press chord buttons 1-7 to play back sample chromatically"
+            "Device shows \"Tuning...\" briefly, then auto-switches to LEAD mode",
+            "Sample is now ready - press chord buttons 1-7 to play chromatically"
         ],
         expected: [
             "Microphone captures audio clearly",
-            "Recording indicator shows on OLED during recording",
-            "Recorded sample plays back correctly",
-            "Sample mapped chromatically across all 7 buttons",
+            "Recording shows progress bar and RMS meter on OLED",
+            "Device automatically tunes sample to F#3 after recording",
+            "Device automatically switches to LEAD mode",
+            "Sample plays back correctly, mapped chromatically across buttons 1-7",
             "No excessive noise or clipping",
-            "Pitch detection works accurately"
+            "Entire workflow completes automatically - no manual tuning needed"
         ],
         oled: {
             type: "mic_recording",
@@ -260,7 +261,7 @@ const manualTests = [
             progressBar: { x: 4, y: 22, width: 56, height: 4, filled: 28 },
             rmsMeter: { x: 4, y: 28, width: 56, height: 4, filled: 40 }
         },
-        note: "BATCH 4+ ONLY - Skip for Batch 1-3 (no microphone)"
+        note: "BATCH 4+ ONLY - Skip for Batch 1-3 (no microphone). Workflow is fully automatic: Record → Auto-tune → LEAD mode."
     },
     {
         id: 11,
