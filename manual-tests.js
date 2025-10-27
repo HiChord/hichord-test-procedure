@@ -28,13 +28,13 @@ const manualTests = [
         ],
         expected: [
             "Display shows \"HiChord\" title with animated ghost",
-            "Version \"REV 1.98\" appears below title",
+            "Version \"REV 1.99\" appears below title",
             "Boot sequence completes within 3 seconds",
             "No screen artifacts or glitches"
         ],
         oled: {
             type: "boot",
-            content: ["HiChord", "REV 1.98"]
+            content: ["HiChord", "REV 1.99"]
         },
         image: "images/boot_logo.bmp"
     },
@@ -236,14 +236,24 @@ const manualTests = [
         batch: "4+",
         skipBatch: ["1", "2", "3"],
         procedure: [
-            "Press F3 button to open mode selection menu",
-            "Move joystick LEFT once to reach \"MIC SAMPLE\" mode",
+            "NOTE: Microphone is only available on Batch 4 and later devices",
+            "Press F3 button once",
+            "Move joystick UP to enter mode selection menu",
+            "Move joystick LEFT or RIGHT to navigate to \"MIC SAMPLE\" mode",
+            "Move joystick DOWN to select and enter MIC SAMPLE mode",
             "OLED displays: \"MIC SAMPLE\" title with \"Hold Btn 1\" / \"to Record\"",
             "Press and HOLD chord button 1 to start recording",
             "Speak or sing a note into the microphone (located on front panel)",
             "Release chord button 1 to stop recording (max 3.0 seconds)",
+<<<<<<< HEAD
             "Device shows \"Tuning...\" briefly, then auto-switches to LEAD mode",
             "Sample is now ready - press chord buttons 1-7 to play chromatically"
+=======
+            "OLED shows \"READY\" with sample length (e.g., \"1.2 sec\")",
+            "Press F3 again, then UP to open mode menu",
+            "Navigate LEFT/RIGHT to select ONESHOT or LEAD mode, then DOWN to confirm",
+            "Press chord buttons 1-7 to play back the mic sample chromatically"
+>>>>>>> 0630a64 (Update Test 02: Firmware version to REV 1.99)
         ],
         expected: [
             "Microphone captures audio clearly",
