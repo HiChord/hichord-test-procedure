@@ -32,8 +32,10 @@ const manualTests = [
             "Boot sequence completes within 3 seconds",
             "No screen artifacts or glitches"
         ],
-        oled: null,
-        image: "images/boot_logo.bmp"
+        oled: {
+            type: "boot",
+            content: ["HiChord", "REV 1.99"]
+        }
     },
     {
         id: 3,
