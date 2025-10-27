@@ -245,15 +245,8 @@ const manualTests = [
             "Press and HOLD chord button 1 to start recording",
             "Speak or sing a note into the microphone (located on front panel)",
             "Release chord button 1 to stop recording (max 3.0 seconds)",
-<<<<<<< HEAD
             "Device shows \"Tuning...\" briefly, then auto-switches to LEAD mode",
             "Sample is now ready - press chord buttons 1-7 to play chromatically"
-=======
-            "OLED shows \"READY\" with sample length (e.g., \"1.2 sec\")",
-            "Press F3 again, then UP to open mode menu",
-            "Navigate LEFT/RIGHT to select ONESHOT or LEAD mode, then DOWN to confirm",
-            "Press chord buttons 1-7 to play back the mic sample chromatically"
->>>>>>> 0630a64 (Update Test 02: Firmware version to REV 1.99)
         ],
         expected: [
             "Microphone captures audio clearly",
