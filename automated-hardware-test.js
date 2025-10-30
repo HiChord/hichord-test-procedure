@@ -158,7 +158,7 @@ class HiChordTest {
         document.getElementById('currentTest').style.display = 'block';
 
         // Show simple message - all action is on the HiChord OLED
-        document.getElementById('progressText').textContent = '0 / 20';
+        document.getElementById('progressText').textContent = '0 / 19';
         document.getElementById('progressFill').style.width = '0%';
         document.getElementById('currentTestInstruction').innerHTML = 'Follow the instructions on the HiChord OLED display';
 
@@ -182,7 +182,7 @@ class HiChordTest {
         document.getElementById('progressText').textContent = `${stepNum} / 19`;
 
         // Log for debugging
-        console.log(`[Test] Progress: ${stepNum}/20 - ${passed ? 'PASS' : 'FAIL'}`);
+        console.log(`[Test] Progress: ${stepNum}/19 - ${passed ? 'PASS' : 'FAIL'}`);
     }
 
     showResults(passedCount, failedCount) {
@@ -235,7 +235,7 @@ class HiChordTest {
             });
         }
 
-        console.log(`[Test] Results displayed: ${passedCount}/20 passed`);
+        console.log(`[Test] Results displayed: ${passedCount}/19 passed`);
     }
 
     sendSysEx(data) {

@@ -67,11 +67,11 @@ const manualTests = [
             "Click \"Connect Device\" button below",
             "Follow on-screen instructions from device OLED",
             "Press each button/control as instructed by device",
-            "Device will automatically detect and verify all 20 inputs",
+            "Device will automatically detect and verify all 19 inputs",
             "Review pass/fail results when complete"
         ],
         expected: [
-            "All 20 buttons/controls detected correctly",
+            "All 19 buttons/controls detected correctly",
             "Device OLED shows current test (e.g. \"Test 5/19: Chord 5\")",
             "Web interface displays real-time progress",
             "Final report shows PASS for all tests"
@@ -122,8 +122,7 @@ const manualTests = [
             timeText: "0.5 sec",
             progressBar: { x: 4, y: 22, width: 56, height: 4, filled: 28 },
             rmsMeter: { x: 4, y: 28, width: 56, height: 4, filled: 40 }
-        },
-        note: "BATCH 4+ ONLY - Skip for Batch 1-3 (no microphone). Workflow: Record → Saving → Tuning → Ready (stays in MIC SAMPLE mode)"
+        }
     },
     {
         id: 7,
