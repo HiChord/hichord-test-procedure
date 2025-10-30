@@ -705,16 +705,8 @@ function renderOLED(oledData) {
         volume_pixelperfect: () => `
             <div class="oled-screen-full">
                 <div class="oled-volume-accurate">
-                    <svg class="volume-display-svg" viewBox="0 0 64 32" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Inverted header box (0, 0, 64, 12) -->
-                        <rect x="0" y="0" width="64" height="12" fill="white"/>
-
-                        <!-- "VOLUME" text in header (u8g2_font_helvB08_tr, baseline y=10) -->
-                        <text x="32" y="9" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="7" font-weight="bold" fill="black">VOLUME</text>
-
-                        <!-- "75%" text (u8g2_font_helvB14_tr, baseline y=28) -->
-                        <text x="32" y="26" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="12" font-weight="bold" fill="white">75%</text>
-                    </svg>
+                    <div class="volume-header-inverted">VOLUME</div>
+                    <div class="volume-percentage-large">75%</div>
                 </div>
             </div>
         `
