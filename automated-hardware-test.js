@@ -9,6 +9,9 @@ class HiChordTest {
         this.testRunning = false;
         this.results = [];
 
+        // Latest firmware version (update this when releasing new firmware)
+        this.latestFirmwareVersion = { major: 2, minor: 1 };
+
         // Test names (20 tests) - matches firmware exactly
         this.testNames = [
             'Chord 1', 'Chord 2', 'Chord 3', 'Chord 4', 'Chord 5', 'Chord 6', 'Chord 7',
@@ -88,15 +91,26 @@ class HiChordTest {
 
             // Hardware info (0x14)
             if (cmd === 0x14 && data.length >= 8) {
-                const version = `${data[3]}.${data[4]}`;
+                const fwMajor = data[3];
+                const fwMinor = data[4];
+                const version = `${fwMajor}.${fwMinor}`;
                 const batch = data[5];
                 const buttonSystem = data[6] === 1 ? 'I2C' : 'ADC';
 
-                document.getElementById('detectedFirmware').textContent = `v${version}`;
+                // Check if firmware is up-to-date
+                const isUpToDate = (fwMajor > this.latestFirmwareVersion.major) ||
+                                   (fwMajor === this.latestFirmwareVersion.major &&
+                                    fwMinor >= this.latestFirmwareVersion.minor);
+
+                const versionStatus = isUpToDate
+                    ? `<span style="color: #27ae60; font-weight: 600;">v${version} ✓ (Up-to-date)</span>`
+                    : `<span style="color: #e74c3c; font-weight: 600;">v${version} ⚠️ (Update available: v${this.latestFirmwareVersion.major}.${this.latestFirmwareVersion.minor})</span>`;
+
+                document.getElementById('detectedFirmware').innerHTML = versionStatus;
                 document.getElementById('detectedBatch').textContent = `Batch ${batch}`;
                 document.getElementById('detectedButtonSystem').textContent = buttonSystem;
 
-                console.log(`[Test] Hardware: v${version}, Batch ${batch}, ${buttonSystem}`);
+                console.log(`[Test] Hardware: v${version}, Batch ${batch}, ${buttonSystem}, Up-to-date: ${isUpToDate}`);
             }
 
             // Test progress update (0x12): [step number] [pass/fail] [button pressed]

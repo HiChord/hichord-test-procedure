@@ -42,7 +42,8 @@ class TestProcedureApp {
     loadManualTests() {
         const container = document.getElementById('manualSteps');
         container.innerHTML = ''; // Clear existing content
-        manualTests.forEach((test, index) => {
+        const visibleTests = manualTests.filter(test => !test.hidden);
+        visibleTests.forEach((test, index) => {
             const testElement = document.createElement('div');
             testElement.innerHTML = buildManualTestHTML(test);
             const testDiv = testElement.querySelector('.manual-test');
@@ -52,8 +53,8 @@ class TestProcedureApp {
             }
         });
 
-        // Build test overview navigation
-        this.buildTestOverview('testOverview', manualTests);
+        // Build test overview navigation (only visible tests)
+        this.buildTestOverview('testOverview', visibleTests);
 
         // Show first test
         this.updateTestDisplay();

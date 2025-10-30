@@ -2843,7 +2843,7 @@ footer {
     align-items: center;
     justify-content: center;
     font-family: 'Helvetica', 'Arial', sans-serif;
-    font-size: 40px;
+    font-size: 30px;
     font-weight: bold;
     letter-spacing: 0.5px;
 }
@@ -2855,9 +2855,9 @@ footer {
     justify-content: center;
     color: #FFF;
     font-family: 'Helvetica', 'Arial', sans-serif;
-    font-size: 70px;
+    font-size: 48px;
     font-weight: bold;
-    padding-top: 5px;
+    padding-top: 0px;
 }
 
 /* ========================================================================
@@ -2993,4 +2993,16 @@ footer {
 
 .joy-click {
     background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23333333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3" fill="%23333333"/></svg>');
+}
+
+/* Battery Display SVG */
+.battery-display {
+    width: 320px;
+    height: 160px;
+    background: #000;
+}
+
+.battery-display text {
+    font-family: 'Courier New', monospace;
+    font-weight: normal;
 }

@@ -41,14 +41,14 @@ const manualTests = [
         name: "Volume Control",
         image: "images/Top View.png",
         procedure: [
-            "Locate volume slider on top edge",
+            "Locate volume wheel on top edge",
             "Press any chord button <span class=\"chord-btn-icon\" data-num=\"1\"></span>-<span class=\"chord-btn-icon\" data-num=\"7\"></span> to generate sound",
-            "Move slider from minimum to maximum position",
+            "Turn wheel from minimum to maximum position",
             "Observe OLED volume indicator"
         ],
         expected: [
-            "Volume bar appears on OLED when slider moved",
-            "Audio level changes smoothly with slider",
+            "Volume bar appears on OLED when wheel turned",
+            "Audio level changes smoothly with wheel",
             "Volume percentage displays (0-100%)",
             "No crackling or distortion at any level"
         ],
@@ -58,7 +58,28 @@ const manualTests = [
     },
     {
         id: 4,
+        name: "Button Test (Automated Detection)",
+        isAutomatedTest: true,
+        procedure: [
+            "Connect device to computer via USB",
+            "Click \"Connect Device\" button below",
+            "Follow on-screen instructions from device OLED",
+            "Press each button/control as instructed by device",
+            "Device will automatically detect and verify all 20 inputs",
+            "Review pass/fail results when complete"
+        ],
+        expected: [
+            "All 20 buttons/controls detected correctly",
+            "Device OLED shows current test (e.g. \"Test 5/19: Chord 5\")",
+            "Web interface displays real-time progress",
+            "Final report shows PASS for all tests"
+        ],
+        note: "This automated test verifies: 7 chord buttons, 3 menu buttons (F1/F2/F3), 8 joystick directions, joystick click, and volume wheel (20 tests total)."
+    },
+    {
+        id: 5,
         name: "Function Buttons (F1, F2, F3)",
+        hidden: true,
         image: "images/BUtton numbers 3.png",
         procedure: [
             "Press each function button <span class=\"inline-code f1\">F1</span> <span class=\"inline-code f2\">F2</span> <span class=\"inline-code f3\">F3</span> ONCE after startup",
@@ -114,6 +135,7 @@ const manualTests = [
     {
         id: 5,
         name: "Chord Buttons (1-7) in C Major",
+        hidden: true,
         image: "images/BUtton numbers 2.png",
         procedure: [
             "Press each chord button <span class=\"chord-btn-icon\" data-num=\"1\"></span>-<span class=\"chord-btn-icon\" data-num=\"7\"></span> individually",
@@ -143,6 +165,7 @@ const manualTests = [
     {
         id: 6,
         name: "Joystick Chord Modification (Hold Button 1)",
+        hidden: true,
         image: "images/Top View.png",
         procedure: [
             "Hold <span class=\"chord-btn-icon\" data-num=\"1\"></span> CHORD BUTTON 1",
@@ -176,6 +199,7 @@ const manualTests = [
     {
         id: 7,
         name: "Joystick Click (Bar Select Menu)",
+        hidden: true,
         image: "images/Top View.png",
         procedure: [
             "From default startup, <span class=\"joy-click\"></span> click joystick button (press down)",
@@ -771,25 +795,39 @@ function renderOLED(oledData) {
             `;
         },
         battery_accurate: (data) => {
-            // Show battery display with centered text and battery bar with dividers
+            // Pixel-perfect battery display matching main.cpp:19308-19342
+            // OLED: 64x32, Font: u8g2_font_6x12_tf, Bar: (12,20,40x12), Tip: 2x8
             const bar = data.batteryBar;
             const fillWidth = (bar.fillPercentage / 100) * (bar.width - 2);
 
             return `
                 <div class="oled-screen-full">
                     <div class="oled-battery-accurate">
-                        <div class="battery-text-centered">${data.text}</div>
-                        <div class="battery-bar-container" style="margin-left: ${bar.x}px; margin-top: ${bar.y}px;">
-                            <div class="battery-bar-frame" style="width: ${bar.width}px; height: ${bar.height}px;">
-                                <div class="battery-fill" style="width: ${fillWidth}px; height: ${bar.height - 2}px;"></div>
-                                ${bar.hasDividers ? `
-                                    <div class="battery-divider" style="left: ${(bar.width - 2) * 0.25 + 1}px;"></div>
-                                    <div class="battery-divider" style="left: ${(bar.width - 2) * 0.50 + 1}px;"></div>
-                                    <div class="battery-divider" style="left: ${(bar.width - 2) * 0.75 + 1}px;"></div>
-                                ` : ''}
-                            </div>
-                            <div class="battery-tip" style="left: ${bar.width}px; top: ${(bar.height - bar.tipHeight) / 2}px; width: ${bar.tipWidth}px; height: ${bar.tipHeight}px;"></div>
-                        </div>
+                        <svg class="battery-display" viewBox="0 0 64 32" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Text "Bat: 3.8V 65%" at y=16 (baseline), centered -->
+                            <text x="10" y="16" font-family="monospace" font-size="6" fill="white">${data.text}</text>
+
+                            <!-- Battery bar frame at (12, 20), 40x12 pixels -->
+                            <rect x="${bar.x}" y="${bar.y}" width="${bar.width}" height="${bar.height}" fill="none" stroke="white" stroke-width="1"/>
+
+                            <!-- Battery fill (65% = ~24.7px of 38px max) -->
+                            <rect x="${bar.x + 1}" y="${bar.y + 1}" width="${fillWidth}" height="${bar.height - 2}" fill="white"/>
+
+                            <!-- Dividers at 25%, 50%, 75% (cut through fill) -->
+                            <line x1="${bar.x + 1 + (bar.width - 2) * 0.25}" y1="${bar.y + 1}"
+                                  x2="${bar.x + 1 + (bar.width - 2) * 0.25}" y2="${bar.y + bar.height - 1}"
+                                  stroke="black" stroke-width="1"/>
+                            <line x1="${bar.x + 1 + (bar.width - 2) * 0.50}" y1="${bar.y + 1}"
+                                  x2="${bar.x + 1 + (bar.width - 2) * 0.50}" y2="${bar.y + bar.height - 1}"
+                                  stroke="black" stroke-width="1"/>
+                            <line x1="${bar.x + 1 + (bar.width - 2) * 0.75}" y1="${bar.y + 1}"
+                                  x2="${bar.x + 1 + (bar.width - 2) * 0.75}" y2="${bar.y + bar.height - 1}"
+                                  stroke="black" stroke-width="1"/>
+
+                            <!-- Battery tip (2x8 pixels) on right side, vertically centered -->
+                            <rect x="${bar.x + bar.width}" y="${bar.y + (bar.height - bar.tipHeight) / 2}"
+                                  width="${bar.tipWidth}" height="${bar.tipHeight}" fill="white"/>
+                        </svg>
                     </div>
                 </div>
             `;
@@ -1012,6 +1050,24 @@ function buildManualTestHTML(test) {
         </div>
     ` : '';
 
+    const automatedTestHTML = test.isAutomatedTest ? `
+        <div class="automated-test-embed" id="automatedTestEmbed">
+            <div class="test-controls">
+                <button class="btn-primary" id="connectButton" onclick="window.hiChordTest.connect()">
+                    Connect Device
+                </button>
+                <button class="btn-primary" id="startTestButton" onclick="window.hiChordTest.startTest()" disabled style="display: none;">
+                    Start Test
+                </button>
+            </div>
+
+            <div id="connectionStatus" class="connection-status"></div>
+            <div id="hardwareInfo" class="hardware-info" style="display: none;"></div>
+            <div id="testProgress" class="test-progress" style="display: none;"></div>
+            <div id="testResults" class="test-results" style="display: none;"></div>
+        </div>
+    ` : '';
+
     return `
         <div class="manual-test" data-test-id="${test.id}">
             <div class="test-header">
@@ -1029,6 +1085,7 @@ function buildManualTestHTML(test) {
                 </div>
 
                 ${midiTestHTML}
+                ${automatedTestHTML}
 
                 ${oledHTML}
 
