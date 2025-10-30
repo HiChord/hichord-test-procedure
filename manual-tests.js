@@ -102,7 +102,7 @@ const manualTests = [
         batch: "4+",
         skipBatch: ["1", "2", "3"],
         procedure: [
-            "Hold <span class=\"inline-code f3\">F3</span> button and press <span class=\"chord-btn-icon\" data-num=\"7\"></span> Button 7 (Quick Mode Select)",
+            "Hold <span class=\"inline-code f3\">F3</span> button and press <span class=\"chord-btn-icon\" data-num=\"7\"></span> Button 7",
             "Device enters MIC SAMPLE mode",
             "Press and HOLD <span class=\"chord-btn-icon\" data-num=\"1\"></span> chord button 1 to start recording, speak or sing into the microphone (front panel), then release to stop (max 3.0 seconds)",
             "Device shows \"RECORDING\" (with progress bars), then \"Saving...\", then \"Tuning...\"",
