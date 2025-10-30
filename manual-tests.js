@@ -80,144 +80,6 @@ const manualTests = [
     },
     {
         id: 5,
-        name: "Function Buttons (F1, F2, F3)",
-        hidden: true,
-        image: "images/BUtton numbers 3.png",
-        procedure: [
-            "Press each function button <span class=\"inline-code f1\">F1</span> <span class=\"inline-code f2\">F2</span> <span class=\"inline-code f3\">F3</span> ONCE after startup",
-            "Move joystick <span class=\"joy-up\"></span> <span class=\"joy-down\"></span> <span class=\"joy-left\"></span> <span class=\"joy-right\"></span> to see different menu values",
-            "Verify OLED shows correct displays"
-        ],
-        expected: [
-            "Each button press registers immediately",
-            "<span class=\"inline-code f1\">F1</span>: Shows KEY or OCTAVE when joystick moved",
-            "<span class=\"inline-code f2\">F2</span>: Shows Press Up to enter Sound menu, left/right to change effect",
-            "<span class=\"inline-code f3\">F3</span>: Shows Press up to enter Mode menu, left/right to change BPM"
-        ],
-        oled: {
-            type: "function3_pixelperfect",
-            buttons: [
-                {
-                    button: "F1",
-                    name: "Settings",
-                    color: "#808080",
-                    iconSvg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="14" r="3.5"/><line x1="9.5" y1="11.5" x2="18" y2="3"/><line x1="16" y1="5" x2="16" y2="3"/></svg>',
-                    display: "key_octave_dual",
-                    topLine: { text: "KEY < >", inverted: true },
-                    bottomLine: { text: "OCTAVE ^ v", inverted: false },
-                    hasBorder: true
-                },
-                {
-                    button: "F2",
-                    name: "Effects",
-                    color: "#FFB800",
-                    iconSvg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3,17 3,9 7,9 7,17 11,17 11,9 15,9 15,17 19,17 19,9 21,9"/></svg>',
-                    display: "sound_effect_onoff",
-                    topLine: { text: "SOUND ^", inverted: true },
-                    middleLine: { text: "< VERB >", inverted: false },
-                    bottomLine: { text: "ON / OFF v", inverted: true },
-                    hasBorder: true
-                },
-                {
-                    button: "F3",
-                    name: "BPM/Mode",
-                    color: "#ef4444",
-                    iconSvg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="12" x2="12" y2="6"/><line x1="12" y1="12" x2="17" y2="12"/></svg>',
-                    display: "bpm_mode",
-                    topText: "MODE ^",
-                    bpmNumber: "120",
-                    bpmLabel: "BPM",
-                    arrows: "< >",
-                    hasInvertedBox: true,
-                    hasBorder: true
-                }
-            ]
-        }
-    },
-    {
-        id: 5,
-        name: "Chord Buttons (1-7) in C Major",
-        hidden: true,
-        image: "images/BUtton numbers 2.png",
-        procedure: [
-            "Press each chord buttons 1-7 <span class=\"chord-btn-icon\"></span> individually",
-            "Verify chord name and number display on OLED",
-            "Listen for clear audio (no distortion)"
-        ],
-        expected: [
-            "Each button triggers immediately",
-            "OLED shows: chord number (circled, top left) + key letter (top right) + chord name (center)",
-            "Clear audio with no distortion",
-            "No stuck notes or audio glitches"
-        ],
-        oled: {
-            type: "chord7_cmajor",
-            key: "C",
-            chords: [
-                { button: 1, chord: "Cmaj" },
-                { button: 2, chord: "Dmin" },
-                { button: 3, chord: "Emin" },
-                { button: 4, chord: "Fmaj" },
-                { button: 5, chord: "Gmaj" },
-                { button: 6, chord: "Amin" },
-                { button: 7, chord: "Bdim" }
-            ]
-        }
-    },
-    {
-        id: 6,
-        name: "Joystick Chord Modification (Hold Button 1)",
-        hidden: true,
-        image: "images/Top View.png",
-        procedure: [
-            "Hold <span class=\"chord-btn-icon\" data-num=\"1\"></span> CHORD BUTTON 1",
-            "Move joystick <span class=\"joy-up\"></span> <span class=\"joy-down\"></span> <span class=\"joy-left\"></span> <span class=\"joy-right\"></span> in each of 8 directions + center",
-            "Verify chord modification displays on OLED",
-            "Listen for clear audio (no distortion)"
-        ],
-        expected: [
-            "Joystick responds smoothly in all directions",
-            "OLED shows: chord number (1, circled) + key (C) + modified chord name",
-            "Clear audio with no distortion",
-            "Center position returns to default chord (Cmaj)"
-        ],
-        oled: {
-            type: "joystick8_button1",
-            key: "C",
-            buttonNumber: 1,
-            directions: [
-                { dir: "CENTER", chord: "C" },
-                { dir: "UP", chord: "Cmin" },
-                { dir: "UP-RIGHT", chord: "C7" },
-                { dir: "RIGHT", chord: "Cmaj7" },
-                { dir: "DOWN-RIGHT", chord: "Cmaj9" },
-                { dir: "DOWN", chord: "Csus4" },
-                { dir: "DOWN-LEFT", chord: "Cmaj6" },
-                { dir: "LEFT", chord: "Cdim" },
-                { dir: "UP-LEFT", chord: "Caug" }
-            ]
-        }
-    },
-    {
-        id: 7,
-        name: "Joystick Click (Bar Select Menu)",
-        hidden: true,
-        image: "images/Top View.png",
-        procedure: [
-            "From default startup, <span class=\"joy-click\"></span> click joystick button (press down)",
-            "OLED shows \"WAITING\" screen with bar selection"
-        ],
-        expected: [
-            "<span class=\"joy-click\"></span> Joystick click opens bar select menu immediately",
-            "OLED displays: \"WAITING\" header with line separator, Shows bar count (FREE or number) with \"BARS <>\" label"
-        ],
-        oled: {
-            type: "bar_select",
-            content: ["WAITING", "___", "4  BARS <>"]
-        }
-    },
-    {
-        id: 8,
         name: "Headphone Output",
         image: "images/Top View.png",
         procedure: [
@@ -235,27 +97,7 @@ const manualTests = [
         oled: null
     },
     {
-        id: 9,
-        name: "MIDI over USB-C",
-        hidden: true,
-        image: "images/Side View.png",
-        procedure: [
-            "Connect HiChord to computer via USB-C",
-            "Click 'CONNECT & TEST MIDI' button below",
-            "Wait for connection status indicator",
-            "Press any button on HiChord"
-        ],
-        expected: [
-            "HiChord detected as USB MIDI device",
-            "Connection successful with green status indicator",
-            "App automatically enables MIDI output on HiChord",
-            "Success message appears when button pressed"
-        ],
-        oled: null,
-        midiTest: true
-    },
-    {
-        id: 10,
+        id: 6,
         name: "Microphone Input",
         batch: "4+",
         skipBatch: ["1", "2", "3"],
@@ -284,7 +126,7 @@ const manualTests = [
         note: "BATCH 4+ ONLY - Skip for Batch 1-3 (no microphone). Workflow: Record → Saving → Tuning → Ready (stays in MIC SAMPLE mode)"
     },
     {
-        id: 11,
+        id: 7,
         name: "Battery Indicator",
         batch: "2+",
         skipBatch: ["1"],
