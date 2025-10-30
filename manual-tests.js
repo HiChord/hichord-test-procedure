@@ -102,15 +102,14 @@ const manualTests = [
         batch: "4+",
         skipBatch: ["1", "2", "3"],
         procedure: [
-            "Press <span class=\"inline-code f3\">F3</span> button once",
-            "Move joystick <span class=\"joy-up\"></span> UP to enter mode selection menu",
-            "Move joystick <span class=\"joy-left\"></span> LEFT or <span class=\"joy-right\"></span> RIGHT to navigate to \"MIC SAMPLE\" mode",
-            "Move joystick <span class=\"joy-down\"></span> DOWN to select and enter MIC SAMPLE mode",
+            "Hold <span class=\"inline-code f3\">F3</span> button and press <span class=\"chord-btn-icon\" data-num=\"7\"></span> Button 7 (Quick Mode Select)",
+            "Device enters MIC SAMPLE mode",
             "Press and HOLD <span class=\"chord-btn-icon\" data-num=\"1\"></span> chord button 1 to start recording, speak or sing into the microphone (front panel), then release to stop (max 3.0 seconds)",
             "Device shows \"RECORDING\" (with progress bars), then \"Saving...\", then \"Tuning...\"",
             "Sample recorded - play chord buttons 1-7 <span class=\"chord-btn-icon\"></span> to play the sample"
         ],
         expected: [
+            "Quick mode select (F3+Btn7) enters MIC SAMPLE mode instantly",
             "Microphone captures audio clearly",
             "Recording shows progress bar and RMS meter on OLED",
             "Sample plays back correctly, mapped chromatically across buttons 1-7",
