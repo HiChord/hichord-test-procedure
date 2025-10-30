@@ -868,10 +868,10 @@ function renderOLED(oledData) {
                         <rect x="0" y="0" width="64" height="12" fill="white"/>
 
                         <!-- "VOLUME" text in header (u8g2_font_helvB08_tr, baseline y=10) -->
-                        <text x="32" y="10" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="5.5" font-weight="bold" fill="black">VOLUME</text>
+                        <text x="32" y="9" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="7" font-weight="bold" fill="black">VOLUME</text>
 
                         <!-- "75%" text (u8g2_font_helvB14_tr, baseline y=28) -->
-                        <text x="32" y="28" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="bold" fill="white">75%</text>
+                        <text x="32" y="26" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="12" font-weight="bold" fill="white">75%</text>
                     </svg>
                 </div>
             </div>
