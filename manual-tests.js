@@ -42,7 +42,7 @@ const manualTests = [
         image: "images/Top View.png",
         procedure: [
             "Locate volume slider on top edge",
-            "Press any chord button (1-7) to generate sound",
+            "Press any chord button <span class=\"chord-btn-icon\" data-num=\"1\"></span>-<span class=\"chord-btn-icon\" data-num=\"7\"></span> to generate sound",
             "Move slider from minimum to maximum position",
             "Observe OLED volume indicator"
         ],
@@ -61,15 +61,15 @@ const manualTests = [
         name: "Function Buttons (F1, F2, F3)",
         image: "images/BUtton numbers 3.png",
         procedure: [
-            "Press each function button ONCE after startup",
-            "Move joystick to see different menu values",
+            "Press each function button <span class=\"inline-code f1\">F1</span> <span class=\"inline-code f2\">F2</span> <span class=\"inline-code f3\">F3</span> ONCE after startup",
+            "Move joystick <span class=\"joy-up\"></span> <span class=\"joy-down\"></span> <span class=\"joy-left\"></span> <span class=\"joy-right\"></span> to see different menu values",
             "Verify OLED shows correct displays"
         ],
         expected: [
             "Each button press registers immediately",
-            "F1: Shows KEY or OCTAVE (one at a time) when joystick moved",
-            "F2: Shows Press Up to enter Sound menu, left and right to change effect",
-            "F3: Shows Press up to enter Mode menu, and left and right to change BPM, shows current BPM"
+            "<span class=\"inline-code f1\">F1</span>: Shows KEY or OCTAVE when joystick moved",
+            "<span class=\"inline-code f2\">F2</span>: Shows Press Up to enter Sound menu, left/right to change effect",
+            "<span class=\"inline-code f3\">F3</span>: Shows Press up to enter Mode menu, left/right to change BPM"
         ],
         oled: {
             type: "function3_pixelperfect",
@@ -116,7 +116,7 @@ const manualTests = [
         name: "Chord Buttons (1-7) in C Major",
         image: "images/BUtton numbers 2.png",
         procedure: [
-            "Press each chord button 1-7 individually",
+            "Press each chord button <span class=\"chord-btn-icon\" data-num=\"1\"></span>-<span class=\"chord-btn-icon\" data-num=\"7\"></span> individually",
             "Verify chord name and number display on OLED",
             "Listen for clear audio (no distortion)"
         ],
@@ -145,8 +145,8 @@ const manualTests = [
         name: "Joystick Chord Modification (Hold Button 1)",
         image: "images/Top View.png",
         procedure: [
-            "Hold CHORD BUTTON 1",
-            "Move joystick in each of 8 directions + center",
+            "Hold <span class=\"chord-btn-icon\" data-num=\"1\"></span> CHORD BUTTON 1",
+            "Move joystick <span class=\"joy-up\"></span> <span class=\"joy-down\"></span> <span class=\"joy-left\"></span> <span class=\"joy-right\"></span> in each of 8 directions + center",
             "Verify chord modification displays on OLED",
             "Listen for clear audio (no distortion)"
         ],
@@ -154,7 +154,7 @@ const manualTests = [
             "Joystick responds smoothly in all directions",
             "OLED shows: chord number (1, circled) + key (C) + modified chord name",
             "Clear audio with no distortion",
-            "Center position returns to default chord (C)"
+            "Center position returns to default chord (Cmaj)"
         ],
         oled: {
             type: "joystick8_button1",
@@ -178,11 +178,11 @@ const manualTests = [
         name: "Joystick Click (Bar Select Menu)",
         image: "images/Top View.png",
         procedure: [
-            "From default startup, click joystick button (press down)",
+            "From default startup, <span class=\"joy-click\"></span> click joystick button (press down)",
             "OLED shows \"WAITING\" screen with bar selection"
         ],
         expected: [
-            "Joystick click opens bar select menu immediately",
+            "<span class=\"joy-click\"></span> Joystick click opens bar select menu immediately",
             "OLED displays: \"WAITING\" header with line separator, Shows bar count (FREE or number) with \"BARS <>\" label"
         ],
         oled: {
@@ -197,7 +197,7 @@ const manualTests = [
         procedure: [
             "Connect headphones to 3.5mm jack on top side (see image)",
             "Set volume to 50%",
-            "Press chord buttons 1-7",
+            "Press chord buttons <span class=\"chord-btn-icon\" data-num=\"1\"></span>-<span class=\"chord-btn-icon\" data-num=\"7\"></span>",
             "Listen for stereo audio in headphones"
         ],
         expected: [
@@ -233,17 +233,17 @@ const manualTests = [
         batch: "4+",
         skipBatch: ["1", "2", "3"],
         procedure: [
-            "NOTE: Microphone is only available on Batch 4 and later devices",
-            "Press F3 button once",
-            "Move joystick UP to enter mode selection menu",
-            "Move joystick LEFT or RIGHT to navigate to \"MIC SAMPLE\" mode",
-            "Move joystick DOWN to select and enter MIC SAMPLE mode",
+            "Press <span class=\"inline-code f3\">F3</span> button once",
+            "Move joystick <span class=\"joy-up\"></span> UP to enter mode selection menu",
+            "Move joystick <span class=\"joy-left\"></span> LEFT or <span class=\"joy-right\"></span> RIGHT to navigate to \"MIC SAMPLE\" mode",
+            "Move joystick <span class=\"joy-down\"></span> DOWN to select and enter MIC SAMPLE mode",
             "OLED displays: \"MIC SAMPLE\" title with \"Hold Btn 1\" / \"to Record\"",
-            "Press and HOLD chord button 1 to start recording",
+            "Press and HOLD <span class=\"chord-btn-icon\" data-num=\"1\"></span> chord button 1 to start recording",
             "Speak or sing a note into the microphone (located on front panel)",
-            "Release chord button 1 to stop recording (max 3.0 seconds)",
-            "Device shows \"Tuning...\" briefly, then auto-switches to LEAD mode",
-            "Sample is now ready - press chord buttons 1-7 to play chromatically"
+            "Release <span class=\"chord-btn-icon\" data-num=\"1\"></span> to stop recording (max 3.0 seconds)",
+            "Device shows \"RECORDING\" (with progress bars), then \"Saving...\", then \"Tuning...\"",
+            "Returns to MIC SAMPLE mode - sample is now ready to play",
+            "Press chord buttons <span class=\"chord-btn-icon\" data-num=\"1\"></span>-<span class=\"chord-btn-icon\" data-num=\"7\"></span> to play sample chromatically"
         ],
         expected: [
             "Microphone captures audio clearly",
@@ -258,7 +258,7 @@ const manualTests = [
             progressBar: { x: 4, y: 22, width: 56, height: 4, filled: 28 },
             rmsMeter: { x: 4, y: 28, width: 56, height: 4, filled: 40 }
         },
-        note: "BATCH 4+ ONLY - Skip for Batch 1-3 (no microphone). Workflow is fully automatic: Record → Auto-tune → LEAD mode."
+        note: "BATCH 4+ ONLY - Skip for Batch 1-3 (no microphone). Workflow: Record → Saving → Tuning → Ready (stays in MIC SAMPLE mode)"
     },
     {
         id: 11,
@@ -266,7 +266,7 @@ const manualTests = [
         batch: "2+",
         skipBatch: ["1"],
         procedure: [
-            "Press and hold F1 + F2 buttons together",
+            "Press and hold <span class=\"inline-code f1\">F1</span> + <span class=\"inline-code f2\">F2</span> buttons together",
             "Observe battery voltage and percentage on OLED",
             "Release buttons to return to normal operation"
         ],

@@ -2859,3 +2859,138 @@ footer {
     font-weight: bold;
     padding-top: 5px;
 }
+
+/* ========================================================================
+   BUTTON ICONS - From HiChord Manual
+   ======================================================================== */
+
+/* Function Button Icons (F1, F2, F3) */
+.inline-code.f1,
+.inline-code.f2,
+.inline-code.f3 {
+    display: inline-block;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border-radius: 4px;
+    position: relative;
+    vertical-align: middle;
+    margin: 0 4px;
+    font-size: 0;
+    line-height: 0;
+    overflow: hidden;
+    text-indent: -9999px;
+    border: none;
+    flex-shrink: 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15),
+                0 1px 2px rgba(0, 0, 0, 0.1),
+                inset 0 -1px 1px rgba(0, 0, 0, 0.2);
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.inline-code.f1 {
+    background: linear-gradient(135deg, #909090 0%, #808080 50%, #707070 100%);
+}
+
+.inline-code.f2 {
+    background: linear-gradient(135deg, #FFC820 0%, #FFB800 50%, #E0A000 100%);
+}
+
+.inline-code.f3 {
+    background: linear-gradient(135deg, #ff5555 0%, #ef4444 50%, #dc2626 100%);
+}
+
+/* SVG icons inside function keys */
+.inline-code.f1::before,
+.inline-code.f2::before,
+.inline-code.f3::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 18px;
+    height: 18px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* F1 - Key Icon */
+.inline-code.f1::before {
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="14" r="3.5"/><line x1="9.5" y1="11.5" x2="18" y2="3"/><line x1="16" y1="5" x2="16" y2="3"/></svg>');
+}
+
+/* F2 - Waveform Icon */
+.inline-code.f2::before {
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3,17 3,9 7,9 7,17 11,17 11,9 15,9 15,17 19,17 19,9 21,9"/></svg>');
+}
+
+/* F3 - Clock Icon */
+.inline-code.f3::before {
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="12" x2="12" y2="6"/><line x1="12" y1="12" x2="17" y2="12"/></svg>');
+}
+
+/* Chord Button Icon */
+.chord-btn-icon {
+    display: inline-block;
+    width: 18px;
+    height: 22px;
+    margin: 0 3px;
+    vertical-align: middle;
+    position: relative;
+    border: 1.5px solid #333333;
+    border-radius: 3px;
+    background: linear-gradient(135deg, #F8F8F8 0%, #E8E8E8 100%);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15), inset 0 -1px 1px rgba(0, 0, 0, 0.1);
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    color: #333333;
+    text-align: center;
+    line-height: 22px;
+}
+
+.chord-btn-icon::before {
+    content: attr(data-num);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Joystick Direction Icons */
+.joy-up,
+.joy-down,
+.joy-left,
+.joy-right,
+.joy-click {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin: 0 2px;
+    vertical-align: middle;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.joy-up {
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23333333" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5 L12 19 M12 5 L7 10 M12 5 L17 10"/></svg>');
+}
+
+.joy-down {
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23333333" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19 L12 5 M12 19 L7 14 M12 19 L17 14"/></svg>');
+}
+
+.joy-left {
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23333333" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12 L19 12 M5 12 L10 7 M5 12 L10 17"/></svg>');
+}
+
+.joy-right {
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23333333" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12 L5 12 M19 12 L14 7 M19 12 L14 17"/></svg>');
+}
+
+.joy-click {
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23333333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3" fill="%23333333"/></svg>');
+}
