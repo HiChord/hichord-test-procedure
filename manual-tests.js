@@ -33,8 +33,7 @@ const manualTests = [
             "No screen artifacts or glitches"
         ],
         oled: {
-            type: "boot",
-            content: ["HiChord", "REV 1.99"]
+            type: "boot_pixelperfect"
         }
     },
     {
@@ -54,8 +53,7 @@ const manualTests = [
             "No crackling or distortion at any level"
         ],
         oled: {
-            type: "volume",
-            content: ["VOLUME", "75%"]
+            type: "volume_pixelperfect"
         }
     },
     {
@@ -132,12 +130,12 @@ const manualTests = [
             type: "chord7_cmajor",
             key: "C",
             chords: [
-                { button: 1, chord: "C" },
-                { button: 2, chord: "Dm" },
-                { button: 3, chord: "Em" },
-                { button: 4, chord: "F" },
-                { button: 5, chord: "G" },
-                { button: 6, chord: "Am" },
+                { button: 1, chord: "Cmaj" },
+                { button: 2, chord: "Dmin" },
+                { button: 3, chord: "Emin" },
+                { button: 4, chord: "Fmaj" },
+                { button: 5, chord: "Gmaj" },
+                { button: 6, chord: "Amin" },
                 { button: 7, chord: "Bdim" }
             ]
         }
@@ -164,14 +162,14 @@ const manualTests = [
             buttonNumber: 1,
             directions: [
                 { dir: "CENTER", chord: "C" },
-                { dir: "UP", chord: "Cm" },
+                { dir: "UP", chord: "Cmin" },
                 { dir: "UP-RIGHT", chord: "C7" },
-                { dir: "RIGHT", chord: "CM7" },
-                { dir: "DOWN-RIGHT", chord: "CM9" },
+                { dir: "RIGHT", chord: "Cmaj7" },
+                { dir: "DOWN-RIGHT", chord: "Cmaj9" },
                 { dir: "DOWN", chord: "Csus4" },
-                { dir: "DOWN-LEFT", chord: "C6" },
+                { dir: "DOWN-LEFT", chord: "Cmaj6" },
                 { dir: "LEFT", chord: "Cdim" },
-                { dir: "UP-LEFT", chord: "C+" }
+                { dir: "UP-LEFT", chord: "Caug" }
             ]
         }
     },
@@ -795,7 +793,46 @@ function renderOLED(oledData) {
                     </div>
                 </div>
             `;
-        }
+        },
+        boot_pixelperfect: () => `
+            <div class="oled-screen-full">
+                <div class="oled-boot-accurate">
+                    <svg class="boot-ghost" viewBox="0 0 64 32" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Ghost body at x=12, y=16 -->
+                        <circle cx="12" cy="16" r="5" fill="white"/>
+                        <rect x="7" y="16" width="11" height="6" fill="white"/>
+                        <!-- Wavy bottom (3 small circles for waves) -->
+                        <circle cx="9" cy="22" r="1" fill="white"/>
+                        <circle cx="12" cy="23" r="1" fill="white"/>
+                        <circle cx="15" cy="22" r="1" fill="white"/>
+                        <!-- Eyes (black pixels) -->
+                        <rect x="10" y="15" width="1" height="1" fill="black"/>
+                        <rect x="14" y="15" width="1" height="1" fill="black"/>
+                        <!-- Tiny smile -->
+                        <rect x="12" y="18" width="1" height="1" fill="black"/>
+
+                        <!-- Vertical divider line from (20, 8) to (20, 24) -->
+                        <line x1="20" y1="8" x2="20" y2="24" stroke="white" stroke-width="1"/>
+
+                        <!-- "HiChord" text at x=22, y=14 -->
+                        <text x="22" y="14" font-family="monospace" font-size="6" fill="white">HiChord</text>
+
+                        <!-- "REV 1.99" text at x=22, y=24 -->
+                        <text x="22" y="24" font-family="monospace" font-size="5" fill="white">REV 1.99</text>
+                    </svg>
+                </div>
+            </div>
+        `,
+        volume_pixelperfect: () => `
+            <div class="oled-screen-full">
+                <div class="oled-volume-accurate">
+                    <!-- Inverted bar at top (0, 0, 64, 12) with white background -->
+                    <div class="volume-header-bar">VOLUME</div>
+                    <!-- Percentage value centered at y=28 -->
+                    <div class="volume-percentage">75%</div>
+                </div>
+            </div>
+        `
     };
 
     const renderer = oledTypes[oledData.type];
@@ -870,6 +907,24 @@ function renderOLED(oledData) {
             <div class="oled-mockup battery-mockup">
                 ${renderer(oledData)}
                 <div class="mockup-label">Expected OLED Display (F1 + F2 Held)</div>
+            </div>
+        `;
+    }
+
+    if (oledData.type === 'boot_pixelperfect') {
+        return `
+            <div class="oled-mockup boot-mockup">
+                ${renderer(oledData)}
+                <div class="mockup-label">Expected OLED Display (Final Boot Screen)</div>
+            </div>
+        `;
+    }
+
+    if (oledData.type === 'volume_pixelperfect') {
+        return `
+            <div class="oled-mockup volume-mockup">
+                ${renderer(oledData)}
+                <div class="mockup-label">Expected OLED Display (Volume Slider Moved)</div>
             </div>
         `;
     }
