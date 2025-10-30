@@ -282,23 +282,27 @@ h1 {
     line-height: 1.6;
 }
 
-/* Procedure with secondary image layout */
-.procedure-with-image {
+/* Procedure with images - procedure left, images stacked right */
+.procedure-with-images {
     display: flex;
     gap: 24px;
     align-items: flex-start;
 }
 
-.procedure-with-image .procedure-section {
+.procedure-with-images .procedure-section {
     flex: 1;
 }
 
-.procedure-secondary-image {
+.images-stack {
     flex-shrink: 0;
-    max-width: 300px;
+    max-width: 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
-.procedure-secondary-image img {
+.images-stack .device-image img,
+.images-stack .procedure-secondary-image img {
     width: 100%;
     height: auto;
     border: 1px solid #E5E5E5;

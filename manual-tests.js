@@ -236,6 +236,7 @@ const manualTests = [
     {
         id: 9,
         name: "MIDI over USB-C",
+        hidden: true,
         image: "images/Side View.png",
         procedure: [
             "Connect HiChord to computer via USB-C",
@@ -262,12 +263,9 @@ const manualTests = [
             "Move joystick <span class=\"joy-up\"></span> UP to enter mode selection menu",
             "Move joystick <span class=\"joy-left\"></span> LEFT or <span class=\"joy-right\"></span> RIGHT to navigate to \"MIC SAMPLE\" mode",
             "Move joystick <span class=\"joy-down\"></span> DOWN to select and enter MIC SAMPLE mode",
-            "OLED displays: \"MIC SAMPLE\" title with \"Hold Btn 1\" / \"to Record\"",
-            "Press and HOLD <span class=\"chord-btn-icon\" data-num=\"1\"></span> chord button 1 to start recording",
-            "Speak or sing a note into the microphone (located on front panel)",
-            "Release <span class=\"chord-btn-icon\" data-num=\"1\"></span> to stop recording (max 3.0 seconds)",
+            "Press and HOLD <span class=\"chord-btn-icon\" data-num=\"1\"></span> chord button 1 to start recording, speak or sing into the microphone (front panel), then release to stop (max 3.0 seconds)",
             "Device shows \"RECORDING\" (with progress bars), then \"Saving...\", then \"Tuning...\"",
-            "Returns to MIC SAMPLE mode - sample is now ready to play"
+            "Sample recorded - play chord buttons 1-7 <span class=\"chord-btn-icon\"></span> to play the sample"
         ],
         expected: [
             "Microphone captures audio clearly",
@@ -1186,14 +1184,15 @@ function buildManualTestHTML(test) {
             </div>
 
             <div class="test-body">
-                ${imageHTML}
-
-                <div class="procedure-with-image">
+                <div class="procedure-with-images">
                     <div class="procedure-section">
                         <h3>Test Procedure</h3>
                         <ol>${procedureHTML}</ol>
                     </div>
-                    ${secondaryImageHTML}
+                    <div class="images-stack">
+                        ${imageHTML}
+                        ${secondaryImageHTML}
+                    </div>
                 </div>
 
                 ${midiTestHTML}
