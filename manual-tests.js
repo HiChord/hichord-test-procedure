@@ -42,7 +42,7 @@ const manualTests = [
         image: "images/BUtton numbers only.jpg",
         procedure: [
             "Locate volume wheel on top edge",
-            "Press any chord button <span class=\"chord-btn-icon\" data-num=\"1\"></span>-<span class=\"chord-btn-icon\" data-num=\"7\"></span> <span class=\"chord-btn-icon\"></span> to generate sound",
+            "Press any chord buttons 1-7 <span class=\"chord-btn-icon\"></span> to generate sound",
             "Turn wheel from minimum to maximum position",
             "Observe OLED volume indicator"
         ],
@@ -138,7 +138,7 @@ const manualTests = [
         hidden: true,
         image: "images/BUtton numbers 2.png",
         procedure: [
-            "Press each chord button <span class=\"chord-btn-icon\" data-num=\"1\"></span>-<span class=\"chord-btn-icon\" data-num=\"7\"></span> <span class=\"chord-btn-icon\"></span> individually",
+            "Press each chord buttons 1-7 <span class=\"chord-btn-icon\"></span> individually",
             "Verify chord name and number display on OLED",
             "Listen for clear audio (no distortion)"
         ],
@@ -221,7 +221,7 @@ const manualTests = [
         procedure: [
             "Connect headphones to 3.5mm jack on top side (see image)",
             "Set volume to 50%",
-            "Press chord buttons <span class=\"chord-btn-icon\" data-num=\"1\"></span>-<span class=\"chord-btn-icon\" data-num=\"7\"></span> <span class=\"chord-btn-icon\"></span>",
+            "Press chord buttons 1-7 <span class=\"chord-btn-icon\"></span>",
             "Listen for stereo audio in headphones"
         ],
         expected: [
@@ -266,8 +266,7 @@ const manualTests = [
             "Speak or sing a note into the microphone (located on front panel)",
             "Release <span class=\"chord-btn-icon\" data-num=\"1\"></span> to stop recording (max 3.0 seconds)",
             "Device shows \"RECORDING\" (with progress bars), then \"Saving...\", then \"Tuning...\"",
-            "Returns to MIC SAMPLE mode - sample is now ready to play",
-            "Press chord buttons <span class=\"chord-btn-icon\" data-num=\"1\"></span>-<span class=\"chord-btn-icon\" data-num=\"7\"></span> <span class=\"chord-btn-icon\"></span> to play sample chromatically"
+            "Returns to MIC SAMPLE mode - sample is now ready to play"
         ],
         expected: [
             "Microphone captures audio clearly",
