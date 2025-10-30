@@ -39,10 +39,10 @@ const manualTests = [
     {
         id: 3,
         name: "Volume Control",
-        image: "images/Top View.png",
+        image: "images/BUtton numbers only.jpg",
         procedure: [
             "Locate volume wheel on top edge",
-            "Press any chord button <span class=\"chord-btn-icon\" data-num=\"1\"></span>-<span class=\"chord-btn-icon\" data-num=\"7\"></span> to generate sound",
+            "Press any chord button <span class=\"chord-btn-icon\" data-num=\"1\"></span>-<span class=\"chord-btn-icon\" data-num=\"7\"></span> <span class=\"chord-btn-icon\"></span> to generate sound",
             "Turn wheel from minimum to maximum position",
             "Observe OLED volume indicator"
         ],
@@ -138,7 +138,7 @@ const manualTests = [
         hidden: true,
         image: "images/BUtton numbers 2.png",
         procedure: [
-            "Press each chord button <span class=\"chord-btn-icon\" data-num=\"1\"></span>-<span class=\"chord-btn-icon\" data-num=\"7\"></span> individually",
+            "Press each chord button <span class=\"chord-btn-icon\" data-num=\"1\"></span>-<span class=\"chord-btn-icon\" data-num=\"7\"></span> <span class=\"chord-btn-icon\"></span> individually",
             "Verify chord name and number display on OLED",
             "Listen for clear audio (no distortion)"
         ],
@@ -221,7 +221,7 @@ const manualTests = [
         procedure: [
             "Connect headphones to 3.5mm jack on top side (see image)",
             "Set volume to 50%",
-            "Press chord buttons <span class=\"chord-btn-icon\" data-num=\"1\"></span>-<span class=\"chord-btn-icon\" data-num=\"7\"></span>",
+            "Press chord buttons <span class=\"chord-btn-icon\" data-num=\"1\"></span>-<span class=\"chord-btn-icon\" data-num=\"7\"></span> <span class=\"chord-btn-icon\"></span>",
             "Listen for stereo audio in headphones"
         ],
         expected: [
@@ -267,7 +267,7 @@ const manualTests = [
             "Release <span class=\"chord-btn-icon\" data-num=\"1\"></span> to stop recording (max 3.0 seconds)",
             "Device shows \"RECORDING\" (with progress bars), then \"Saving...\", then \"Tuning...\"",
             "Returns to MIC SAMPLE mode - sample is now ready to play",
-            "Press chord buttons <span class=\"chord-btn-icon\" data-num=\"1\"></span>-<span class=\"chord-btn-icon\" data-num=\"7\"></span> to play sample chromatically"
+            "Press chord buttons <span class=\"chord-btn-icon\" data-num=\"1\"></span>-<span class=\"chord-btn-icon\" data-num=\"7\"></span> <span class=\"chord-btn-icon\"></span> to play sample chromatically"
         ],
         expected: [
             "Microphone captures audio clearly",
@@ -864,10 +864,16 @@ function renderOLED(oledData) {
         volume_pixelperfect: () => `
             <div class="oled-screen-full">
                 <div class="oled-volume-accurate">
-                    <!-- Inverted bar at top (0, 0, 64, 12) with white background -->
-                    <div class="volume-header-bar">VOLUME</div>
-                    <!-- Percentage value centered at y=28 -->
-                    <div class="volume-percentage">75%</div>
+                    <svg class="volume-display-svg" viewBox="0 0 64 32" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Inverted header box (0, 0, 64, 12) -->
+                        <rect x="0" y="0" width="64" height="12" fill="white"/>
+
+                        <!-- "VOLUME" text in header (centered, baseline y=10) -->
+                        <text x="32" y="10" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="bold" fill="black">VOLUME</text>
+
+                        <!-- "75%" text (centered, baseline y=28) -->
+                        <text x="32" y="28" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="bold" fill="white">75%</text>
+                    </svg>
                 </div>
             </div>
         `

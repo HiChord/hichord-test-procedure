@@ -2835,29 +2835,16 @@ footer {
     position: relative;
 }
 
-.volume-header-bar {
-    background: #FFF;
-    color: #000;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Helvetica', 'Arial', sans-serif;
-    font-size: 30px;
-    font-weight: bold;
-    letter-spacing: 0.5px;
+/* Volume Display SVG - Pixel Perfect */
+.volume-display-svg {
+    width: 320px;
+    height: 160px;
+    background: #000;
 }
 
-.volume-percentage {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #FFF;
+.volume-display-svg text {
     font-family: 'Helvetica', 'Arial', sans-serif;
-    font-size: 48px;
     font-weight: bold;
-    padding-top: 0px;
 }
 
 /* ========================================================================
