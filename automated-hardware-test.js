@@ -142,7 +142,7 @@ class HiChordTest {
                 const passedCount = data[3];
                 const failedCount = data[4];
 
-                console.log(`[Test] Complete: ${passedCount} passed, ${failedCount} failed`);
+                console.log(`[Test] ✓ Received final report (0x15): ${passedCount} passed, ${failedCount} failed`);
                 this.showResults(passedCount, failedCount);
             }
         }
@@ -181,12 +181,42 @@ class HiChordTest {
         document.getElementById('progressFill').style.width = `${progress}%`;
         document.getElementById('progressText').textContent = `${stepNum} / 19`;
 
+        // Update instruction text based on progress
+        if (stepNum === 19) {
+            // All tests complete - waiting for final report
+            document.getElementById('currentTestInstruction').innerHTML =
+                '<strong style="color: #27ae60;">Test complete! Waiting for final report from device...</strong>';
+
+            // Set a timeout to check if we got the final report
+            // If not received within 3 seconds, show warning
+            if (this.finalReportTimeout) {
+                clearTimeout(this.finalReportTimeout);
+            }
+            this.finalReportTimeout = setTimeout(() => {
+                if (this.testRunning) {
+                    console.warn('[Test] Final report (0x15) not received after 3 seconds!');
+                    document.getElementById('currentTestInstruction').innerHTML =
+                        '<strong style="color: #e74c3c;">⚠️ Connection issue detected. Check USB cable and device status.</strong>';
+                }
+            }, 3000);
+        } else {
+            // Still testing - follow OLED
+            document.getElementById('currentTestInstruction').innerHTML =
+                'Follow the instructions on the HiChord OLED display';
+        }
+
         // Log for debugging
         console.log(`[Test] Progress: ${stepNum}/19 - ${passed ? 'PASS' : 'FAIL'}`);
     }
 
     showResults(passedCount, failedCount) {
         this.testRunning = false;
+
+        // Clear the timeout since we got the final report
+        if (this.finalReportTimeout) {
+            clearTimeout(this.finalReportTimeout);
+            this.finalReportTimeout = null;
+        }
 
         // Exit test mode
         this.sendSysEx([0xF0, 0x7D, 0x11, 0xF7]);
