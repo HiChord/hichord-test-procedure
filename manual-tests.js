@@ -74,7 +74,7 @@ const manualTests = [
             "Web interface displays real-time progress",
             "Final report shows PASS for all tests"
         ],
-        note: "This automated test verifies: 7 chord buttons, 3 menu buttons (F1/F2/F3), 8 joystick directions, joystick click, and volume wheel (20 tests total)."
+        note: "This automated test verifies: 7 chord buttons, 3 menu buttons (F1/F2/F3), 8 joystick directions, and joystick click (19 tests total). Device will automatically restart when complete."
     },
     {
         id: 5,
@@ -1057,19 +1057,116 @@ function buildManualTestHTML(test) {
 
     const automatedTestHTML = test.isAutomatedTest ? `
         <div class="automated-test-embed" id="automatedTestEmbed">
-            <div class="test-controls">
-                <button class="btn-primary" id="connectButton" onclick="window.hiChordTest.connect()">
-                    Connect Device
-                </button>
-                <button class="btn-primary" id="startTestButton" onclick="window.hiChordTest.startTest()" disabled style="display: none;">
-                    Start Test
-                </button>
+            <!-- Connection Panel -->
+            <div class="connection-panel">
+                <div class="connection-status" id="connectionStatus">
+                    <div class="status-indicator disconnected" id="statusIndicator"></div>
+                    <div class="status-text">
+                        <div id="statusTitle">Not Connected</div>
+                        <div id="statusSubtitle">Connect HiChord™ via USB-C</div>
+                    </div>
+                </div>
+                <button class="btn-connect" id="connectBtn">Connect to HiChord</button>
             </div>
 
-            <div id="connectionStatus" class="connection-status"></div>
-            <div id="hardwareInfo" class="hardware-info" style="display: none;"></div>
-            <div id="testProgress" class="test-progress" style="display: none;"></div>
-            <div id="testResults" class="test-results" style="display: none;"></div>
+            <!-- Hardware Info -->
+            <div class="hardware-info" id="hardwareInfo" style="display: none;">
+                <h3>Detected Hardware</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Firmware:</span>
+                        <span class="info-value" id="detectedFirmware">—</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">PCB Batch:</span>
+                        <span class="info-value" id="detectedBatch">—</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Button System:</span>
+                        <span class="info-value" id="detectedButtonSystem">—</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Test Controls -->
+            <div class="test-controls" id="testControls" style="display: none;">
+                <button class="btn-start-test" id="startTestBtn">START TEST</button>
+                <div class="test-quick-stats">
+                    <div class="quick-stat-item">
+                        <div class="stat-number">19</div>
+                        <div class="stat-label">Total Tests</div>
+                    </div>
+                    <div class="quick-stat-item">
+                        <div class="stat-number">~2</div>
+                        <div class="stat-label">Minutes</div>
+                    </div>
+                </div>
+                <div class="test-coverage-note">
+                    <h4>What This Test Covers:</h4>
+                    <ul>
+                        <li><strong>✓ All Buttons:</strong> 7 chord buttons + 3 menu buttons</li>
+                        <li><strong>✓ Joystick:</strong> 8 directions + click detection</li>
+                    </ul>
+                    <p style="margin-top: 12px; font-size: 13px; color: var(--black); font-weight: 600;">
+                        <strong>⚠️ IMPORTANT:</strong> Follow the HiChord OLED screen during the test.
+                        The device will guide you through each step.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Current Test Display -->
+            <div class="current-test-card" id="currentTest" style="display: none;">
+                <div class="test-progress-bar-slim">
+                    <div class="progress-fill-slim" id="progressFill"></div>
+                </div>
+                <div class="progress-count" id="progressText">0 / 19</div>
+
+                <div class="test-instruction-large" id="currentTestInstruction">Follow the instructions on the HiChord OLED display</div>
+
+                <div class="test-visual-display" id="testDisplay">
+                    <!-- Dynamic test content -->
+                </div>
+
+                <div class="test-status-indicator" id="testStatus">
+                    <div class="status-icon" id="statusIcon"></div>
+                    <div class="status-text" id="statusText">Testing in progress - refer to device</div>
+                </div>
+            </div>
+
+            <!-- Test Results Summary -->
+            <div class="test-results-card" id="testResults" style="display: none;">
+                <div class="results-verdict" id="resultsVerdict">
+                    <div class="verdict-icon" id="verdictIcon">✓</div>
+                    <div class="verdict-text" id="verdictText">ALL TESTS PASSED</div>
+                </div>
+
+                <div class="results-stats-grid">
+                    <div class="stat-box stat-pass">
+                        <div class="stat-big-number" id="passedCount">0</div>
+                        <div class="stat-small-label">PASSED</div>
+                    </div>
+                    <div class="stat-box stat-fail">
+                        <div class="stat-big-number" id="failedCount">0</div>
+                        <div class="stat-small-label">FAILED</div>
+                    </div>
+                    <div class="stat-box stat-total">
+                        <div class="stat-big-number" id="totalCount">0</div>
+                        <div class="stat-small-label">TOTAL</div>
+                    </div>
+                </div>
+
+                <div class="results-actions-row">
+                    <button class="btn-action-secondary" onclick="printAutoResults()">PRINT</button>
+                    <button class="btn-action-primary" onclick="resetAutoTests()">TEST AGAIN</button>
+                </div>
+
+                <details class="results-detail-section">
+                    <summary>View Detailed Results</summary>
+                    <div class="results-detail-list" id="resultsDetail">
+                        <!-- Detailed results will be added here -->
+                    </div>
+                </details>
+            </div>
         </div>
     ` : '';
 

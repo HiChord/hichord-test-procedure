@@ -12,14 +12,13 @@ class HiChordTest {
         // Latest firmware version (update this when releasing new firmware)
         this.latestFirmwareVersion = { major: 2, minor: 1 };
 
-        // Test names (20 tests) - matches firmware exactly
+        // Test names (19 tests - no volume) - matches firmware exactly
         this.testNames = [
             'Chord 1', 'Chord 2', 'Chord 3', 'Chord 4', 'Chord 5', 'Chord 6', 'Chord 7',
             'Menu Button 1', 'Menu Button 2', 'Menu Button 3',
             'Joystick UP', 'Joystick DOWN', 'Joystick LEFT', 'Joystick RIGHT',
             'Joystick UP-LEFT', 'Joystick UP-RIGHT', 'Joystick DOWN-LEFT', 'Joystick DOWN-RIGHT',
-            'Joystick CLICK',
-            'Volume Wheel'
+            'Joystick CLICK'
         ];
     }
 
@@ -178,9 +177,9 @@ class HiChordTest {
 
     updateProgress(stepNum, passed, buttonPressed) {
         // Update progress bar and counter
-        const progress = (stepNum / 20) * 100;
+        const progress = (stepNum / 19) * 100;
         document.getElementById('progressFill').style.width = `${progress}%`;
-        document.getElementById('progressText').textContent = `${stepNum} / 20`;
+        document.getElementById('progressText').textContent = `${stepNum} / 19`;
 
         // Log for debugging
         console.log(`[Test] Progress: ${stepNum}/20 - ${passed ? 'PASS' : 'FAIL'}`);
@@ -200,7 +199,14 @@ class HiChordTest {
         document.getElementById('verdictIcon').textContent = failedCount === 0 ? '✓' : '✗';
         document.getElementById('passedCount').textContent = passedCount;
         document.getElementById('failedCount').textContent = failedCount;
-        document.getElementById('totalCount').textContent = '20';
+        document.getElementById('totalCount').textContent = '19';
+
+        // Restart device after 2 seconds
+        setTimeout(() => {
+            console.log('[Test] Restarting device...');
+            // Send restart command (SysEx 0x7D 0x99)
+            this.sendSysEx([0xF0, 0x7D, 0x99, 0xF7]);
+        }, 2000);
 
         // Show detailed results
         const detailDiv = document.getElementById('resultsDetail');
