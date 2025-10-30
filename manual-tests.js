@@ -21,6 +21,7 @@ const manualTests = [
     {
         id: 2,
         name: "Power On Sequence",
+        image: "images/Top View.png",
         procedure: [
             "Slide power switch to ON position",
             "Observe OLED display boot animation",
