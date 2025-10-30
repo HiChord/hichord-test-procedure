@@ -2843,9 +2843,9 @@ footer {
     align-items: center;
     justify-content: center;
     font-family: 'Helvetica', 'Arial', sans-serif;
-    font-size: 16px;
+    font-size: 40px;
     font-weight: bold;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
 }
 
 .volume-percentage {
@@ -2855,7 +2855,7 @@ footer {
     justify-content: center;
     color: #FFF;
     font-family: 'Helvetica', 'Arial', sans-serif;
-    font-size: 56px;
+    font-size: 70px;
     font-weight: bold;
-    padding-top: 10px;
+    padding-top: 5px;
 }
