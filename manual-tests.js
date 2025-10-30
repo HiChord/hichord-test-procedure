@@ -39,7 +39,8 @@ const manualTests = [
     {
         id: 3,
         name: "Volume Control",
-        image: "images/BUtton numbers only.jpg",
+        image: "images/Top View.png",
+        secondaryImage: "images/BUtton numbers only.jpg",
         procedure: [
             "Locate volume wheel on top edge",
             "Press any chord buttons 1-7 <span class=\"chord-btn-icon\"></span> to generate sound",
@@ -1034,6 +1035,12 @@ function buildManualTestHTML(test) {
         </div>
     ` : '';
 
+    const secondaryImageHTML = test.secondaryImage ? `
+        <div class="procedure-secondary-image">
+            <img src="${test.secondaryImage}" alt="${test.name} - Controls" />
+        </div>
+    ` : '';
+
     const midiTestHTML = test.midiTest ? `
         <div class="midi-test-app">
             <div class="midi-connection-status" id="midiConnectionStatus">
@@ -1181,9 +1188,12 @@ function buildManualTestHTML(test) {
             <div class="test-body">
                 ${imageHTML}
 
-                <div class="procedure-section">
-                    <h3>Test Procedure</h3>
-                    <ol>${procedureHTML}</ol>
+                <div class="procedure-with-image">
+                    <div class="procedure-section">
+                        <h3>Test Procedure</h3>
+                        <ol>${procedureHTML}</ol>
+                    </div>
+                    ${secondaryImageHTML}
                 </div>
 
                 ${midiTestHTML}

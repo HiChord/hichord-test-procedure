@@ -282,6 +282,29 @@ h1 {
     line-height: 1.6;
 }
 
+/* Procedure with secondary image layout */
+.procedure-with-image {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+}
+
+.procedure-with-image .procedure-section {
+    flex: 1;
+}
+
+.procedure-secondary-image {
+    flex-shrink: 0;
+    max-width: 300px;
+}
+
+.procedure-secondary-image img {
+    width: 100%;
+    height: auto;
+    border: 1px solid #E5E5E5;
+    border-radius: 4px;
+}
+
 .expected-section ul {
     list-style: none;
     margin-left: 0;
