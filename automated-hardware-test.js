@@ -118,14 +118,10 @@ class HiChordTest {
                 const passed = data[4] === 0x01;
                 const buttonPressed = data[5];  // What button was actually pressed
 
-                console.log(`[Test] Received 0x12: Step ${stepNum}, testRunning=${this.testRunning}`);
+                console.log(`[Test] Received 0x12: Step ${stepNum}: ${passed ? 'PASS' : 'FAIL'} (pressed ${buttonPressed}, expected ${stepNum})`);
 
-                if (!this.testRunning) {
-                    console.warn(`[Test] Ignoring message - test not running!`);
-                    return;
-                }
-
-                console.log(`[Test] Step ${stepNum}: ${passed ? 'PASS' : 'FAIL'} (pressed ${buttonPressed}, expected ${stepNum})`);
+                // Always process step updates, even if testRunning is false
+                // This prevents race condition where final report (0x15) arrives before last step update
 
                 // Store result with additional info
                 this.results[stepNum - 1] = {
@@ -134,7 +130,10 @@ class HiChordTest {
                     expectedButton: stepNum
                 };
 
-                this.updateProgress(stepNum, passed, buttonPressed);
+                // Only update progress UI if test is still running (prevents flicker)
+                if (this.testRunning) {
+                    this.updateProgress(stepNum, passed, buttonPressed);
+                }
             }
 
             // Final test report (0x15): [passed count] [failed count]
