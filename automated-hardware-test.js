@@ -130,10 +130,9 @@ class HiChordTest {
                     expectedButton: stepNum
                 };
 
-                // Only update progress UI if test is still running (prevents flicker)
-                if (this.testRunning) {
-                    this.updateProgress(stepNum, passed, buttonPressed);
-                }
+                // Always update progress (no testRunning check)
+                // Even if final report arrives first, we still need to show 19/19
+                this.updateProgress(stepNum, passed, buttonPressed);
             }
 
             // Final test report (0x15): [passed count] [failed count]
