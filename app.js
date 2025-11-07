@@ -4,7 +4,7 @@
 class TestProcedureApp {
     constructor() {
         this.currentTestIndex = 0;
-        this.totalTests = 12;
+        this.totalTests = 7;
         this.testResults = {};
         this.currentMode = 'manual';  // 'manual' or 'automated'
 
