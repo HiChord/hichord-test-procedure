@@ -116,32 +116,22 @@ class HiChordTest {
             }
 
             // Test progress update (0x12): [step number] [pass/fail] [button pressed]
+            // We receive these but DON'T update the UI - device OLED shows everything
             if (cmd === 0x12 && data.length >= 6) {
                 const stepNum = data[3];  // 1-19
                 const passed = data[4] === 0x01;
                 const buttonPressed = data[5];  // What button was actually pressed
 
-                console.log(`[Test] ✓✓✓ Received 0x12: Step ${stepNum}/19: ${passed ? 'PASS' : 'FAIL'} (button ${buttonPressed})`);
+                console.log(`[Test] ✓ Received 0x12: Step ${stepNum}/19: ${passed ? 'PASS' : 'FAIL'} (button ${buttonPressed})`);
 
-                // Validate step number is in valid range
-                if (stepNum < 1 || stepNum > 19) {
-                    console.error(`[Test] ✗ Invalid step number: ${stepNum}`);
-                    return;
-                }
-
-                // Always process step updates, even if testRunning is false
-                // This prevents race condition where final report (0x15) arrives before last step update
-
-                // Store result with additional info
+                // Store result for final report (but don't update UI during test)
                 this.results[stepNum - 1] = {
                     passed: passed,
                     buttonPressed: buttonPressed,
                     expectedButton: stepNum
                 };
 
-                // Always update progress (no testRunning check)
-                // Even if final report arrives first, we still need to show 19/19
-                this.updateProgress(stepNum, passed, buttonPressed);
+                // NO UI UPDATE - device shows progress on its OLED
             }
 
             // Final test report (0x15): [passed count] [failed count]
@@ -165,15 +155,16 @@ class HiChordTest {
         document.getElementById('testControls').style.display = 'none';
         document.getElementById('currentTest').style.display = 'block';
 
-        // Show simple message - all action is on the HiChord OLED
-        document.getElementById('progressText').textContent = '0 / 19';
-        document.getElementById('progressFill').style.width = '0%';
-        document.getElementById('currentTestInstruction').innerHTML = 'Follow the instructions on the HiChord OLED display';
+        // SIMPLIFIED: Just show "Testing on device" - no progress tracking
+        document.getElementById('progressText').textContent = 'Testing on device...';
+        document.getElementById('progressFill').style.width = '100%';
+        document.getElementById('progressFill').style.backgroundColor = '#3498db'; // Blue color
+        document.getElementById('currentTestInstruction').innerHTML = '<strong>Follow HiChord OLED display</strong><br><br>Device will show "Complete All Pass" when finished';
 
         // Clear test display and status
         document.getElementById('testDisplay').innerHTML = '';
-        document.getElementById('statusIcon').textContent = '';
-        document.getElementById('statusText').textContent = 'Testing in progress - refer to device';
+        document.getElementById('statusIcon').textContent = '⏳';
+        document.getElementById('statusText').textContent = 'Test in progress on device';
         document.getElementById('testStatus').className = 'test-status-indicator waiting';
 
         // Enter test mode
@@ -220,75 +211,63 @@ class HiChordTest {
     showResults(passedCount, failedCount) {
         this.testRunning = false;
 
-        console.log(`[Test] *** showResults() called with ${passedCount} passed, ${failedCount} failed`);
-        console.log(`[Test] *** Current results array has ${this.results.filter(r => r !== undefined).length} entries`);
+        console.log(`[Test] ✓ Test complete: ${passedCount} passed, ${failedCount} failed`);
 
-        // CRITICAL FIX: ALWAYS force progress to 19/19 when final report arrives
-        // This ensures the display always shows complete, regardless of dropped MIDI messages
-        const receivedSteps = this.results.filter(r => r !== undefined).length;
-        console.log(`[Test] Received ${receivedSteps}/19 step updates. Forcing display to 19/19...`);
+        // SIMPLIFIED: No progress bar manipulation - just show results
+        // Clear the timeout since we got the final report
+        if (this.finalReportTimeout) {
+            clearTimeout(this.finalReportTimeout);
+            this.finalReportTimeout = null;
+        }
 
-        // Force update to 19/19 ALWAYS (not just when receivedSteps < 19)
-        document.getElementById('progressFill').style.width = '100%';
-        document.getElementById('progressText').textContent = '19 / 19';
+        // Exit test mode
+        this.sendSysEx([0xF0, 0x7D, 0x11, 0xF7]);
 
-        // Give the UI a moment to update before transitioning screens
+        // Hide progress, show results
+        document.getElementById('currentTest').style.display = 'none';
+        document.getElementById('testResults').style.display = 'block';
+
+        document.getElementById('verdictText').textContent = failedCount === 0 ? 'ALL TESTS PASSED' : `${failedCount} FAILED`;
+        document.getElementById('verdictIcon').textContent = failedCount === 0 ? '✓' : '✗';
+        document.getElementById('passedCount').textContent = passedCount;
+        document.getElementById('failedCount').textContent = failedCount;
+        document.getElementById('totalCount').textContent = '19';
+
+        // Restart device after 2 seconds
         setTimeout(() => {
-            // Clear the timeout since we got the final report
-            if (this.finalReportTimeout) {
-                clearTimeout(this.finalReportTimeout);
-                this.finalReportTimeout = null;
-            }
+            console.log('[Test] Restarting device...');
+            // Send restart command (SysEx 0x7D 0x99)
+            this.sendSysEx([0xF0, 0x7D, 0x99, 0xF7]);
+        }, 2000);
 
-            // Exit test mode
-            this.sendSysEx([0xF0, 0x7D, 0x11, 0xF7]);
+        // Show detailed results (only for tests we actually received)
+        const detailDiv = document.getElementById('resultsDetail');
+        if (detailDiv) {
+            detailDiv.innerHTML = '';
+            this.results.forEach((result, i) => {
+                if (!result) return; // Skip if no result for this test
 
-            // Hide progress, show results
-            document.getElementById('currentTest').style.display = 'none';
-            document.getElementById('testResults').style.display = 'block';
+                const div = document.createElement('div');
+                div.className = `result-row ${result.passed ? 'pass' : 'fail'}`;
 
-            document.getElementById('verdictText').textContent = failedCount === 0 ? 'ALL TESTS PASSED' : `${failedCount} FAILED`;
-            document.getElementById('verdictIcon').textContent = failedCount === 0 ? '✓' : '✗';
-            document.getElementById('passedCount').textContent = passedCount;
-            document.getElementById('failedCount').textContent = failedCount;
-            document.getElementById('totalCount').textContent = '19';
+                let statusText = result.passed ? '✓' : '✗';
+                let failInfo = '';
 
-            // Restart device after 2 seconds
-            setTimeout(() => {
-                console.log('[Test] Restarting device...');
-                // Send restart command (SysEx 0x7D 0x99)
-                this.sendSysEx([0xF0, 0x7D, 0x99, 0xF7]);
-            }, 2000);
+                if (!result.passed && result.buttonPressed) {
+                    const pressedName = this.testNames[result.buttonPressed - 1] || `Button ${result.buttonPressed}`;
+                    failInfo = `<span class="fail-detail"> (got ${pressedName})</span>`;
+                }
 
-            // Show detailed results
-            const detailDiv = document.getElementById('resultsDetail');
-            if (detailDiv) {
-                detailDiv.innerHTML = '';
-                this.results.forEach((result, i) => {
-                    if (!result) return; // Skip if no result for this test
+                div.innerHTML = `
+                    <span class="result-number">${i + 1}</span>
+                    <span class="result-name">${this.testNames[i]}${failInfo}</span>
+                    <span class="result-status">${statusText}</span>
+                `;
+                detailDiv.appendChild(div);
+            });
+        }
 
-                    const div = document.createElement('div');
-                    div.className = `result-row ${result.passed ? 'pass' : 'fail'}`;
-
-                    let statusText = result.passed ? '✓' : '✗';
-                    let failInfo = '';
-
-                    if (!result.passed && result.buttonPressed) {
-                        const pressedName = this.testNames[result.buttonPressed - 1] || `Button ${result.buttonPressed}`;
-                        failInfo = `<span class="fail-detail"> (got ${pressedName})</span>`;
-                    }
-
-                    div.innerHTML = `
-                        <span class="result-number">${i + 1}</span>
-                        <span class="result-name">${this.testNames[i]}${failInfo}</span>
-                        <span class="result-status">${statusText}</span>
-                    `;
-                    detailDiv.appendChild(div);
-                });
-            }
-
-            console.log(`[Test] Results displayed: ${passedCount}/19 passed`);
-        }, 100); // 100ms delay to ensure UI updates before transition
+        console.log(`[Test] ✓ Results displayed: ${passedCount}/19 passed`);
     }
 
     sendSysEx(data) {
