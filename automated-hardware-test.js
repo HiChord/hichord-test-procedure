@@ -163,8 +163,8 @@ class HiChordTest {
 
         // Clear test display and status
         document.getElementById('testDisplay').innerHTML = '';
-        document.getElementById('statusIcon').textContent = '⏳';
-        document.getElementById('statusText').textContent = 'Test in progress on device';
+        document.getElementById('statusIcon').textContent = '';
+        document.getElementById('statusText').textContent = '';
         document.getElementById('testStatus').className = 'test-status-indicator waiting';
 
         // Enter test mode
