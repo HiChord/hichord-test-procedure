@@ -223,70 +223,72 @@ class HiChordTest {
         console.log(`[Test] *** showResults() called with ${passedCount} passed, ${failedCount} failed`);
         console.log(`[Test] *** Current results array has ${this.results.filter(r => r !== undefined).length} entries`);
 
-        // CRITICAL: If we got the final report but didn't receive all step updates,
-        // force the progress counter to show 19/19 before transitioning
+        // CRITICAL FIX: ALWAYS force progress to 19/19 when final report arrives
+        // This ensures the display always shows complete, regardless of dropped MIDI messages
         const receivedSteps = this.results.filter(r => r !== undefined).length;
-        if (receivedSteps < 19) {
-            console.warn(`[Test] ⚠ Only received ${receivedSteps}/19 step updates! Updating progress to 19/19...`);
-            // Force update to 19/19 before showing results
-            document.getElementById('progressFill').style.width = '100%';
-            document.getElementById('progressText').textContent = '19 / 19';
-        }
+        console.log(`[Test] Received ${receivedSteps}/19 step updates. Forcing display to 19/19...`);
 
-        // Clear the timeout since we got the final report
-        if (this.finalReportTimeout) {
-            clearTimeout(this.finalReportTimeout);
-            this.finalReportTimeout = null;
-        }
+        // Force update to 19/19 ALWAYS (not just when receivedSteps < 19)
+        document.getElementById('progressFill').style.width = '100%';
+        document.getElementById('progressText').textContent = '19 / 19';
 
-        // Exit test mode
-        this.sendSysEx([0xF0, 0x7D, 0x11, 0xF7]);
-
-        // Hide progress, show results
-        document.getElementById('currentTest').style.display = 'none';
-        document.getElementById('testResults').style.display = 'block';
-
-        document.getElementById('verdictText').textContent = failedCount === 0 ? 'ALL TESTS PASSED' : `${failedCount} FAILED`;
-        document.getElementById('verdictIcon').textContent = failedCount === 0 ? '✓' : '✗';
-        document.getElementById('passedCount').textContent = passedCount;
-        document.getElementById('failedCount').textContent = failedCount;
-        document.getElementById('totalCount').textContent = '19';
-
-        // Restart device after 2 seconds
+        // Give the UI a moment to update before transitioning screens
         setTimeout(() => {
-            console.log('[Test] Restarting device...');
-            // Send restart command (SysEx 0x7D 0x99)
-            this.sendSysEx([0xF0, 0x7D, 0x99, 0xF7]);
-        }, 2000);
+            // Clear the timeout since we got the final report
+            if (this.finalReportTimeout) {
+                clearTimeout(this.finalReportTimeout);
+                this.finalReportTimeout = null;
+            }
 
-        // Show detailed results
-        const detailDiv = document.getElementById('resultsDetail');
-        if (detailDiv) {
-            detailDiv.innerHTML = '';
-            this.results.forEach((result, i) => {
-                if (!result) return; // Skip if no result for this test
+            // Exit test mode
+            this.sendSysEx([0xF0, 0x7D, 0x11, 0xF7]);
 
-                const div = document.createElement('div');
-                div.className = `result-row ${result.passed ? 'pass' : 'fail'}`;
+            // Hide progress, show results
+            document.getElementById('currentTest').style.display = 'none';
+            document.getElementById('testResults').style.display = 'block';
 
-                let statusText = result.passed ? '✓' : '✗';
-                let failInfo = '';
+            document.getElementById('verdictText').textContent = failedCount === 0 ? 'ALL TESTS PASSED' : `${failedCount} FAILED`;
+            document.getElementById('verdictIcon').textContent = failedCount === 0 ? '✓' : '✗';
+            document.getElementById('passedCount').textContent = passedCount;
+            document.getElementById('failedCount').textContent = failedCount;
+            document.getElementById('totalCount').textContent = '19';
 
-                if (!result.passed && result.buttonPressed) {
-                    const pressedName = this.testNames[result.buttonPressed - 1] || `Button ${result.buttonPressed}`;
-                    failInfo = `<span class="fail-detail"> (got ${pressedName})</span>`;
-                }
+            // Restart device after 2 seconds
+            setTimeout(() => {
+                console.log('[Test] Restarting device...');
+                // Send restart command (SysEx 0x7D 0x99)
+                this.sendSysEx([0xF0, 0x7D, 0x99, 0xF7]);
+            }, 2000);
 
-                div.innerHTML = `
-                    <span class="result-number">${i + 1}</span>
-                    <span class="result-name">${this.testNames[i]}${failInfo}</span>
-                    <span class="result-status">${statusText}</span>
-                `;
-                detailDiv.appendChild(div);
-            });
-        }
+            // Show detailed results
+            const detailDiv = document.getElementById('resultsDetail');
+            if (detailDiv) {
+                detailDiv.innerHTML = '';
+                this.results.forEach((result, i) => {
+                    if (!result) return; // Skip if no result for this test
 
-        console.log(`[Test] Results displayed: ${passedCount}/19 passed`);
+                    const div = document.createElement('div');
+                    div.className = `result-row ${result.passed ? 'pass' : 'fail'}`;
+
+                    let statusText = result.passed ? '✓' : '✗';
+                    let failInfo = '';
+
+                    if (!result.passed && result.buttonPressed) {
+                        const pressedName = this.testNames[result.buttonPressed - 1] || `Button ${result.buttonPressed}`;
+                        failInfo = `<span class="fail-detail"> (got ${pressedName})</span>`;
+                    }
+
+                    div.innerHTML = `
+                        <span class="result-number">${i + 1}</span>
+                        <span class="result-name">${this.testNames[i]}${failInfo}</span>
+                        <span class="result-status">${statusText}</span>
+                    `;
+                    detailDiv.appendChild(div);
+                });
+            }
+
+            console.log(`[Test] Results displayed: ${passedCount}/19 passed`);
+        }, 100); // 100ms delay to ensure UI updates before transition
     }
 
     sendSysEx(data) {
