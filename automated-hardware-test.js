@@ -84,6 +84,9 @@ class HiChordTest {
     handleMIDI(event) {
         const data = Array.from(event.data);
 
+        // Log all incoming MIDI messages for debugging
+        console.log(`[Test] Raw MIDI: [${data.map(b => '0x' + b.toString(16).padStart(2, '0')).join(', ')}]`);
+
         // SysEx from HiChord
         if (data[0] === 0xF0 && data[1] === 0x7D) {
             const cmd = data[2];
@@ -118,7 +121,13 @@ class HiChordTest {
                 const passed = data[4] === 0x01;
                 const buttonPressed = data[5];  // What button was actually pressed
 
-                console.log(`[Test] Received 0x12: Step ${stepNum}: ${passed ? 'PASS' : 'FAIL'} (pressed ${buttonPressed}, expected ${stepNum})`);
+                console.log(`[Test] ✓✓✓ Received 0x12: Step ${stepNum}/19: ${passed ? 'PASS' : 'FAIL'} (button ${buttonPressed})`);
+
+                // Validate step number is in valid range
+                if (stepNum < 1 || stepNum > 19) {
+                    console.error(`[Test] ✗ Invalid step number: ${stepNum}`);
+                    return;
+                }
 
                 // Always process step updates, even if testRunning is false
                 // This prevents race condition where final report (0x15) arrives before last step update
@@ -140,7 +149,8 @@ class HiChordTest {
                 const passedCount = data[3];
                 const failedCount = data[4];
 
-                console.log(`[Test] ✓ Received final report (0x15): ${passedCount} passed, ${failedCount} failed`);
+                console.log(`[Test] ✓✓✓ Received final report (0x15): ${passedCount} passed, ${failedCount} failed`);
+                console.log(`[Test] Results array length: ${this.results.filter(r => r !== undefined).length}`);
                 this.showResults(passedCount, failedCount);
             }
         }
@@ -209,6 +219,19 @@ class HiChordTest {
 
     showResults(passedCount, failedCount) {
         this.testRunning = false;
+
+        console.log(`[Test] *** showResults() called with ${passedCount} passed, ${failedCount} failed`);
+        console.log(`[Test] *** Current results array has ${this.results.filter(r => r !== undefined).length} entries`);
+
+        // CRITICAL: If we got the final report but didn't receive all step updates,
+        // force the progress counter to show 19/19 before transitioning
+        const receivedSteps = this.results.filter(r => r !== undefined).length;
+        if (receivedSteps < 19) {
+            console.warn(`[Test] ⚠ Only received ${receivedSteps}/19 step updates! Updating progress to 19/19...`);
+            // Force update to 19/19 before showing results
+            document.getElementById('progressFill').style.width = '100%';
+            document.getElementById('progressText').textContent = '19 / 19';
+        }
 
         // Clear the timeout since we got the final report
         if (this.finalReportTimeout) {
