@@ -68,7 +68,8 @@ const manualTests = [
             "Follow on-screen instructions from device OLED",
             "Press each button/control as instructed by device",
             "Device will automatically detect and verify all 19 inputs",
-            "Review pass/fail results when complete"
+            "Review pass/fail results when complete",
+            "If Device says \"ALL PASS\", unplug, restart the Device and move to the next step"
         ],
         expected: [
             "All 19 buttons/controls detected correctly",
@@ -102,6 +103,7 @@ const manualTests = [
         batch: "4+",
         skipBatch: ["1", "2", "3"],
         procedure: [
+            "<strong style=\"color: #e74c3c; font-size: 1.1em;\">⚠️ IMPORTANT: Be sure that the device is NOT plugged into a computer</strong>",
             "Hold <span class=\"inline-code f3\">F3</span> button and press <span class=\"chord-btn-icon\" data-num=\"7\"></span> Button 7",
             "Device enters MIC SAMPLE mode",
             "Press and HOLD <span class=\"chord-btn-icon\" data-num=\"1\"></span> chord button 1 to start recording, speak or sing into the microphone (front panel), then release to stop (max 3.0 seconds)",
