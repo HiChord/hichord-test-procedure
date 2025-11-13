@@ -123,7 +123,7 @@ const manualTests = [
             progressBar: { x: 4, y: 22, width: 56, height: 4, filled: 28 },
             rmsMeter: { x: 4, y: 28, width: 56, height: 4, filled: 40 }
         },
-        note: "NOTE: Be sure that the device is not plugged into a computer during this test"
+        note: "<strong>Be sure that the device is not plugged into a computer during this test</strong>"
     },
     {
         id: 7,
