@@ -154,8 +154,7 @@ const manualTests = [
                 fillPercentage: 65,
                 hasDividers: true
             }
-        },
-        note: "BATCH 2+ ONLY - F1+F2 combo always shows battery info (even 0V for debugging early PCBs)"
+        }
     }
 ];
 
