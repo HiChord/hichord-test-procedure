@@ -103,7 +103,6 @@ const manualTests = [
         batch: "4+",
         skipBatch: ["1", "2", "3"],
         procedure: [
-            "<strong style=\"color: #e74c3c; font-size: 1.1em;\">⚠️ IMPORTANT: Be sure that the device is NOT plugged into a computer</strong>",
             "Hold <span class=\"inline-code f3\">F3</span> button and press <span class=\"chord-btn-icon\" data-num=\"7\"></span> Button 7",
             "Device enters MIC SAMPLE mode",
             "Press and HOLD <span class=\"chord-btn-icon\" data-num=\"1\"></span> chord button 1 to start recording, speak or sing into the microphone (front panel), then release to stop (max 3.0 seconds)",
@@ -123,7 +122,8 @@ const manualTests = [
             timeText: "0.5 sec",
             progressBar: { x: 4, y: 22, width: 56, height: 4, filled: 28 },
             rmsMeter: { x: 4, y: 28, width: 56, height: 4, filled: 40 }
-        }
+        },
+        note: "NOTE: Be sure that the device is not plugged into a computer during this test"
     },
     {
         id: 7,
