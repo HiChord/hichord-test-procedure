@@ -77,7 +77,7 @@ const manualTests = [
             "Web interface displays real-time progress",
             "Final report shows PASS for all tests"
         ],
-        note: "This automated test verifies: 7 chord buttons, 3 menu buttons (F1/F2/F3), 8 joystick directions, and joystick click (19 tests total). Device will automatically restart when complete."
+        note: "This automated test verifies: 7 chord buttons, 3 menu buttons (F1/F2/F3), 8 joystick directions, and joystick click (19 tests total)."
     },
     {
         id: 5,
