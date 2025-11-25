@@ -29,7 +29,7 @@ const manualTests = [
         ],
         expected: [
             "Display shows \"HiChord\" title with animated ghost",
-            "Version \"REV 2.0\" appears below title",
+            "Version \"REV 2.01\" appears below title",
             "Boot sequence completes within 3 seconds",
             "No screen artifacts or glitches"
         ],
