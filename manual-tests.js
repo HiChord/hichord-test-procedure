@@ -29,7 +29,7 @@ const manualTests = [
         ],
         expected: [
             "Display shows \"HiChord\" title with animated ghost",
-            "Version \"REV 2.08\" appears below title",
+            "Version \"REV 2.09\" appears below title",
             "Boot sequence completes within 3 seconds",
             "No screen artifacts or glitches"
         ],
@@ -695,8 +695,8 @@ function renderOLED(oledData) {
                         <!-- "HiChord" text at x=22, y=14 -->
                         <text x="22" y="14" font-family="monospace" font-size="6" fill="white">HiChord</text>
 
-                        <!-- "REV 2.08" text at x=22, y=24 -->
-                        <text x="22" y="24" font-family="monospace" font-size="5" fill="white">REV 2.08</text>
+                        <!-- "REV 2.09" text at x=22, y=24 -->
+                        <text x="22" y="24" font-family="monospace" font-size="5" fill="white">REV 2.09</text>
                     </svg>
                 </div>
             </div>
