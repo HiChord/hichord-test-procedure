@@ -95,6 +95,7 @@ const manualTests = [
             "Volume control functions properly",
             "Clean audio output at all volume levels"
         ],
+        note: "<strong>Listen for High Pitched Whine</strong> - If present, this indicates a hardware issue.",
         oled: null
     },
     {
