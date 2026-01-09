@@ -30,7 +30,7 @@ Interactive USB-C connected testing with real-time validation:
 ## Test Coverage (12 Tests)
 
 1. **Charging Indicator** - USB-C LED (red charging, blue charged)
-2. **Power On Sequence** - OLED boot screen "HICHORD Rev 2.2"
+2. **Power On Sequence** - OLED boot screen "HICHORD Rev 2.2.1"
 3. **Volume Control** - Slider + OLED display
 4. **Function Buttons** - F1 (gray), F2 (yellow), F3 (red)
 5. **Joystick 8 Directions** - UP, DOWN, LEFT, RIGHT + diagonals
