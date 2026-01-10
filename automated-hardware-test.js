@@ -10,7 +10,7 @@ class HiChordTest {
         this.results = [];
 
         // Latest firmware version (update this when releasing new firmware)
-        this.latestFirmwareVersion = { major: 2, minor: 3, patch: 0 };
+        this.latestFirmwareVersion = { major: 2, minor: 4, patch: 0 };
 
         // Test names (19 tests - no volume) - matches firmware exactly
         this.testNames = [
