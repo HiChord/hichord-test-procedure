@@ -4,27 +4,6 @@
 const manualTests = [
     {
         id: 1,
-        name: "Visual Inspection",
-        procedure: [
-            "Perform inspection in a well-lit room where the device is clearly visible",
-            "Inspect unit for scratches on the enclosure and display",
-            "Check OLED display is aligned properly (not crooked or misaligned)",
-            "Verify all keys are straight and properly seated (not crooked)",
-            "Ensure all keys are fully inserted and sitting flush",
-            "Flip unit over and verify 4 rubber feet are present on bottom"
-        ],
-        expected: [
-            "No visible scratches on enclosure or display",
-            "OLED display is straight and properly aligned",
-            "All keys are aligned and not crooked",
-            "All keys are fully seated (not loose or partially inserted)",
-            "Bottom has all 4 rubber feet attached"
-        ],
-        image: "images/Front View.png",
-        oled: null
-    },
-    {
-        id: 2,
         name: "Charging Indicator",
         procedure: [
             "Locate USB-C port on side of HiChord™",
@@ -40,7 +19,7 @@ const manualTests = [
         image: "images/Side View.png"
     },
     {
-        id: 3,
+        id: 2,
         name: "Power On Sequence",
         image: "images/Top View.png",
         procedure: [
@@ -59,7 +38,7 @@ const manualTests = [
         }
     },
     {
-        id: 4,
+        id: 3,
         name: "Volume Control",
         image: "images/Top View.png",
         secondaryImage: "images/BUtton numbers only.jpg",
@@ -80,7 +59,7 @@ const manualTests = [
         }
     },
     {
-        id: 5,
+        id: 4,
         name: "Button Test (Automated Detection)",
         isAutomatedTest: true,
         procedure: [
@@ -101,7 +80,7 @@ const manualTests = [
         note: "This automated test verifies: 7 chord buttons, 3 menu buttons (F1/F2/F3), 8 joystick directions, and joystick click (19 tests total)."
     },
     {
-        id: 6,
+        id: 5,
         name: "Headphone Output",
         image: "images/Top View.png",
         procedure: [
@@ -120,7 +99,7 @@ const manualTests = [
         oled: null
     },
     {
-        id: 7,
+        id: 6,
         name: "Microphone Input",
         batch: "4+",
         skipBatch: ["1", "2", "3"],
@@ -148,7 +127,7 @@ const manualTests = [
         note: "<strong>Be sure that the device is not plugged into a computer during this test</strong>"
     },
     {
-        id: 8,
+        id: 7,
         name: "Battery Indicator",
         batch: "2+",
         skipBatch: ["1"],
@@ -177,6 +156,27 @@ const manualTests = [
                 hasDividers: true
             }
         }
+    },
+    {
+        id: 8,
+        name: "Visual Inspection",
+        procedure: [
+            "Perform inspection in a well-lit room where the device is clearly visible",
+            "Inspect unit for scratches on the enclosure and display",
+            "Check OLED display is aligned properly (not crooked or misaligned)",
+            "Verify all keys are straight and properly seated (not crooked)",
+            "Ensure all keys are fully inserted and sitting flush",
+            "Flip unit over and verify 4 rubber feet are present on bottom"
+        ],
+        expected: [
+            "No visible scratches on enclosure or display",
+            "OLED display is straight and properly aligned",
+            "All keys are aligned and not crooked",
+            "All keys are fully seated (not loose or partially inserted)",
+            "Bottom has all 4 rubber feet attached"
+        ],
+        image: "images/Front View.png",
+        oled: null
     }
 ];
 
