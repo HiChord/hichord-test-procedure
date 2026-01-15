@@ -176,6 +176,7 @@ const manualTests = [
             "Bottom has all 4 rubber feet attached"
         ],
         image: "images/Front View.png",
+        secondaryImage: "images/Back View.png",
         oled: null
     }
 ];
