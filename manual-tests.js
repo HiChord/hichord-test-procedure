@@ -718,7 +718,7 @@ function renderOLED(oledData) {
                         <!-- "HiChord" text at x=22, y=14 -->
                         <text x="22" y="14" font-family="monospace" font-size="6" fill="white">HiChord</text>
 
-                        <!-- "Rev 2.5" text at x=22, y=24 -->
+                        <!-- "Rev 2.6.7" text at x=22, y=24 -->
                         <text x="22" y="24" font-family="monospace" font-size="5" fill="white">Rev 2.6.7</text>
                     </svg>
                 </div>
